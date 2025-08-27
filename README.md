@@ -1,5 +1,5 @@
 <div align="center">
-  <p>🔥 Started with an original design from ----, upgraded it from Next.js 13 / React 18 to Next.js 15 and React 19 - Stack includes: Next.js, TypeScript, Tailwind CSS, SWR, and Prisma with PostgreSQL</p>
+  <p>🔥 Started with an original design from ----, upgraded from Next.js 13 / React 18 -> Next.js 15 / React 19 - Stack includes: Next.js, TypeScript, Tailwind CSS, SWR, and Prisma with PostgreSQL</p>
 
 </div>
 <br />
@@ -115,7 +115,7 @@ GOOGLE_CLIENT_SECRET=
 
 ### 4. Run the development server
 
-You can start the server using this command:
+You can start the server using this command:git 
 
 ```bash
 npm run dev
@@ -126,4 +126,4 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## License
 
-Licensed under the [GPL-3.0 license](https://github.com/LucasPMorris/profile_site/blob/master/LICENSE).# profile_site
+Licensed under the [GPL-3.0 license](https://github.com/LucasPMorris/profile_site/blob/master/LICENSE).
