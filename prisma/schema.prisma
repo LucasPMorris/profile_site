@@ -1,5 +1,5 @@
 generator client {
-  provider     = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -25,9 +25,87 @@ model projects {
 }
 
 model contentmeta {
-  id          Int      @id @default(autoincrement())
-  slug        String   @unique
-  type        String
-  views       Int      @default(0)
-  updated_at  DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  slug       String   @unique
+  type       String
+  views      Int      @default(0)
+  updated_at DateTime @default(now())
+}
+
+model blogPost {
+  id               Int      @id @default(autoincrement())
+  date             DateTime
+  modified         DateTime
+  slug             String   @unique
+  status           String
+  link             String
+  title            String
+  contentHtml      String
+  contentMarkdown  String
+  contentProtected Boolean  @default(false)
+  excerptHtml      String
+  excerptProtected Boolean  @default(false)
+  authorId         Int
+  author           user     @relation(fields: [authorId], references: [user_id])
+  featuredMediaId  Int?
+  featuredMedia    media?   @relation("FeaturedMedia", fields: [featuredMediaId], references: [id])
+  sticky           Boolean  @default(false)
+  template         String
+  format           String
+  footnotes        String
+  featuredImageUrl String?
+  totalViewsCount  Int      @default(0)
+
+  categories  category[]   @relation("PostCategories")
+  tags        tag[]        @relation("PostTags")
+  attachments attachment[]
+  terms       term[]
+}
+
+model user {
+  user_id         Int        @id @default(autoincrement())
+  name            String
+  username        String     @unique
+  twitterUsername String?
+  githubUsername  String?
+  websiteUrl      String?
+  profileImage    String?
+  posts           blogPost[]
+}
+
+model category {
+  id    Int        @id @default(autoincrement())
+  name  String
+  slug  String
+  posts blogPost[] @relation("PostCategories")
+}
+
+model tag {
+  id    Int        @id @default(autoincrement())
+  name  String
+  slug  String
+  posts blogPost[] @relation("PostTags")
+}
+
+model media {
+  id          Int        @id @default(autoincrement())
+  url         String
+  description String?
+  posts       blogPost[] @relation("FeaturedMedia")
+}
+
+model attachment {
+  id     Int      @id @default(autoincrement())
+  href   String
+  postId Int
+  post   blogPost @relation(fields: [postId], references: [id])
+}
+
+model term {
+  id         Int      @id @default(autoincrement())
+  taxonomy   String
+  embeddable Boolean  @default(true)
+  href       String
+  postId     Int
+  post       blogPost @relation(fields: [postId], references: [id])
 }

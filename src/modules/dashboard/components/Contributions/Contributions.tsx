@@ -18,24 +18,15 @@ type ContributionsProps = {
 const Contributions = ({ username, endpoint }: ContributionsProps) => {
   const { data } = useSWR(endpoint, fetcher);
 
-  const contributionCalendar =
-    data?.contributionsCollection?.contributionCalendar;
+  const contributionCalendar = data?.contributionsCollection?.contributionCalendar;
 
   return (
     <section className='flex flex-col gap-y-2'>
-      <SectionHeading
-        title='Contributions'
-        icon={<GithubIcon className='mr-1' />}
-      />
+      <SectionHeading title='Contributions' icon={<GithubIcon className='mr-1' />} />
       <SectionSubHeading>
-        <p className='dark:text-neutral-400'>
-          My contributions from last year on github.
-        </p>
-        <Link
-          href={`https://github.com/${username}`}
-          target='_blank'
-          passHref
-          className='font-code text-sm text-neutral-400 hover:text-neutral-700 dark:text-neutral-600 hover:dark:text-neutral-400'
+        <p className='dark:text-neutral-400'>My contributions from last year on github.</p>
+        <Link href={`https://github.com/${username}`} target='_blank' passHref
+          className='font-code text-sm text-neutral-600 hover:text-neutral-700 dark:text-neutral-400 hover:dark:text-neutral-400'
         >
           @{username}
         </Link>

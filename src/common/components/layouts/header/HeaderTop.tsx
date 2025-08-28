@@ -1,16 +1,11 @@
 import clsx from 'clsx';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useContext, useState } from 'react';
-import { BiCommand as CommandIcon } from 'react-icons/bi';
+import { useState } from 'react';
 import { FiMenu as MenuIcon } from 'react-icons/fi';
-import {
-  MdClose as CloseIcon,
-  MdVerified as VerifiedIcon,
-} from 'react-icons/md';
+import { MdClose as CloseIcon, MdVerified as VerifiedIcon } from 'react-icons/md';
 
 import { MENU_ITEMS } from '@/common/constant/menu';
-import { CommandPaletteContext } from '@/common/context/CommandPaletteContext';
 
 import Image from '../../elements/Image';
 import ThemeToggleButton from '../../elements/ThemeToggleButton';
@@ -18,11 +13,8 @@ import Tooltip from '../../elements/Tooltip';
 import Profile from '../../sidebar/Profile';
 
 const HeaderTop = () => {
-  const { setIsOpen } = useContext(CommandPaletteContext);
   const [showMenu, setShowMenu] = useState(false);
-
   const router = useRouter();
-
   const menus = MENU_ITEMS.filter((item) => item.isShow && item.title !== 'Home' );
 
   return (
@@ -62,15 +54,10 @@ const HeaderTop = () => {
             </div>
           )}
 
-          {!showMenu && (
-            <>
-              <ThemeToggleButton />
-              <CommandIcon onClick={() => setIsOpen(true)} className='cursor-pointer' size={20} />
-            </>
-          )}
+          {!showMenu && (<><ThemeToggleButton /></>)}
 
           <button
-            className='flex items-center gap-2 rounded-md border p-2 backdrop-blur dark:border-neutral-700 dark:bg-neutral-900'
+            className='flex items-center gap-2 rounded-md border p-2 backdrop-blur border-neutral-400 dark:border-neutral-700 dark:bg-neutral-900'
             onClick={() => setShowMenu(!showMenu)}
           >
             {showMenu ? <CloseIcon size={18} /> : <MenuIcon size={18} />}

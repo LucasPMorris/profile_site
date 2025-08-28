@@ -56,31 +56,13 @@ const CodeBlock = ({
         <div className='relative'>
           <button
             className='absolute right-3 top-3 rounded-lg border border-neutral-700 p-2 hover:bg-neutral-800'
-            type='button'
-            aria-label='Copy to Clipboard'
-            onClick={() => handleCopy(children?.toString() || '')}
-            data-umami-event='Click Copy Code'
-          >
-            {!isCopied ? (
-              <CopyIcon size={18} className='text-neutral-400' />
-            ) : (
-              <CheckIcon size={18} className='text-green-600' />
-            )}
+            type='button'  aria-label='Copy to Clipboard' onClick={() => handleCopy(children?.toString() || '')}
+            data-umami-event='Click Copy Code'>
+            {!isCopied ? (<CopyIcon size={18} className='text-neutral-400' />) : (<CheckIcon size={18} className='text-green-600' />)}
           </button>
 
           <SyntaxHighlighter
-            {...props}
-            style={themeColor}
-            customStyle={{
-              padding: '20px',
-              fontSize: '14px',
-              borderRadius: '8px',
-              paddingRight: '50px',
-            }}
-            PreTag='div'
-            language={match ? match[1] : 'javascript'}
-            wrapLongLines
-          >
+            {...props} style={themeColor} customStyle={{ padding: '20px', fontSize: '14px', borderRadius: '8px', paddingRight: '50px' }} PreTag='div' language={match ? match[1] : 'javascript'} wrapLongLines>
             {String(children).replace(/\n$/, '')}
           </SyntaxHighlighter>
         </div>
@@ -95,7 +77,4 @@ const CodeBlock = ({
 
 const LoadingPlaceholder = () => <div className='mb-12 mt-12 h-36 w-full' />;
 
-export default dynamic(() => Promise.resolve(CodeBlock), {
-  ssr: false,
-  loading: LoadingPlaceholder,
-});
+export default dynamic(() => Promise.resolve(CodeBlock), { ssr: false, loading: LoadingPlaceholder });

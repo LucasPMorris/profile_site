@@ -13,6 +13,7 @@ import { fetcher } from '@/services/fetcher';
 
 import BlogCardNew from './BlogCardNew';
 import BlogFeaturedSection from './BlogFeaturedSection';
+import { url } from 'inspector';
 
 const BlogListNew = () => {
   const [page, setPage] = useState<number>(1);
@@ -20,7 +21,7 @@ const BlogListNew = () => {
   const router = useRouter();
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const { data, error, mutate, isValidating } = useSWR(`/api/blog?page=${page}&per_page=6&search=${debouncedSearchTerm}`, fetcher, { revalidateOnFocus: false, refreshInterval: 0 } );
-  const { posts: blogData = [], total_pages: totalPages = 1, total_posts = 0 } = data?.data || {};
+  const { posts: blogData = [], total_pages: totalPages = 1, total_posts = 0 } = data || {};
 
   const handlePageChange = async (newPage: number) => {
     await mutate();

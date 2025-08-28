@@ -19,6 +19,8 @@ interface BlogCardProps extends BlogItemProps { isExcerpt?: boolean; }
 const BlogCardNew = ({ id, title, featured_image_url, date, slug, content, excerpt, total_views_count, tags_list, isExcerpt = true }: BlogCardProps) => {
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
+  console.log('Basic Info:', { id, title, slug });
+
   const readingTimeMinutes = calculateReadingTime(content?.rendered) ?? 0;
   const tagList = tags_list || [];
   const defaultImage = '/images/placeholder.png';

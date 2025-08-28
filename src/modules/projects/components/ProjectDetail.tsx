@@ -6,14 +6,7 @@ import { ProjectItemProps } from '@/common/types/projects';
 
 import ProjectLink from './ProjectLink';
 
-const ProjectDetail = ({
-  title,
-  image,
-  stacks,
-  link_demo,
-  link_github,
-  content,
-}: ProjectItemProps) => {
+const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content }: ProjectItemProps) => {
   const stacksArray = JSON.parse(stacks);
 
   return (
@@ -31,19 +24,9 @@ const ProjectDetail = ({
             ))}
           </div>
         </div>
-        <ProjectLink
-          title={title}
-          link_demo={link_demo}
-          link_github={link_github}
-        />
+        <ProjectLink title={title} link_demo={link_demo} link_github={link_github} />
       </div>
-      <Image
-        src={image}
-        width={800}
-        height={400}
-        alt={title}
-        className='hover:scale-105'
-      />
+      <Image src={image} width={800} height={400} alt={title} className='hover:scale-105' />
       {content && (
         <div className='mt-5 space-y-6 leading-[1.8] dark:text-neutral-300'>
           <MDXComponent>{content}</MDXComponent>
