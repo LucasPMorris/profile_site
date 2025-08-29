@@ -3,11 +3,17 @@ import { GITHUB_ACCOUNTS } from '@/common/constant/github';
 
 import CodingActive from './CodingActive';
 import Contributions from './Contributions';
+import SpotifyStats  from './SpotifyStats';
+import HikingStats from './HikingStats';
 
 const Dashboard = () => {
   return (
     <>
       <CodingActive />
+      <Breakline className='mb-8 mt-10' />
+      {/* <HikingStats />
+      <Breakline className='mb-8 mt-10' /> */}
+      <SpotifyStats />
       <Breakline className='mb-8 mt-10' />
       <div className='space-y-10'>
         {GITHUB_ACCOUNTS?.filter((account) => account?.is_active).map(

@@ -16,7 +16,6 @@ import prisma from '@/common/libs/prisma';
 interface BlogDetailPageProps { post: BlogDetailProps; };
 
 const BlogDetailPage: NextPage<BlogDetailPageProps> = ({ post }) => {
-  console.log('Blog Data:', post);
   const slug = `blog/${post?.slug}?id=${post?.id}`;
   const canonicalUrl = `https://lucasmorris.site/${slug}`;
   const description = formatExcerpt(post?.excerpt?.rendered);

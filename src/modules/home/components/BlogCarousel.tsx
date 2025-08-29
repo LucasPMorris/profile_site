@@ -9,48 +9,32 @@ import BlogCardNew from '@/modules/blog/components/BlogCardNew';
 import { fetcher } from '@/services/fetcher';
 
 const BlogCarousel = () => {
-  const { data, isLoading } = useSWR(`/api/blog?page=1&per_page=4`, fetcher, {
-    revalidateOnFocus: false,
-    refreshInterval: 0,
-  });
+  const { data, isLoading } = useSWR(`/api/blog?page=1&per_page=4`, fetcher, { revalidateOnFocus: false, refreshInterval: 0 });
 
   const blogData: BlogItemProps[] = useMemo(() => {
-    return data?.data?.posts || [];
+    return data?.posts || [];
   }, [data]);
 
-  const ref =
-    useRef<HTMLDivElement>(undefined) as React.MutableRefObject<HTMLInputElement>;
+  const ref = useRef<HTMLDivElement>(undefined) as React.MutableRefObject<HTMLInputElement>;
   const { events } = useDraggable(ref);
 
   const renderBlogCards = () => {
-    if (isLoading) {
-      return Array.from({ length: 3 }, (_, index) => (
-        <BlogCardNewSkeleton key={index} />
-      ));
-    }
+    if (isLoading) { return Array.from({ length: 3 }, (_, index) => ( <BlogCardNewSkeleton key={index} /> )); }
 
     return blogData.map((item, index) => (
-      <motion.div
-        key={index}
+      <motion.div key={index}
         initial={{ opacity: 0, x: 100 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -100 }}
         transition={{ duration: 0.5 }}
-        className='min-w-[326px] gap-x-5'
-      >
+        className='min-w-[326px] gap-x-5'>
         <BlogCardNew {...item} />
       </motion.div>
     ));
   };
 
   return (
-    <div
-      className='flex gap-4 overflow-x-scroll p-1 scrollbar-hide'
-      {...events}
-      ref={ref}
-    >
-      {renderBlogCards()}
-    </div>
+    <div className='flex gap-4 overflow-x-scroll p-1 scrollbar-hide' {...events} ref={ref}>{renderBlogCards()}</div>
   );
 };
 

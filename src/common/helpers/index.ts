@@ -45,7 +45,6 @@ export const removeHtmlTags = (html: string) => {
 };
 
 export const formatExcerpt = (content: string, maxLength = 100) => {
-  console.log('Original Content:', content);
   if (!content) { return ''; }
   const cleanedContent = removeHtmlTags(content);
 

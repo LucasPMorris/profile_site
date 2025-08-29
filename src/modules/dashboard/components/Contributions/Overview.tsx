@@ -1,15 +1,7 @@
 import OverviewItem from './OverviewItem';
 
 interface OverviewProps {
-  data: {
-    totalContributions?: number;
-    weeks?: {
-      contributionDays: {
-        contributionCount: number;
-      }[];
-    }[];
-  };
-}
+  data: { totalContributions?: number; weeks?: { contributionDays: { contributionCount: number; }[]; }[]; }; }
 
 const Overview = ({ data }: OverviewProps) => {
   const totalContributions = data?.totalContributions || 0;
@@ -18,16 +10,10 @@ const Overview = ({ data }: OverviewProps) => {
   const totalThisWeekContribution =
     weeks[weeks.length - 1]?.contributionDays
       ?.map((item) => item.contributionCount)
-      ?.reduce(
-        (previousValue, currentValue) => previousValue + currentValue,
-        0,
-      ) || 0;
+      ?.reduce((previousValue, currentValue) => previousValue + currentValue, 0 ) || 0;
+  
   const totalContributionList = weeks
-    .map((week) =>
-      week.contributionDays.map(
-        (contributionDay) => contributionDay.contributionCount,
-      ),
-    )
+    .map((week) => week.contributionDays.map((contributionDay) => contributionDay.contributionCount ),)
     .flat();
 
   const bestContribution = Math.max(...totalContributionList) || 0;

@@ -26,20 +26,13 @@ const Profile = ({ isScrolled = false }: ProfileProps) => {
 
   const [expandMenu, setExpandMenu] = useState<boolean>(false);
 
-  const hideNavbar = () => {
-    setExpandMenu(false);
-  };
+  const hideNavbar = () => { setExpandMenu(false); };
 
   useEffect(() => {
-    if (expandMenu) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
+    if (expandMenu) { document.body.style.overflow = 'hidden'; }
+    else { document.body.style.overflow = 'auto'; }
 
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
+    return () => {document.body.style.overflow = 'auto'; };
   }, [expandMenu]);
 
   return (

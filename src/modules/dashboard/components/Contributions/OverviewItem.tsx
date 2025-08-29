@@ -1,11 +1,7 @@
 import AnimateCounter from '@/common/components/elements/AnimateCounter';
 import Card from '@/common/components/elements/Card';
 
-interface OverviewItemProps {
-  label: string;
-  value: number;
-  unit?: string;
-}
+interface OverviewItemProps { label: string; value: number; unit?: string; }
 
 const OverviewItem = ({ label, value, unit = '' }: OverviewItemProps) => (
   <Card className='flex flex-col self-center rounded-xl border border-neutral-400 bg-neutral-100 px-4 py-3 dark:border-neutral-900'>

@@ -9,8 +9,7 @@ const ThemeSwitcher = () => {
 
   const [mounted, setMounted] = useState(false);
 
-  const toggleTheme = () =>
-    setTheme(resolvedTheme === 'light' ? 'dark' : 'light');
+  const toggleTheme = () => setTheme(resolvedTheme === 'light' ? 'dark' : 'light');
 
   useEffect(() => setMounted(true), []);
 
