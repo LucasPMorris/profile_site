@@ -16,6 +16,10 @@ module.exports = {
         light: '#fafafa',
       },
       keyframes: {
+        spotifyScroll: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
         wave: {
           '0%': { transform: 'rotate(0.0deg)' },
           '10%': { transform: 'rotate(14deg)' },
@@ -43,6 +47,7 @@ module.exports = {
         },
       },
       animation: {
+        'spotifyScroll': 'spotifyScroll 20s linear infinite',
         'waving-hand': 'wave 2s linear infinite',
         'flying-card': 'flying 3s infinite normal',
         'badge-pulse': 'badge 1.5s ease-out infinite',

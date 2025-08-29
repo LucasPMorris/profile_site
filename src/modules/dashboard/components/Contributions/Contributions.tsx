@@ -8,6 +8,7 @@ import { fetcher } from '@/services/fetcher';
 
 import Calendar from './Calendar';
 import Overview from './Overview';
+import Card from '@/common/components/elements/Card';
 
 type ContributionsProps = {
   username: string;
@@ -35,10 +36,12 @@ const Contributions = ({ username, endpoint }: ContributionsProps) => {
       {!data && <div className='dark:text-neutral-400'>No Data</div>}
 
       {data && (
-        <div className='space-y-3'>
-          <Overview data={contributionCalendar} />
-          <Calendar data={contributionCalendar} />
-        </div>
+          <div className='space-y-3'>
+            <Overview data={contributionCalendar} />
+            <Card className='p-4 border border-neutral-400 bg-neutral-100 dark:border-neutral-900 rounded-lg'>
+              <Calendar data={contributionCalendar} />
+            </Card>
+          </div>
       )}
     </section>
   );

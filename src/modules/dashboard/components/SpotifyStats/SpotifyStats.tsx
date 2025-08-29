@@ -1,7 +1,7 @@
 // import Link from 'next/link';
 // import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { SiWakatime as WakatimeIcon } from 'react-icons/si';
+import { SiWakatime as WakatimeIcon, SiSpotify as SpotifyIcon } from 'react-icons/si';
 import useSWR from 'swr';
 import Card from '@/common/components/elements/Card';
 
@@ -19,29 +19,15 @@ type SpotifyStatItem = OverviewStat | ArtistProps | TrackProps;
 
 interface SpotifyStatGroup { title: string; styles: { bg: string }; data: SpotifyStatItem[]; }
 
-const getStatKey = (item: SpotifyStatItem): string => { if ('name' in item) return item.name; if ('title' in item) return item.title; return Math.random().toString(); };
-
-// const SpotifyOverviewItem = ({ label, value }: { label: string; value: string | number }) => (
-//   <Card className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900 sm:col-span-1'>
-//     <span className='text-sm dark:text-neutral-400'>{label}</span>
-//     <span>{value || '-'}</span>
-//   </Card>
-// );
-
-
 const SpotifyStats = () => {
   const { data } = useSWR('/api/spotify', fetcher);
 
   const totalPlays = data?.recentlyPlayed?.length ?? 0; 
-  data?.recentlyPlayed?.forEach((track: { played_at: string }, index: number) => {
-    console.log(`${index + 1}: ${JSON.stringify(track)}`);
-  });
-
   const uniqueDays = new Set(data?.recentlyPlayed?.map((track: { played_at: string }) => {
     const date = new Date(track.played_at); 
     return isNaN(date.getTime()) ? null : date.toISOString().split('T')[0]; })
   );
-  
+
   const days = uniqueDays.size || 1; // Avoid division by zero
   const sortedDates = [...uniqueDays].sort((a, b) => new Date(a as string).getTime() - new Date(b as string).getTime());
   const dateRange = sortedDates.length === 1 ? sortedDates[0] : `${sortedDates[0]} - ${sortedDates[sortedDates.length - 1]}`;
@@ -49,6 +35,25 @@ const SpotifyStats = () => {
   const explicitCount = data?.recentlyPlayed?.filter((track: { explicit: boolean }) => track.explicit).length ?? 0;
   const percentExplicit = ((explicitCount / totalPlays) * 100).toFixed(1);
   
+  const playsByHour: number[] = Array(24).fill(0);
+
+  data?.recentlyPlayed?.forEach((track: { played_at: string }) => {
+    const hour = new Date(track.played_at).getHours(); // 0–23
+    playsByHour[hour]++;
+  });
+
+  const maxPlays = Math.max(...playsByHour);
+
+  const getIntensityClass = (count: number) => {
+  const ratio = count / maxPlays;
+  if (ratio === 0) return 'bg-neutral-200';
+  if (ratio < 0.2) return 'bg-rose-200';
+  if (ratio < 0.4) return 'bg-rose-400';
+  if (ratio < 0.6) return 'bg-rose-500';
+  if (ratio < 0.8) return 'bg-rose-700';
+  return 'bg-rose-900';
+};
+
   const spotifyStats: SpotifyStatGroup[] = [
     {
       title: 'Listening Overview',
@@ -56,26 +61,17 @@ const SpotifyStats = () => {
       data: [
         { name: 'Avg Songs/Day', value: avgPerDay },
         { name: 'Explicit Content', value: `${percentExplicit}%` },
-        { name: 'Total Plays', value: totalPlays },
-        { name: 'Date Range', value: dateRange }
-
       ],
     },
     {
       title: 'Top Artists', styles: { bg: 'bg-purple-300/30 dark:bg-purple-800/30' },
       data: data?.topArtists?.slice(0, 5).map((artist: ArtistProps): ArtistProps => ({
-        name: artist.name, artist_url: artist.artist_url,
-        image: artist.image, })) ?? [],
+        name: artist.name, artist_url: artist.artist_url, image: artist.image, })) ?? [],
     },
     {
       title: 'Top Tracks', styles: { bg: 'bg-yellow-300/30 dark:bg-yellow-800/30' },
       data: data?.topTracks?.slice(0, 5).map((track: TrackProps): TrackProps => ({
-        album: track.album,
-        artist: track.artist,
-        songUrl: track.songUrl,
-        title: track.title,
-        release_date: track.release_date,
-        explicit: track.explicit,
+        album: track.album, artist: track.artist, songUrl: track.songUrl, title: track.title, release_date: track.release_date, explicit: track.explicit
       })) ?? [],
     },
   ];
@@ -83,8 +79,8 @@ const SpotifyStats = () => {
   if (!data) {
     return (
       <section className='flex flex-col gap-y-2'>
-        <SectionHeading title='Spotify' icon={<WakatimeIcon className='mr-1' />} />
-        <SectionSubHeading>Loading your audio stats...</SectionSubHeading>
+        <SectionHeading title='Spotify' icon={<SpotifyIcon className='mr-1' />} />
+        <SectionSubHeading><div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>Loading you audio stats...</div></SectionSubHeading>
         {/* Skeleton cards or shimmer effect here */}
       </section>
     );
@@ -92,17 +88,14 @@ const SpotifyStats = () => {
 
   return (
     <section className='flex flex-col gap-y-4'>
-      <SectionHeading title='Spotify' icon={<WakatimeIcon className='mr-1' />} />
-      <SectionSubHeading>My audio listening habits!</SectionSubHeading>
+      <SectionHeading title='Spotify' icon={<SpotifyIcon className='mr-1' />} />
+      <SectionSubHeading ><div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>My audio listening habits!</div></SectionSubHeading>
 
       {/* Overview Grid */}
-      <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 mb-6'>
+      <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 mb-3'>
         {spotifyStats[0].data.map((subItem) =>
           'value' in subItem ? (
-            <Card
-              key={subItem.name}
-              className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900 sm:col-span-1'
-            >
+            <Card key={subItem.name} className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900 sm:col-span-1'>
               <span className='text-sm dark:text-neutral-400'>{subItem.name}</span>
               <span>{subItem.value || '-'}</span>
             </Card>
@@ -110,92 +103,80 @@ const SpotifyStats = () => {
         )}
       </div>
 
-      {/* Top Tracks */}
-      <div className='mb-6 rounded-xl border border-neutral-400 bg-neutral-100 p-4 dark:border-neutral-900'>
-        <h3 className='mb-2 text-sm font-semibold text-neutral-700 dark:text-neutral-300'>Top Tracks</h3>
-        <ul className='flex flex-col gap-3'>
-          {spotifyStats[2].data.map((track) =>
-            'title' in track ? (
-              <li key={track.title} className='flex items-center gap-4'>
-                <Image
-                  src={track.album.image?.url ?? fallback}
-                  alt={track.title} width={48} height={48}
-                  className='rounded-md'
-                />
-                <div className='flex flex-col'>
-                  <a href={track.songUrl} target='_blank' rel='noopener noreferrer' className='hover:underline'>
-                    <span className='text-sm font-medium'>{track.title}</span>
-                  </a>
-                  <span className='text-xs text-neutral-500'>{track.artist}</span>
-                  {track.explicit && <span className='text-xs text-red-500'>🔞 Explicit</span>}
-                </div>
-              </li>
-            ) : null
+      {/* Heatmap Column */}
+      <Card className='rounded-xl border border-neutral-400 bg-neutral-100 p-4 dark:border-neutral-900 mb-5' >
+        <span className='text-sm dark:text-neutral-400'>Listining Times</span>
+        <div className='flex flex-row gap-[4px]'>
+          {playsByHour.map((count, hour) => (            
+            <div className='flex flex-col items-center' key={hour}>
+              { hour % 3 === 0 ? 
+                ( <span key={hour} className='text-[10px] text-neutral-500 text-center overflow-visible'>
+                    {hour === 0 ? '12am' : hour < 12 ? `${hour}am` : hour === 12 ? '12pm' : `${hour - 12}pm`}
+                  </span>)
+                : ( <div className='text-[10px] text-neutral-500 text-center'>&nbsp;</div> )
+              }              
+              <div className={clsx('h-5 w-5 rounded-sm', getIntensityClass(count))} title={`${hour}:00 – ${count} plays`} />
+            </div>
+            )
           )}
-        </ul>
+        </div>
+      </Card>
+
+      {/* Top Tracks */}
+      <div className='bg-gradient-to-r from-amber-400 to-rose-600 relative flex flex-1 flex-col gap-2 rounded-lg p-[3px] mb-6'>
+        <div className='h-full w-full rounded-lg bg-neutral-50 p-2 pb-3 dark:bg-dark'>  
+          <p className='relative -top-5 inline-block px-2 rounded bg-neutral-50 dark:bg-dark'>Top Tracks</p>
+          <div className='overflow-hidden relative h-[110px] group mb-2'>
+            <ul className='flex w-max animate-looping-tag gap-3 group-hover:paused p-2'>
+              {[...spotifyStats[2].data, ...spotifyStats[2].data].map((track, index) => 'title' in track ? (
+                  <li key={track.title} className={clsx(spotifyStats[2].styles.bg, 'relative flex min-w-[240px] flex-shrink-0 items-top gap-4 px-2 pt-2 py-3 rounded-xl')}>
+                    <span className='absolute -top-2 -left-2 z-5000 flex h-6 w-6 items-center justify-center rounded-full bg-black text-xs font-bold text-white'>
+                      #{(index % spotifyStats[2].data.length) + 1}
+                    </span>
+                    <Image src={track.album.image?.url ?? fallback} alt={track.title} width={82} height={82} className='rounded-md' />
+                    <div className='flex flex-col'>
+                      <a href={track.songUrl} target='_blank' rel='noopener noreferrer' className='hover:underline'><span className='font-medium'>{track.title}</span></a>
+                      <span className='text-neutral-600 dark:text-neutral-400'>{track.artist}</span>
+                      {track.explicit && <span className='text-red-500'>🔞 Explicit</span>}
+                    </div>
+                  </li>
+                ) : null
+              )}
+            </ul>
+          </div>
+        </div>
       </div>
+      {/* </Card>   */}
 
       {/* Top Artists */}
-      <div className='mb-6 rounded-xl border border-neutral-400 bg-neutral-100 p-4 dark:border-neutral-900'>
-        <h3 className='mb-2 text-sm font-semibold text-neutral-700 dark:text-neutral-300'>Top Artists</h3>
-        <ul className='flex flex-col gap-3'>
-          {spotifyStats[1].data.map((artist) =>
-            'artist_url' in artist ? (
-              <li key={artist.name} className='flex items-center gap-4'>
-                <Image
-                  src={artist.image?.url ?? fallback}
-                  alt={artist.name}
-                  width={48}
-                  height={48}
-                  className='rounded-full'
-                />
-                <a href={artist.artist_url} target='_blank' rel='noopener noreferrer' className='text-sm hover:underline'>
-                  {artist.name}
-                </a>
-              </li>
-            ) : null
-          )}
-        </ul>
+        <div className='bg-gradient-to-r from-blue-400 to-purple-600 relative flex flex-1 flex-col gap-2 rounded-lg p-[3px]'>
+          <div className='h-full w-full rounded-lg bg-neutral-50 p-2 pb-3 dark:bg-dark'>  
+            <p className='relative -top-5 inline-block px-2 rounded bg-neutral-50 dark:bg-dark'>Top Arists</p>
+            <div className='overflow-hidden relative h-[135px] group'>
+              <ul className='flex w-max animate-looping-tag gap-3 group-hover:paused p-[8px]'>
+                {[...spotifyStats[1].data, ...spotifyStats[1].data, ...spotifyStats[1].data ].map((artist, index) => 'artist_url' in artist ? (
+                    <li key={artist.name} className={clsx(spotifyStats[1].styles.bg, 'relative min-w-[140px] flex flex-col items-center justify-center flex-shrink-0 gap-4 px-2 py-2 rounded-xl')}>
+                      <span className='absolute -top-2 -left-2 z-40 overflow-visible flex h-6 w-6 items-center justify-center rounded-full bg-black text-xs font-bold text-white'>
+                        #{(index % spotifyStats[2].data.length) + 1}
+                      </span>
+                      <div className='flex flex-col items-center'>
+                        <div className='relative w-20 h-20'>
+                          <Image src={artist.image?.url ?? fallback} alt={artist.name} fill className='rounded-full object-cover' />
+                        </div>
+                          <a href={artist.artist_url} target='_blank' rel='noopener noreferrer' className='relative hover:underline text-center font-medium'>
+                            <p className='inine-block px-2 rounded bg-neutral-50 dark:bg-dark'>{artist.name}</p>
+                          </a>
+                      </div>
+                  </li>
+                ) : null
+              )}
+            </ul>
+          </div>
+        </div>
       </div>
+
     </section>
   );
 };
 
 export default SpotifyStats;
-
-
-
-// const TopTracksCard = ({ tracks }: { tracks: TrackProps[] }) => (
-//   <div className='rounded-md bg-yellow-300/30 dark:bg-yellow-800/30 p-3'>
-//     <p className='mb-2 text-sm font-semibold'>Top Tracks</p>
-//     <ul className='flex flex-col gap-3'>
-//       {tracks.map((track) => (
-//         <li key={track.title} className='flex items-center gap-3'>
-//           <Image src={track.album.image?.url ?? '/default-fallback.png'} alt={track.title} width={48} height={48} className='rounded-md' priority />
-//           <div className='flex flex-col'>
-//             <a href={track.songUrl} target='_blank' rel='noopener noreferrer' className='hover:underline'>
-//               <span className='text-sm font-medium'>{track.title}</span>
-//             </a>
-//             <span className='text-xs text-neutral-600 dark:text-neutral-400'>{track.artist}</span>
-//           </div>
-//           {track.explicit && <span className='ml-auto text-xs text-red-500'>🔞</span>}
-//         </li>
-//       ))}
-//     </ul>
-//   </div>
-// );
-
-// const TopArtistsCard = ({ artists }: { artists: ArtistProps[] }) => (
-
-//   <div className='rounded-md bg-purple-300/30 dark:bg-purple-800/30 p-3'>
-//     <p className='mb-2 text-sm font-semibold'>Top Artists</p>
-//     <div className='flex gap-4 overflow-x-auto'>
-//       {artists.map((artist) => (
-//         <a key={artist.name} href={artist.artist_url} target='_blank' rel='noopener noreferrer' className='flex flex-col items-center gap-1 hover:underline'>
-//           <Image src={artist.image?.url ?? fallback} alt={artist.name} width={48} height={48} className='rounded-full' />
-//           <span className='text-xs'>{artist.name}</span>
-//         </a>
-//       ))}
-//     </div>
-//   </div>
-// );

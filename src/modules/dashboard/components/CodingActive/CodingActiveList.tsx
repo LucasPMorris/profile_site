@@ -31,8 +31,10 @@ const CodingActiveList = ({ data }: CodingActiveListProps) => {
       {actives.map((item) => (
         <div key={item?.title} className={clsx(item?.styles?.bg, 'relative flex flex-1 flex-col gap-2 rounded-lg p-[2px]' )}>
           <div className='h-full w-full rounded-lg bg-neutral-50 p-2 dark:bg-dark'>
-            <p className='absolute -top-3 left-3 bg-neutral-50 px-2 dark:bg-dark'>{item?.title}</p>
-            <ul className='flex flex-col gap-1 px-4 py-3'>{item?.data?.map((subItem) => (<li key={subItem?.name}><Progress data={subItem} className={item?.styles?.bg} /></li> ))}</ul>
+            <p className='absolute -top-3 left-3 rounded bg-neutral-50 px-2 dark:bg-dark'>{item?.title}</p>
+            <ul className='flex flex-col gap-1 px-4 py-3'>
+              {item?.data?.map((subItem) => (<li key={subItem?.name}><Progress data={subItem} className={item?.styles?.bg} /></li> ))}
+            </ul>
           </div>
         </div>
       ))}
@@ -41,3 +43,17 @@ const CodingActiveList = ({ data }: CodingActiveListProps) => {
 };
 
 export default CodingActiveList;
+
+
+{/* <div className='mt-2 flex flex-col gap-6 sm:flex-row sm:gap-4'>
+  {actives.map((item) => (
+    <div key={item?.title} className={clsx(item?.styles?.bg, 'relative flex flex-1 flex-col gap-2 rounded-lg p-[2px]' )}> <--- Gradient Background
+      <div className='h-full w-full rounded-lg bg-neutral-50 p-2 dark:bg-dark'>                <--- Just inside Gradient Background
+        <p className='absolute -top-3 left-3 bg-neutral-50 px-2 dark:bg-dark'>{item?.title}</p> <--- Title overlapping border
+        <ul className='flex flex-col gap-1 px-4 py-3'>
+          {item?.data?.map((subItem) => (<li key={subItem?.name}><Progress data={subItem} className={item?.styles?.bg} /></li> ))}
+        </ul>
+      </div>
+    </div>
+  ))}
+</div> */}
