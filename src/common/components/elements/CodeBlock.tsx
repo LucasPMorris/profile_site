@@ -1,9 +1,6 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState, type ComponentPropsWithoutRef } from 'react';
-import {
-  HiCheckCircle as CheckIcon,
-  HiOutlineClipboardCopy as CopyIcon,
-} from 'react-icons/hi';
+import { HiCheckCircle as CheckIcon, HiOutlineClipboardCopy as CopyIcon, } from 'react-icons/hi';
 
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
 import css from 'react-syntax-highlighter/dist/cjs/languages/prism/css';
@@ -14,13 +11,7 @@ import typescript from 'react-syntax-highlighter/dist/cjs/languages/prism/typesc
 import { a11yDark as themeColor } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { useCopyToClipboard } from 'usehooks-ts';
 
-const languages = {
-  javascript: 'javascript',
-  typescript: 'typescript',
-  diff: 'diff',
-  tsx: 'tsx',
-  css: 'css',
-};
+const languages = { javascript: 'javascript', typescript: 'typescript', diff: 'diff', tsx: 'tsx', css: 'css' };
 
 SyntaxHighlighter.registerLanguage(languages.javascript, javascript);
 SyntaxHighlighter.registerLanguage(languages.typescript, typescript);
@@ -28,12 +19,7 @@ SyntaxHighlighter.registerLanguage(languages.diff, diff);
 SyntaxHighlighter.registerLanguage(languages.tsx, tsx);
 SyntaxHighlighter.registerLanguage(languages.css, css);
 
-const CodeBlock = ({
-  className = '',
-  children,
-  inline,
-  ...props
-}: ComponentPropsWithoutRef<'code'> & { inline?: boolean }) => {
+const CodeBlock = ({ className = '', children, inline, ...props }: ComponentPropsWithoutRef<'code'> & { inline?: boolean }) => {
   const [isCopied, setIsCopied] = useState(false);
   const [value, copy] = useCopyToClipboard();
   const match = /language-(\w+)/.exec(className || '');

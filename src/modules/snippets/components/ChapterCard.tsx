@@ -2,21 +2,9 @@ import clsx from 'clsx';
 import { BiSolidChevronDown as ChevronDownIcon, BiSolidChevronUp as ChevronUpIcon } from 'react-icons/bi';
 import { MdxFileContentProps } from '@/common/types/snippets';
 
-interface ChapterCardProps {
-  chapterId: string;
-  chapterTitle: string;
-  contents: MdxFileContentProps[];
-  openAccordions: string[];
-  onToggle: (chapterId: string) => void;
-}
+interface ChapterCardProps { chapterId: string; chapterTitle: string; contents: MdxFileContentProps[]; openAccordions: string[]; onToggle: (chapterId: string) => void; }
 
-const ChapterCard = ({
-  chapterId,
-  chapterTitle,
-  contents,
-  openAccordions,
-  onToggle,
-}: ChapterCardProps) => {
+const ChapterCard = ({chapterId, chapterTitle, contents, openAccordions, onToggle }: ChapterCardProps) => {
   return (
     <div
       className={clsx(
@@ -29,13 +17,8 @@ const ChapterCard = ({
     >
       <div className=' text-[15px]'>{chapterTitle}</div>
       <div className='flex items-center gap-3'>
-        <div className='hidden text-[13px]  md:flex'>
-          {contents?.length} Lesson{contents?.length > 1 && 's'}
-        </div>
-        <div>
-          {openAccordions.includes(chapterId) ? ( <ChevronUpIcon size={18} /> )
-          : ( <ChevronDownIcon size={18} /> )}
-        </div>
+        <div className='hidden text-[13px]  md:flex'>{contents?.length} Lesson{contents?.length > 1 && 's'}</div>
+        <div>{openAccordions.includes(chapterId) ? ( <ChevronUpIcon size={18} /> ) : ( <ChevronDownIcon size={18} /> )}</div>
       </div>
     </div>
   );

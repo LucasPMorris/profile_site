@@ -7,7 +7,7 @@ import { SNIPPETS_CONTENTS } from '@/common/constant/snippets';
 import SnippetsModule from '@/modules/snippets';
 
 const PAGE_TITLE = 'Snippets';
-const PAGE_DESCRIPTION = `It's not a course, it's my personal learning notes. But if you are interested, let's learn together.`;
+const PAGE_DESCRIPTION = `Helpful reminders and snippets for you to use.`;
 
 const SnippetsPage: NextPage = () => {
   const filteredContents = SNIPPETS_CONTENTS.filter((content) => content.is_show) || [];

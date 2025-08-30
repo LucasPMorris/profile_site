@@ -10,17 +10,8 @@ import { fetcher } from '@/services/fetcher';
 import ContentBody from './ContentBody';
 import ContentPlayground from './ContentPlayground';
 
-interface ContentListItemProps {
-  id: number;
-  parent_slug: string;
-  slug: string;
-  title: string;
-}
-
-interface ContentDetailProps {
-  content: string;
-  frontMatter: SubContentMetaProps;
-}
+interface ContentListItemProps { id: number; parent_slug: string; slug: string; title: string; }
+interface ContentDetailProps { content: string; frontMatter: SubContentMetaProps; }
 
 const ContentDetail = ({ content, frontMatter }: ContentDetailProps) => {
   const [contentList, setContentList] = useState<ContentListItemProps[]>([]);
@@ -61,13 +52,11 @@ const ContentDetail = ({ content, frontMatter }: ContentDetailProps) => {
   }, [resContentData]);
 
   useEffect(() => {
-    const getId = contentList?.find(
-      (item: ContentListItemProps) => item.slug === contentSlug,
-    );
+    const getId = contentList?.find((item: ContentListItemProps) => item.slug === contentSlug );
     const currentContentId = getId?.id as number;
     setCurrentId(currentContentId);
 
-    if (currentContentId > 0) {
+    if (currentContentId > 0) { 
       const previousContent = getNextOrPreviousContent(contentList, -1);
       previousContent && setPreviousTitle(previousContent.title);
     }
@@ -81,14 +70,7 @@ const ContentDetail = ({ content, frontMatter }: ContentDetailProps) => {
   return (
     <>
       {content && <ContentBody content={content} />}
-      <NavigationSection
-        currentIndex={currentId}
-        totalItems={contentList.length}
-        handleNext={() => handleNavigation(1)}
-        handlePrevious={() => handleNavigation(-1)}
-        previousTitle={previousTitle}
-        nextTitle={nextTitle}
-      />
+      <NavigationSection currentIndex={currentId} totalItems={contentList.length} handleNext={() => handleNavigation(1)} handlePrevious={() => handleNavigation(-1)} previousTitle={previousTitle} nextTitle={nextTitle}/>
       {isShowPlayground && <ContentPlayground initialCode={initialCode} />}
     </>
   );
