@@ -4,9 +4,9 @@ import { ContentProps } from '../types/snippets';
 export const SNIPPETS_CONTENTS: ContentProps[] = [
   {
     id: 1,
-    title: 'JavasScript Fundamental',
-    slug: 'js-fundamental',
-    description: 'Master the fundamentals of programming in JavaScript.',
+    title: 'Code and Terminal Snippets',
+    slug: 'code',
+    description: 'Frequently used lines of code or terminal commands with descriptions.',
     image: 'https://cloud.aulianza.com/public/images/learn/javascript.webp',
     is_new: true,
     level: 'Beginner',
@@ -14,9 +14,9 @@ export const SNIPPETS_CONTENTS: ContentProps[] = [
   },
   {
     id: 2,
-    title: 'Problem Solving',
-    slug: 'problem-solving',
-    description: 'Learn problem solving in JavaScript with detailed explanations.',
+    title: 'Software',
+    slug: 'software',
+    description: 'Software that I use and tips and tricks to make great use of them.',
     image: 'https://cloud.aulianza.com/public/images/learn/learn-problem-solving.png',
     is_new: false,
     level: 'All Levels',

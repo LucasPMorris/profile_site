@@ -20,10 +20,33 @@ export interface SongProps {
   };
 }
 
-export interface TrackProps { album: { name: string; image: { width: number; url: string; }; }; artist: string; songUrl: string; title: string; }
+export interface TrackProps { 
+  album: { name: string; image: { width: number; url: string; }; };
+  artist: string;
+  songUrl: string;
+  title: string;
+  release_date: string;
+  explicit: boolean;  
+}
 
 export interface NowPlayingProps { songUrl: string; albumImageUrl: string | undefined; album: string; title: string; artist: string; }
 
 export interface NowPlayingResponseProps { status: number; isPlaying: boolean; data: NowPlayingProps | null; }
 
 export interface TopTracksResponseProps { status: number; data: TrackProps[]; }
+
+export interface ArtistProps { name: string; artist_url: string; image: { width: number; url: string; } }
+
+export interface TopArtistsResponseProps { status: number; data: ArtistProps[]; }
+
+export interface TrackHistoryProps {
+  album: { name: string; images: { width: number; url: string; }[]; };
+  title: string;
+  artist: string;
+  songUrl: string; 
+  played_at: string;
+  explicit: boolean;
+  release_date: string; 
+}
+
+export interface PlayHistoryResponseProps { status: number; data: TrackHistoryProps[]; }

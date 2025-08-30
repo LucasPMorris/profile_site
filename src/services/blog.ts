@@ -22,11 +22,20 @@ const extractData = ( response: AxiosResponse ): { posts: BlogItemProps[]; page:
 
 };
 
+// export const getBlogList = async ({ page = 1, per_page = 6, categories, search }: BlogParamsProps): Promise<{ status: number; data: any }> => {
+//   try {
+//     const params = { page, per_page, categories, search };
+//     const response = await axios.get(`${BLOG_URL}posts`, { params }); 
+//     return { status: response?.status, data: extractData(response) };
+//   } catch (error) { return handleAxiosError(error as AxiosError<any>); }
+// };
+
 export const getBlogList = async ({ page = 1, per_page = 6, categories, search }: BlogParamsProps): Promise<{ status: number; data: any }> => {
   try {
-    const params = { page, per_page, categories, search };
-    const response = await axios.get(`${BLOG_URL}posts`, { params }); 
-    return { status: response?.status, data: extractData(response) };
+    const params = new URLSearchParams({ page: String(page), per_page: String(per_page), ...(categories ? { categories: String(categories) } : {}), ...(search ? { search } : {}) });
+
+    const response = await axios.get('/api/blog', {params});
+    return { status: response.status, data: response?.data };
   } catch (error) { return handleAxiosError(error as AxiosError<any>); }
 };
 

@@ -12,6 +12,4 @@ export interface ProjectItemProps {
   updated_at: Date;
 }
 
-export interface ProjectsProps {
-  projects: ProjectItemProps[];
-}
+export interface ProjectsProps { projects: ProjectItemProps[]; }

@@ -10,6 +10,10 @@
 /.next/
 /out/
 
+# images
+/public/images
+/public/uploads
+
 # production
 /build
 
@@ -19,6 +23,9 @@
 # misc
 .DS_Store
 *.pem
+
+# special Luke files
+/tools
 
 # debug
 npm-debug.log*

@@ -1,7 +1,8 @@
-import { BsFillBootstrapFill, BsRobot } from 'react-icons/bs';
+import { BsFillBootstrapFill, BsTerminalFill, BsRegex, BsRobot } from 'react-icons/bs';
+import { BiLogoPostgresql } from 'react-icons/bi';
 import { SiAngular, SiApollographql, SiCss3, SiExpress, SiFirebase, SiGatsby, SiGraphql, SiJavascript, SiJest, 
-  SiJquery, SiLaravel, SiMui, SiNextdotjs, SiNginx, SiNodedotjs, SiNuxtdotjs, SiPhp, SiPrisma, SiPwa, SiReact, 
-  SiRedux, SiSocketdotio, SiStorybook, SiStyledcomponents, SiTailwindcss, SiTypescript, SiVite, SiVuedotjs, 
+  SiJquery, SiLaravel, SiMui, SiNextdotjs, SiNginx, SiNodedotjs, SiNuxtdotjs, SiPhp, SiPrisma, SiPwa, SiReact, SiNotepadplusplus,
+  SiRedux, SiSocketdotio, SiStorybook, SiStyledcomponents, SiTailwindcss, SiTypescript, SiVite, SiVuedotjs, SiVlcmediaplayer,
   SiWebpack, SiWordpress } from 'react-icons/si';
 import type { JSX } from "react";
 
@@ -9,7 +10,8 @@ export type stacksProps = { [key: string]: JSX.Element;};
 
 const iconSize = 20;
 
-// TODO: Complete this list!
+// TODO: Complete this list! This also adds icons to the snippets sub-content items.
+// Also - consider breaking out software icons into a separate list?
 export const STACKS: stacksProps = {
   PHP: <SiPhp size={iconSize} className='text-blue-500' />,
   JavaScript: <SiJavascript size={iconSize} className='text-yellow-400' />,
@@ -17,6 +19,11 @@ export const STACKS: stacksProps = {
   'Next.js': <SiNextdotjs size={iconSize} />,
   'React.js': <SiReact size={iconSize} className='text-sky-500' />,
   TailwindCSS: <SiTailwindcss size={iconSize} className='text-cyan-300' />,
+  PostgreSQL: <BiLogoPostgresql size={iconSize} style={{ color: 'rgb(0, 100, 165)' }} />,
+  Bash: <BsTerminalFill size={iconSize} className='text-dark' />,
+  Regex: <BsRegex size={iconSize} className='text-white' />,
+  VLC: <SiVlcmediaplayer size={iconSize} style={{ color: 'rgb(232, 94, 0)' }} />,
+  NotepadPlusplus: <SiNotepadplusplus size={iconSize} style={{ color: 'rgb(0, 128, 0)' }} />,    
 //  Bootstrap: ( <BsFillBootstrapFill size={iconSize} className='text-purple-500' /> ),
   GraphQL: <SiGraphql size={iconSize} className='text-pink-600' />,
 //  Apollo: <SiApollographql size={iconSize} />,

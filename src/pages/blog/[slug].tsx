@@ -10,17 +10,17 @@ import { formatExcerpt } from '@/common/helpers';
 import { BlogDetailProps } from '@/common/types/blog';
 import BlogDetail from '@/modules/blog/components/BlogDetail';
 import { getBlogDetail } from '@/services/blog';
+import { mapPrismaPostToBlogDetail } from '@/common/libs/blog';
+import prisma from '@/common/libs/prisma';
 
-interface BlogDetailPageProps { blog: { data: BlogDetailProps; }; }
+interface BlogDetailPageProps { post: BlogDetailProps; };
 
-const BlogDetailPage: NextPage<BlogDetailPageProps> = ({ blog }) => {
-  const blogData = blog?.data || {};
-
-  const slug = `blog/${blogData?.slug}?id=${blogData?.id}`;
+const BlogDetailPage: NextPage<BlogDetailPageProps> = ({ post }) => {
+  const slug = `blog/${post?.slug}?id=${post?.id}`;
   const canonicalUrl = `https://lucasmorris.site/${slug}`;
-  const description = formatExcerpt(blogData?.excerpt?.rendered);
+  const description = formatExcerpt(post?.excerpt?.rendered);
 
-  const incrementViews = async () => { await axios.post(`/api/views?&slug=${blogData?.slug}`); };
+  const incrementViews = async () => { await axios.post(`/api/views?&slug=${post?.slug}`); };
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') { incrementViews(); }
@@ -30,20 +30,20 @@ const BlogDetailPage: NextPage<BlogDetailPageProps> = ({ blog }) => {
   return (
     <>
       <NextSeo
-        title={`${blogData?.title?.rendered} - Blog Lucas Morris`}
+        title={`${post?.title?.rendered} - Blog Lucas Morris`}
         description={description}
         canonical={canonicalUrl}
         openGraph={{
           type: 'article',
-          article: { publishedTime: blogData?.date, modifiedTime: blogData?.date, authors: ['Lucas Morris', 'LucasPMorris'] },
+          article: { publishedTime: post?.date, modifiedTime: post?.date, authors: ['Lucas Morris', 'LucasPMorris'] },
           url: canonicalUrl,
-          images: [ { url: blogData?.featured_image_url } ],
+          images: [ { url: post?.featured_image_url } ],
           siteName: 'lucasmorris blog',
         }}
       />
       <Container data-aos='fade-up'>
         <BackButton url='/blog' />
-        <BlogDetail {...blogData} />
+        <BlogDetail {...post} />
       </Container>
     </>
   );
@@ -52,13 +52,26 @@ const BlogDetailPage: NextPage<BlogDetailPageProps> = ({ blog }) => {
 export default BlogDetailPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const blogId = context.query?.id as string;
+  const { slug } = context.params as { slug: string };
 
-  if (!blogId) { return { redirect: { destination: '/', permanent: false } }; }
+  const post = await prisma.blogPost.findUnique({where: { slug }, include: { categories: true, tags: true, author: true } });
 
-  const response = await getBlogDetail(parseInt(blogId));
+  if (!post) { return { notFound: true }; }
 
-  if (response?.status === 404) { return { redirect: { destination: '/404', permanent: false } }; }
+  const mappedPost: BlogDetailProps = mapPrismaPostToBlogDetail(post);
 
-  return { props: { blog: response } };
+  return { props: { post: mappedPost } };
 };
+
+
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+//   const blogId = context.query?.id as string;
+
+//   if (!blogId) { return { redirect: { destination: '/', permanent: false } }; }
+
+//   const response = await getBlogDetail(parseInt(blogId));
+
+//   if (response?.status === 404) { return { redirect: { destination: '/404', permanent: false } }; }
+
+//   return { props: { blog: response } };
+// };

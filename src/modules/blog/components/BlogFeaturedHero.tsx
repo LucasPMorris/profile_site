@@ -15,24 +15,12 @@ import { BlogFeaturedProps } from '@/common/types/blog';
 
 const BlogFeaturedHero = ({ data }: BlogFeaturedProps) => {
   const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState<number>(0);
-
   const currentFeatured = data[currentFeaturedIndex];
-
   const featuredData = data.slice(0, 4);
-
   const defaultImage = '/images/placeholder.png';
 
-  const nextFeatured = () => {
-    setCurrentFeaturedIndex((prevIndex) =>
-      prevIndex === featuredData.length - 1 ? 0 : prevIndex + 1,
-    );
-  };
-
-  const prevFeatured = () => {
-    setCurrentFeaturedIndex((prevIndex) =>
-      prevIndex === 0 ? featuredData.length - 1 : prevIndex - 1,
-    );
-  };
+  const nextFeatured = () => { setCurrentFeaturedIndex((prevIndex) => prevIndex === featuredData.length - 1 ? 0 : prevIndex + 1 ); };
+  const prevFeatured = () => { setCurrentFeaturedIndex((prevIndex) => prevIndex === 0 ? featuredData.length - 1 : prevIndex - 1 ); };
 
   useEffect(() => {
     const intervalId = setInterval(() => {

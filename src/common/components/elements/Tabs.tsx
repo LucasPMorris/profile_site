@@ -16,13 +16,13 @@ export const Tabs = ({ tabs }: TabsProps) => {
   const handleTabClick = (index: number) => { setActiveTab(index); };
 
   return (
-    <div className='rounded border-x border-b border-neutral-700 dark:border-neutral-800'>
+    <div className='rounded'>
       <div className='flex flex-col gap-1.5 sm:flex-row md:gap-1'>
         {tabs.map((tab, index) => (
-          <button key={index} className={`flex-1 px-4 py-2 text-center font-medium ${
+          <button key={index} className={`flex-1 px-4 py-2 text-center font-medium border-x border-t ${isDarkTheme ? 'border-neutral-800' : 'border-neutral-400'} ${
               activeTab === index
-                ? 'bg-neutral-500 text-neutral-100 dark:bg-neutral-400 dark:text-neutral-900'
-                : 'bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 hover:dark:text-neutral-200'
+                ? 'bg-[rgba(106,106,128)] text-neutral-100 dark:bg-[rgba(106,106,128)] dark:text-neutral-900'
+                : 'bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-400 hover:dark:text-neutral-200'
             } ${ index === 0 ? 'md:rounded-tl' : index === tabs.length - 1 ? 'md:rounded-tr' : '' }`}
             onClick={() => handleTabClick(index)}
           >
@@ -30,7 +30,7 @@ export const Tabs = ({ tabs }: TabsProps) => {
           </button>
         ))}
       </div>
-      <div className={clsx('px-4 py-8 sm:px-8 border-neutral-400 dark:border-neutral-900', isDarkTheme ? 'bg-white/5' : 'bg-white/60')} >
+      <div className={clsx('px-4 py-8 sm:px-8 border-x border-b border-neutral-400', isDarkTheme ? 'bg-white/5 border-neutral-800' : 'bg-white/40')} >
         <AnimatePresence mode='wait'>
           <motion.div key={activeTab} initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 50 }} transition={{ duration: 0.5 }} >
             {tabs[activeTab].children}

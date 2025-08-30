@@ -2,21 +2,7 @@ import { formatDate } from '@/common/helpers';
 
 import OverviewItem from './OverviewItem';
 
-interface OverviewProps {
-  data: {
-    human_readable_total?: string;
-    human_readable_daily_average?: string;
-    best_day?: {
-      text?: string;
-      date?: string;
-    };
-    all_time_since_today?: {
-      text?: string;
-    };
-    start_date?: string;
-    end_date?: string;
-  };
-}
+interface OverviewProps { data: { human_readable_total?: string; human_readable_daily_average?: string; best_day?: { text?: string; date?: string; }; all_time_since_today?: { text?: string; }; start_date?: string; end_date?: string; }; }
 
 const Overview = ({ data }: OverviewProps) => {
   const dailyTotal = data?.human_readable_total || 'N/A';
