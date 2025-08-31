@@ -16,11 +16,11 @@ import prisma from '@/common/libs/prisma';
 interface BlogDetailPageProps { post: BlogDetailProps; };
 
 const BlogDetailPage: NextPage<BlogDetailPageProps> = ({ post }) => {
-  const slug = `blog/${post?.slug}?id=${post?.id}`;
-  const canonicalUrl = `https://lucas.untethered4life.com/${slug}`;
+  const slug = `${post?.slug}?id=${post?.id}`;
+  const canonicalUrl = `https://lucas.untethered4life.com/blog/${slug}`;
   const description = formatExcerpt(post?.excerpt?.rendered);
 
-  const incrementViews = async () => { await axios.post(`/api/views?&slug=${post?.slug}`); };
+  const incrementViews = async () => { await axios.post(`/api/views?&slug=${post?.slug}&type=blog`); };
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') { incrementViews(); }
@@ -38,7 +38,7 @@ const BlogDetailPage: NextPage<BlogDetailPageProps> = ({ post }) => {
           article: { publishedTime: post?.date, modifiedTime: post?.date, authors: ['Lucas Morris', 'LucasPMorris'] },
           url: canonicalUrl,
           images: [ { url: post?.featured_image_url } ],
-          siteName: 'lucasmorris blog',
+          siteName: 'Blog by Lucas Morris',
         }}
       />
       <Container data-aos='fade-up'>

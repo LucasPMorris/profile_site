@@ -9,7 +9,7 @@ import { fetcher } from '@/services/fetcher';
 import BlogHeader from './BlogHeader';
 
 const BlogDetail = ({ id, title, date, slug, content, tags_list, featured_image_url, date_gmt }: BlogDetailProps) => {
-  const { data: viewsData } = useSWR( `/api/views?slug=${slug}&id=${id}`, fetcher );
+  const { data: viewsData } = useSWR( `/api/views?slug=${slug}&type=blog`, fetcher );
 
   const viewsCount = viewsData?.views || 0;
   const tagList = tags_list || [];

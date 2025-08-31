@@ -7,6 +7,8 @@ import PageHeading from '@/common/components/elements/PageHeading';
 import prisma from '@/common/libs/prisma';
 import { ProjectItemProps } from '@/common/types/projects';
 import ProjectDetail from '@/modules/projects/components/ProjectDetail';
+import axios from 'axios';
+import { useEffect } from 'react';
 
 interface ProjectsDetailPageProps { project: ProjectItemProps; }
 
@@ -15,6 +17,12 @@ const ProjectsDetailPage: NextPage<ProjectsDetailPageProps> = ({ project }) => {
   const PAGE_DESCRIPTION = project?.description;
 
   const canonicalUrl = `https://lucas.untethered4life.com/project/${project?.slug}`;
+  const incrementViews = async () => { await axios.post(`/api/views?&slug=${project?.slug}&type=project`); };
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production') { incrementViews(); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
@@ -25,7 +33,7 @@ const ProjectsDetailPage: NextPage<ProjectsDetailPageProps> = ({ project }) => {
         openGraph={{
           type: 'article',
           article: { publishedTime: project?.updated_at.toString(), modifiedTime: project?.updated_at.toString(), authors: ['Lucas Morris'] },
-          url: canonicalUrl, images: [ { url: project?.image } ], siteName: 'Projects Lucas Morris' 
+          url: canonicalUrl, images: [ { url: project?.image } ], siteName: 'Projects by Lucas Morris' 
         }}
       />
       <Container data-aos='fade-up'>

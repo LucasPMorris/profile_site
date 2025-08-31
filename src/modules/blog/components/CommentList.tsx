@@ -23,12 +23,8 @@ const CommentList = ({ id, totalComments }: CommentListProps) => {
     <section className='space-y-5 pb-6 pt-4'>
       {totalComments >= 1 ? (
         <>
-          <div className='pb-5 text-xl font-semibold'>
-            {totalComments} Comment{totalComments > 1 && 's'}
-          </div>
-          {commentsData?.map((comment) => (
-            <CommentItem key={comment?.id_code} {...comment} />
-          ))}
+          <div className='pb-5 text-xl font-semibold'>{totalComments} Comment{totalComments > 1 && 's'}</div>
+          {commentsData?.map((comment) => (<CommentItem key={comment?.id_code} {...comment} />))}
         </>
       ) : (
         <EmptyState message='No Comment.' />

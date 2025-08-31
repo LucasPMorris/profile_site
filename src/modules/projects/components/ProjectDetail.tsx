@@ -5,8 +5,11 @@ import { STACKS } from '@/common/constant/stacks';
 import { ProjectItemProps } from '@/common/types/projects';
 
 import ProjectLink from './ProjectLink';
+import useSWR from 'swr';
+import { fetcher } from '@/services/fetcher';
 
-const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content }: ProjectItemProps) => {
+const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, slug }: ProjectItemProps) => {
+  const { data: viewsData } = useSWR( `/api/views?slug=${slug}&type=project`, fetcher );
   const stacksArray = JSON.parse(stacks);
 
   return (

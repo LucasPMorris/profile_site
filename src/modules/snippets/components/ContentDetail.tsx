@@ -29,6 +29,7 @@ const ContentDetail = ({ content, frontMatter }: ContentDetailProps) => {
   const initialCode = meta?.initial_code ?? '';
 
   const { data: resContentData } = useSWR(`/api/content?category=${parentSlug}`, fetcher );
+  const { data: viewsData } = useSWR( `/api/views?slug=${contentSlug}&type=snippet`, fetcher );
 
   const getNextOrPreviousContent = useCallback(
     (contents: ContentListItemProps[], step: number) => {

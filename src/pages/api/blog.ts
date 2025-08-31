@@ -10,9 +10,7 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
   const skip = (Number(page) - 1) * Number(per_page);
 
   const whereClause: any = {
-    ...(search && {
-      OR: [ { title: { contains: String(search), mode: 'insensitive' } }, { contentMarkdown: { contains: String(search), mode: 'insensitive' } } ],
-    }),
+    ...(search && { OR: [ { title: { contains: String(search), mode: 'insensitive' } }, { contentMarkdown: { contains: String(search), mode: 'insensitive' } } ] }),
     ...(categories && { categories: { some: { id: Number(categories) } } }),
   };
 
