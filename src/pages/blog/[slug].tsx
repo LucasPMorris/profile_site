@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 
 import BackButton from '@/common/components/elements/BackButton';
 import Container from '@/common/components/elements/Container';
-import { formatExcerpt } from '@/common/helpers';
+import { formatDate, formatExcerpt } from '@/common/helpers';
 import { BlogDetailProps } from '@/common/types/blog';
 import BlogDetail from '@/modules/blog/components/BlogDetail';
 import { getBlogDetail } from '@/services/blog';
@@ -43,6 +43,7 @@ const BlogDetailPage: NextPage<BlogDetailPageProps> = ({ post }) => {
       />
       <Container data-aos='fade-up'>
         <BackButton url='/blog' />
+        {/* Metadata Block */}
         <BlogDetail {...post} />
       </Container>
     </>
@@ -62,16 +63,3 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return { props: { post: mappedPost } };
 };
-
-
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//   const blogId = context.query?.id as string;
-
-//   if (!blogId) { return { redirect: { destination: '/', permanent: false } }; }
-
-//   const response = await getBlogDetail(parseInt(blogId));
-
-//   if (response?.status === 404) { return { redirect: { destination: '/404', permanent: false } }; }
-
-//   return { props: { blog: response } };
-// };

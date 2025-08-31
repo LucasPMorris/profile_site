@@ -29,9 +29,7 @@ const BlogFeaturedHero = ({ data }: BlogFeaturedProps) => {
       );
     }, 5000);
 
-    return () => {
-      clearInterval(intervalId);
-    };
+    return () => { clearInterval(intervalId); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [featuredData]);
 
@@ -41,20 +39,9 @@ const BlogFeaturedHero = ({ data }: BlogFeaturedProps) => {
 
   return (
     <div className='relative overflow-hidden rounded-xl border shadow-lg dark:border-neutral-700'>
-      <div
-        className='group relative duration-500'
-        style={{
-          height: '400px',
-          overflow: 'hidden',
-        }}
-      >
-        <Image
-          src={currentFeatured?.featured_image_url || defaultImage}
-          alt={currentFeatured?.title?.rendered}
-          fill={true}
-          sizes='100vw, 100vh'
-          className='h-full w-full transform object-cover transition-transform duration-300'
-        />
+      <div className='group relative duration-500' style={{ height: '400px', overflow: 'hidden' }}>
+        <Image src={currentFeatured?.featured_image_url || defaultImage}
+               alt={currentFeatured?.title?.rendered} fill={true} sizes='100vw, 100vh' className='h-full w-full transform object-cover transition-transform duration-300'/>
         <div className='absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-70 transition-opacity duration-300'></div>
       </div>
 

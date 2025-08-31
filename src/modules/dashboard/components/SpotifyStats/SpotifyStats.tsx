@@ -59,14 +59,13 @@ const SpotifyStats = () => {
       title: 'Listening Overview',
       styles: { bg: 'bg-green-300/30 dark:bg-green-800/30' },
       data: [
-        { name: 'Avg Songs/Day', value: avgPerDay },
+        // { name: 'Avg Songs/Day', value: avgPerDay },
         { name: 'Explicit Content', value: `${percentExplicit}%` },
       ],
     },
     {
       title: 'Top Artists', styles: { bg: 'bg-purple-300/30 dark:bg-purple-800/30' },
-      data: data?.topArtists?.slice(0, 5).map((artist: ArtistProps): ArtistProps => ({
-        name: artist.name, artist_url: artist.artist_url, image: artist.image, })) ?? [],
+      data: data?.topArtists?.slice(0, 5).map((artist: ArtistProps): ArtistProps => ({ name: artist.name, artist_url: artist.artist_url, image: artist.image, })) ?? [],
     },
     {
       title: 'Top Tracks', styles: { bg: 'bg-yellow-300/30 dark:bg-yellow-800/30' },
@@ -92,35 +91,36 @@ const SpotifyStats = () => {
       <SectionSubHeading ><div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>My audio listening habits!</div></SectionSubHeading>
 
       {/* Overview Grid */}
-      <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 mb-3'>
-        {spotifyStats[0].data.map((subItem) =>
-          'value' in subItem ? (
-            <Card key={subItem.name} className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900 sm:col-span-1'>
+      <div className='grid grid-cols-5 gap-4 sm:grid-cols-5 md:grid-cols-5 mb-3'>
+        {spotifyStats[0].data.map((subItem) => 'value' in subItem
+          ? (
+            <Card key={subItem.name} className='flex flex-col col-span-1 h-full space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900 sm:col-span-1'>
               <span className='text-sm dark:text-neutral-400'>{subItem.name}</span>
               <span>{subItem.value || '-'}</span>
-            </Card>
-          ) : null
-        )}
+            </Card>)
+          : null )}
+
+        {/* Heatmap Column */}
+        <Card className='col-span-4 h-full rounded-xl border border-neutral-400 bg-neutral-100 p-4 dark:border-neutral-900 mb-5'>
+        {/* <Card className='rounded-xl border border-neutral-400 bg-neutral-100 p-4 dark:border-neutral-900 mb-5' > */}
+          <span className='text-sm dark:text-neutral-400'>Listining Times</span>
+          <div className='flex flex-row gap-[4px]'>
+            {playsByHour.map((count, hour) => (            
+              <div className='flex flex-col items-center' key={hour}>
+                { hour % 3 === 0 ? 
+                  ( <span key={hour} className='text-[10px] text-neutral-500 text-center overflow-visible'>
+                      {hour === 0 ? '12am' : hour < 12 ? `${hour}am` : hour === 12 ? '12pm' : `${hour - 12}pm`}
+                    </span>)
+                  : ( <div className='text-[10px] text-neutral-500 text-center'>&nbsp;</div> )
+                }              
+                <div className={clsx('h-5 w-5 rounded-sm', getIntensityClass(count))} title={`${hour}:00 – ${count} plays`} />
+              </div> )
+            )}
+          </div>
+        </Card>  
       </div>
 
-      {/* Heatmap Column */}
-      <Card className='rounded-xl border border-neutral-400 bg-neutral-100 p-4 dark:border-neutral-900 mb-5' >
-        <span className='text-sm dark:text-neutral-400'>Listining Times</span>
-        <div className='flex flex-row gap-[4px]'>
-          {playsByHour.map((count, hour) => (            
-            <div className='flex flex-col items-center' key={hour}>
-              { hour % 3 === 0 ? 
-                ( <span key={hour} className='text-[10px] text-neutral-500 text-center overflow-visible'>
-                    {hour === 0 ? '12am' : hour < 12 ? `${hour}am` : hour === 12 ? '12pm' : `${hour - 12}pm`}
-                  </span>)
-                : ( <div className='text-[10px] text-neutral-500 text-center'>&nbsp;</div> )
-              }              
-              <div className={clsx('h-5 w-5 rounded-sm', getIntensityClass(count))} title={`${hour}:00 – ${count} plays`} />
-            </div>
-            )
-          )}
-        </div>
-      </Card>
+
 
       {/* Top Tracks */}
       <div className='bg-gradient-to-r from-amber-400 to-rose-600 relative flex flex-1 flex-col gap-2 rounded-lg p-[3px] mb-6'>
@@ -155,7 +155,7 @@ const SpotifyStats = () => {
             <div className='overflow-hidden relative h-[135px] group'>
               <ul className='flex w-max animate-looping-tag gap-3 group-hover:paused p-[8px]'>
                 {[...spotifyStats[1].data, ...spotifyStats[1].data, ...spotifyStats[1].data ].map((artist, index) => 'artist_url' in artist ? (
-                    <li key={artist.name} className={clsx(spotifyStats[1].styles.bg, 'relative min-w-[140px] flex flex-col items-center justify-center flex-shrink-0 gap-4 px-2 py-2 rounded-xl')}>
+                    <li key={`${artist.name}-${index}`} className={clsx(spotifyStats[1].styles.bg, 'relative min-w-[140px] flex flex-col items-center justify-center flex-shrink-0 gap-4 px-2 py-2 rounded-xl')}>
                       <span className='absolute -top-2 -left-2 z-40 overflow-visible flex h-6 w-6 items-center justify-center rounded-full bg-black text-xs font-bold text-white'>
                         #{(index % spotifyStats[2].data.length) + 1}
                       </span>
