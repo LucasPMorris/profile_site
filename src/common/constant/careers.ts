@@ -11,7 +11,7 @@ export const CAREERS: CareerProps[] = [
     location_type: 'Hybrid',
     type: 'Full-time',
     start_date: '2023-09',
-    end_date: null,
+    end_date: '2025-09',
     industry: 'ota',
     link: 'https://fusionauth.io',
     responsibilities: [
@@ -28,8 +28,8 @@ export const CAREERS: CareerProps[] = [
     location: 'Boulder, Colorado',
     location_type: 'On Site',
     type: 'Full-time',
-    start_date: '2023-08',
-    end_date: '2022-10',
+    start_date: '2023-09',
+    end_date: '2022-09',
     industry: 'Media',
     link: 'https://youtube.com/@untethered4life',
     responsibilities: [

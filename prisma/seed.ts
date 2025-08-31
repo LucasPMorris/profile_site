@@ -3,13 +3,9 @@ const prisma = new PrismaClient();
 
 async function main() {
   const author = await prisma.user.create({
-    data: {
-      name: 'Lucas Morris',
-      username: 'LucasPMorris',
-      twitterUsername: '',
-      githubUsername: 'LucasPMorris',
-      websiteUrl: 'https://lucasmorris.dev',
-      profileImage: 'https://example.com/profile.jpg',
+    data: { name: 'Lucas Morris', username: 'LucasPMorris',
+      twitterUsername: '', githubUsername: 'LucasPMorris',
+      websiteUrl: 'https://profile-site-rt4b.onrender.com', profileImage: '/images/luke_avatar.png',
     },
   });
 
@@ -17,9 +13,7 @@ async function main() {
     data: { name: 'Engineering', slug: 'engineering' },
   });
 
-  const tag = await prisma.tag.create({
-    data: { name: 'Next.js', slug: 'nextjs' },
-  });
+  const tag = await prisma.tag.create({ data: { name: 'Next.js', slug: 'nextjs' } });
 
   await prisma.blogPost.create({
     data: {
@@ -33,13 +27,13 @@ async function main() {
       date: new Date(),
       modified: new Date(),
       status: 'published',
-      link: 'https://lucasmorris.dev/blog/refactoring-ui-systems',
+      link: 'https://profile-site-rt4b.onrender.com//blog/refactoring-ui-systems',
       authorId: author.user_id,
       sticky: false,
       template: 'default',
       format: 'standard',
       footnotes: 'None',
-      featuredImageUrl: 'https://example.com/image.jpg',
+      featuredImageUrl: '/images/blog_feature_exit.png',
       totalViewsCount: 42,
       categories: { connect: [{ id: category.id }] },
       tags: { connect: [{ id: tag.id }] },
