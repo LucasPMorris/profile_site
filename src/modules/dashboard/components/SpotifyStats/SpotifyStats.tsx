@@ -128,20 +128,20 @@ const SpotifyStats = () => {
           <p className='relative -top-5 inline-block px-2 rounded bg-neutral-50 dark:bg-dark'>Top Tracks</p>
           <div className='overflow-hidden relative h-[110px] group mb-2'>
             <ul className='flex w-max animate-looping-tag gap-3 group-hover:paused p-2'>
-              {[...spotifyStats[2].data, ...spotifyStats[2].data].map((track, index) => 'title' in track ? (
-                  <li key={track.title} className={clsx(spotifyStats[2].styles.bg, 'relative flex min-w-[240px] flex-shrink-0 items-top gap-4 px-2 pt-2 py-3 rounded-xl')}>
-                    <span className='absolute -top-2 -left-2 z-5000 flex h-6 w-6 items-center justify-center rounded-full bg-black text-xs font-bold text-white'>
-                      #{(index % spotifyStats[2].data.length) + 1}
-                    </span>
-                    <Image src={track.album.image?.url ?? fallback} alt={track.title} width={82} height={82} className='rounded-md' />
-                    <div className='flex flex-col'>
-                      <a href={track.songUrl} target='_blank' rel='noopener noreferrer' className='hover:underline'><span className='font-medium'>{track.title}</span></a>
-                      <span className='text-neutral-600 dark:text-neutral-400'>{track.artist}</span>
-                      {track.explicit && <span className='text-red-500'>🔞 Explicit</span>}
-                    </div>
+                {[...spotifyStats[2].data, ...spotifyStats[2].data].map((track, index) => 'title' in track ? (
+                  <li key={`${track.title}-${index}`} className={clsx(spotifyStats[2].styles.bg, 'relative flex min-w-[240px] flex-shrink-0 items-top gap-4 px-2 pt-2 py-3 rounded-xl')}>
+                  <span className='absolute -top-2 -left-2 z-5000 flex h-6 w-6 items-center justify-center rounded-full bg-black text-xs font-bold text-white'>
+                    #{(index % spotifyStats[2].data.length) + 1}
+                  </span>
+                  <Image src={track.album.image?.url ?? fallback} alt={track.title} width={82} height={82} className='rounded-md' />
+                  <div className='flex flex-col'>
+                    <a href={track.songUrl} target='_blank' rel='noopener noreferrer' className='hover:underline'><span className='font-medium'>{track.title}</span></a>
+                    <span className='text-neutral-600 dark:text-neutral-400'>{track.artist}</span>
+                    {track.explicit && <span className='text-red-500'>🔞 Explicit</span>}
+                  </div>
                   </li>
                 ) : null
-              )}
+                )}              
             </ul>
           </div>
         </div>
@@ -161,7 +161,7 @@ const SpotifyStats = () => {
                       </span>
                       <div className='flex flex-col items-center'>
                         <div className='relative w-20 h-20'>
-                          <Image src={artist.image?.url ?? fallback} alt={artist.name} fill className='rounded-full object-cover' />
+                          <Image src={artist.image?.url ?? fallback} alt={artist.name} width={82} height={82} className='rounded-full object-cover' />
                         </div>
                           <a href={artist.artist_url} target='_blank' rel='noopener noreferrer' className='relative hover:underline text-center font-medium'>
                             <p className='inine-block px-2 rounded bg-neutral-50 dark:bg-dark'>{artist.name}</p>

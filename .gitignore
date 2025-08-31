@@ -11,8 +11,8 @@
 /out/
 
 # images
-/public/images
-/public/uploads
+#/public/images
+#/public/uploads
 
 # production
 /build

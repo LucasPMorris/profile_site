@@ -32,7 +32,6 @@ const BlogCardNew = ({ id, title, featured_image_url, date, slug, content, excer
         {/* Image Section */}
         <div className='relative w-full h-[200px]'>
           <Image src={featured_image_url || defaultImage} alt={title?.rendered} fill sizes='100vw' className='object-cover object-center transition-transform duration-300 group-hover:scale-105' />
-          {/* <div className='absolute inset-0 bg-gradient-to-b from-black/20 to-black opacity-80'></div> */}
           {/* Tags */}
           <div className='absolute top-2 left-2 flex flex-wrap gap-2 p-2 z-10'>
             {tagList?.map((tag) => (
@@ -52,9 +51,9 @@ const BlogCardNew = ({ id, title, featured_image_url, date, slug, content, excer
         <div className='flex flex-col justify-between p-5 space-y-4'>
           {/* Title + Meta */}
           <div className='flex flex-col space-y-3'>
-            <h3 className='text-lg font-medium text-neutral-100 group-hover:underline group-hover:underline-offset-4'>{title?.rendered}</h3>
+            <h3 className='text-lg font-medium dark:text-neutral-100 group-hover:underline group-hover:underline-offset-4'>{title?.rendered}</h3>
             {isExcerpt && (
-              <p className='text-sm leading-relaxed text-neutral-400'>
+              <p className='text-sm leading-relaxed text-neutral-700 dark:text-neutral-400'>
                 {formatExcerpt(excerpt?.rendered)}
               </p>
             )}
@@ -68,17 +67,17 @@ const BlogCardNew = ({ id, title, featured_image_url, date, slug, content, excer
 
             <motion.div variants={slideDownVariants} initial='visible' animate={isHovered ? 'hidden' : 'visible'} className={clsx('flex justify-between gap-4', isHovered && 'hidden')}>
               <div className='flex items-center gap-1'>
-                <ViewIcon size={14} />
-                <span className='ml-0.5 text-xs font-medium'>{total_views_count.toLocaleString()} VIEWS</span>
+                <ViewIcon size={14} className='text-neutral-700 dark:text-neutral-400' />
+                <span className='ml-0.5 text-xs font-medium text-neutral-700 dark:text-neutral-400'>{total_views_count.toLocaleString()} VIEWS</span>
               </div>
               <div className='flex items-center gap-1'>
-                <ClockIcon size={14} />
-                <span className='ml-0.5 text-xs font-medium'>{readingTimeMinutes.toLocaleString()} MINS READ</span>
+                <ClockIcon size={14} className='text-neutral-700 dark:text-neutral-400'/>
+                <span className='ml-0.5 text-xs font-medium text-neutral-700 dark:text-neutral-400'>{readingTimeMinutes.toLocaleString()} MINS READ</span>
               </div>
             </motion.div>
 
             <motion.div variants={slideDownVariants} initial='hidden' animate={isHovered ? 'visible' : 'hidden'} className={clsx('flex items-center gap-1', !isHovered && 'hidden')}>
-              <span className='mr-0.5 text-xs font-medium'>READ MORE</span>
+              <span className='mr-0.5 text-xs font-medium text-neutral-700 dark:text-neutral-400'>READ MORE</span>
               <MoreIcon size={16} />
             </motion.div>
           </div>

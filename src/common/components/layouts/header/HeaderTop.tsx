@@ -7,7 +7,8 @@ import { MdClose as CloseIcon, MdVerified as VerifiedIcon } from 'react-icons/md
 
 import { MENU_ITEMS } from '@/common/constant/menu';
 
-import Image from '../../elements/Image';
+// import Image from '../../elements/Image';
+import Image from 'next/image';
 import ThemeToggleButton from '../../elements/ThemeToggleButton';
 import Tooltip from '../../elements/Tooltip';
 import Profile from '../../sidebar/Profile';
@@ -22,9 +23,8 @@ const HeaderTop = () => {
       <div className='mx-8 hidden items-center justify-between gap-5 py-8 lg:flex'>
         <div className='flex items-center gap-5'>
           <Image
-            src='/images/luke_avatar.png' alt='Lucas Morris'
-            width={40} height={40} rounded='rounded-full'
-            className='rotate-3 border-2 border-neutral-700 dark:border-neutral-600 lg:hover:scale-105'
+            src='/images/luke_avatar.png' alt='Lucas Morris' priority
+            width={40} height={40} className='rounded-full rotate-3 border-2 border-neutral-700 dark:border-neutral-600 lg:hover:scale-105'
           />
           {!showMenu && (
             <div className='flex items-center gap-3'>
