@@ -1,8 +1,8 @@
-const canonicalUrl = 'https://lucasmorris.site';
+const canonicalUrl = 'https://lucas.untethered4life.com';
 // TODO: Replace with my Image
-const metaImage = 'https://cloud.aulianza.com/public/images/aulianza-id.png';
+const metaImage = 'https://lucas.untethered4life.com/public/images/lucas_profilesite.png';
 const metaDescription =
-  'Seasoned Software Engineer especially in Frontend side, with a passion for creating pixel-perfect web experiences';
+  `Seasoned operational leader building, coaching, and inspiring customer facing technical teams. Let's build!`;
 
 const defaultSEOConfig = {
   defaultTitle: 'Lucas Morris - Personal Website',

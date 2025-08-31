@@ -13,7 +13,6 @@ This website is built using:
 - 🔰 TypeScript
 - 💠 Tailwind CSS 3
 - 🗂 Prisma Client
-- 🦫 Zustand
 - 〰️ SWR
 - ➰ Framer Motion
 - 💢 React Icons

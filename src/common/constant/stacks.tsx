@@ -1,9 +1,10 @@
 import { BsFillBootstrapFill, BsTerminalFill, BsRegex, BsRobot } from 'react-icons/bs';
 import { BiLogoPostgresql } from 'react-icons/bi';
-import { SiAngular, SiApollographql, SiCss3, SiExpress, SiFirebase, SiGatsby, SiGraphql, SiJavascript, SiJest, 
+import { SiAngular, SiApollographql, SiCss3, SiExpress, SiFirebase, SiGatsby, SiGraphql, SiJavascript, SiJest, SiGooglechrome, SiInsomnia,
   SiJquery, SiLaravel, SiMui, SiNextdotjs, SiNginx, SiNodedotjs, SiNuxtdotjs, SiPhp, SiPrisma, SiPwa, SiReact, SiNotepadplusplus,
-  SiRedux, SiSocketdotio, SiStorybook, SiStyledcomponents, SiTailwindcss, SiTypescript, SiVite, SiVuedotjs, SiVlcmediaplayer,
-  SiWebpack, SiWordpress } from 'react-icons/si';
+  SiRedux, SiSocketdotio, SiStorybook, SiStyledcomponents, SiTailwindcss, SiTypescript, SiVite, SiVuedotjs, SiVlcmediaplayer, SiGimp,
+  SiWebpack, SiWordpress, 
+  SiVisualstudiocode} from 'react-icons/si';
 import type { JSX } from "react";
 
 export type stacksProps = { [key: string]: JSX.Element;};
@@ -23,7 +24,11 @@ export const STACKS: stacksProps = {
   Bash: <BsTerminalFill size={iconSize} className='text-dark' />,
   Regex: <BsRegex size={iconSize} className='text-white' />,
   VLC: <SiVlcmediaplayer size={iconSize} style={{ color: 'rgb(232, 94, 0)' }} />,
-  NotepadPlusplus: <SiNotepadplusplus size={iconSize} style={{ color: 'rgb(0, 128, 0)' }} />,    
+  NotepadPlusplus: <SiNotepadplusplus size={iconSize} style={{ color: 'rgb(0, 128, 0)' }} />,
+  Gimp: <SiGimp size={iconSize} style={{ color: 'rgb(161, 136, 127)' }} />,
+  Chrome: <SiGooglechrome size={iconSize} className='text-neutral-600' />,
+  Insomnia: <SiInsomnia size={iconSize} style={{ color: 'rgb(58, 50, 130)' }} />, // Brighter color
+  VSCode: <SiVisualstudiocode size={iconSize} style={{ color: 'rgb(0, 122, 204)' }} />,
 //  Bootstrap: ( <BsFillBootstrapFill size={iconSize} className='text-purple-500' /> ),
   GraphQL: <SiGraphql size={iconSize} className='text-pink-600' />,
 //  Apollo: <SiApollographql size={iconSize} />,

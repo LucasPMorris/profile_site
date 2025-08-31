@@ -27,7 +27,6 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <>
-      {/* TODO: The next two lines make up the background. Consider both light and dark */}
       <div className={clsx('w-full', isDarkTheme ?  '[background-image:url(/gravel.svg)]' : '[background-image:url(/gravel_light.svg)] filter brightness-115 saturate-115')}>
           <div className={clsx(
             'bg-[linear-gradient(to_right,_rgba(197,197,255,0.8),_rgba(230,230,247,0.7),_rgba(197,197,255,0.8))]',

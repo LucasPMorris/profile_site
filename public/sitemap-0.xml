@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>https://lucasmorris.site</loc><lastmod>2025-08-29T08:10:01.345Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://lucasmorris.site/about</loc><lastmod>2025-08-29T08:10:01.345Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://lucasmorris.site/admin</loc><lastmod>2025-08-29T08:10:01.345Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://lucasmorris.site/admin/create</loc><lastmod>2025-08-29T08:10:01.345Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://lucasmorris.site/blog</loc><lastmod>2025-08-29T08:10:01.345Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://lucasmorris.site/contact</loc><lastmod>2025-08-29T08:10:01.345Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://lucasmorris.site/dashboard</loc><lastmod>2025-08-29T08:10:01.345Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://lucasmorris.site/login</loc><lastmod>2025-08-29T08:10:01.345Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://lucasmorris.site/playground</loc><lastmod>2025-08-29T08:10:01.345Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://lucasmorris.site/projects</loc><lastmod>2025-08-29T08:10:01.345Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://lucasmorris.site/snippets</loc><lastmod>2025-08-29T08:10:01.345Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://lucasmorris.site/snippets/js-fundamental</loc><lastmod>2025-08-29T08:10:01.345Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://lucasmorris.site/snippets/problem-solving</loc><lastmod>2025-08-29T08:10:01.345Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://profile-site-rt4b.onrender.com</loc><lastmod>2025-08-31T17:39:48.009Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://profile-site-rt4b.onrender.com/about</loc><lastmod>2025-08-31T17:39:48.009Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://profile-site-rt4b.onrender.com/admin</loc><lastmod>2025-08-31T17:39:48.009Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://profile-site-rt4b.onrender.com/admin/create</loc><lastmod>2025-08-31T17:39:48.009Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://profile-site-rt4b.onrender.com/blog</loc><lastmod>2025-08-31T17:39:48.009Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://profile-site-rt4b.onrender.com/contact</loc><lastmod>2025-08-31T17:39:48.009Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://profile-site-rt4b.onrender.com/dashboard</loc><lastmod>2025-08-31T17:39:48.009Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://profile-site-rt4b.onrender.com/login</loc><lastmod>2025-08-31T17:39:48.009Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://profile-site-rt4b.onrender.com/playground</loc><lastmod>2025-08-31T17:39:48.009Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://profile-site-rt4b.onrender.com/projects</loc><lastmod>2025-08-31T17:39:48.009Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://profile-site-rt4b.onrender.com/snippets</loc><lastmod>2025-08-31T17:39:48.009Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://profile-site-rt4b.onrender.com/snippets/code</loc><lastmod>2025-08-31T17:39:48.009Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://profile-site-rt4b.onrender.com/snippets/software</loc><lastmod>2025-08-31T17:39:48.009Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 </urlset>

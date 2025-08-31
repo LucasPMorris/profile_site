@@ -1,6 +1,6 @@
 import { ContentProps } from '../types/snippets';
 
-// TODO: Replace with my actual learning contents and imagas
+// TODO-Pending: Replace iamges
 export const SNIPPETS_CONTENTS: ContentProps[] = [
   {
     id: 1,

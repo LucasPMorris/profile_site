@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://lucasmorris.site
+Host: https://profile-site-rt4b.onrender.com/
 
 # Sitemaps
-Sitemap: https://lucasmorris.site/sitemap.xml
+Sitemap: https://profile-site-rt4b.onrender.com/sitemap.xml

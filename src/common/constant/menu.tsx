@@ -10,7 +10,6 @@ import { MenuItemProps } from '../types/menu';
 
 const iconSize = 20;
 
-// TODO: Decide which menu items to use
 export const MENU_ITEMS: MenuItemProps[] = [
   { title: 'Home', href: '/', icon: <HomeIcon size={iconSize} />, isShow: true, isExternal: false, eventName: 'Pages: Home', type: 'Pages' },
   { title: 'My Story', href: '/about', icon: <ProfileIcon size={iconSize} />, isShow: true, isExternal: false, eventName: 'Pages: About', type: 'Pages' },  

@@ -35,7 +35,7 @@ export const mapPrismaPostToBlogItem = ( post: blogPost & { categories: { id: nu
       filter: 'raw',
     })),
     total_views_count: post.totalViewsCount,
-    // TODO: The following fields are placeholders and may need proper mapping
+    // TODO-Pending: The following fields are placeholders and may need proper mapping
     comment_status: 'closed',
     ping_status: 'closed',
     amp_enabled: false,    
@@ -93,7 +93,7 @@ export const mapPrismaPostToBlogDetail = ( post: blogPost & { categories: catego
     wp_term: [],
     curies: [],
     total_views_count: post.totalViewsCount,
-    // TODO: The following fields are placeholders and may need proper mapping
+    // TODO-Pending: The following fields are placeholders and may need proper mapping
     comment_status: 'closed',
     ping_status: 'closed',
     amp_enabled: false,

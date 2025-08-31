@@ -4,7 +4,7 @@ import { DeviceInfoProps } from '../types/spotify';
 const iconSize = 24;
 const iconClassName = 'w-auto text-neutral-800 dark:text-neutral-300';
 
-// TODO: Update with my actual devices
+// TODO-Pending: Update with my actual devices
 export const PAIR_DEVICES: Record<string, DeviceInfoProps> = {
   Computer: {
     icon: <BsLaptop className={iconClassName} size={iconSize} />,

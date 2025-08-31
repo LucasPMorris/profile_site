@@ -31,10 +31,10 @@ const BlogHeader = ({ title, page_views_count, published_at, reading_time_minute
         {featuredImageUrl && (<img src={featuredImageUrl} alt="Header" className="absolute inset-0 h-full w-full object-cover"/>)}
 
         {/* Top-right stats */}
-        <div className="absolute top-4 right-4 z-10 flex gap-4 text-sm text-white dark:text-neutral-200">
-          <div className="flex rounded-full bg-black/0 px-3 py-1 text-xs text-white dark:bg-neutral-700">
-            <div className='mr-3 text-[14px]'>
-              <TbCalendarBolt size={18} className="inline-block mr-1 text-neutral-700 dark:text-neutral-200" />
+        <div className="absolute top-4 right-4 z-10 flex gap-4 text-sm text-neutral-200 dark:bg-neutral-700">
+          <div className="flex rounded-full bg-black/0 px-3 py-1 text-xs text-neutral-200 bg-neutral-700">
+            <div className='mr-3 text-[14px] text-neutral-200 dark:bg-neutral-700'>
+              <TbCalendarBolt size={18} className="inline-block mr-1 text-neutral-200 dark:text-neutral-200" />
               <span className="px-1">{published_at ? formatDate(published_at) : ''}</span>
             </div>  
             <div className="flex mr-4 text-[14px] items-center gap-1">

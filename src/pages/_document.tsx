@@ -1,6 +1,5 @@
 import { Head, Html, Main, NextScript } from 'next/document';
 
-// TODO: Do I really need the analytics script here?
 export default function Document() {
   return (
     <Html lang='en' data-scroll-behavior="smooth">
