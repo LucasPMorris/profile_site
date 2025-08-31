@@ -1,6 +1,6 @@
 const canonicalUrl = 'https://lucas.untethered4life.com';
 // TODO: Replace with my Image
-const metaImage = 'https://lucas.untethered4life.com/public/images/lucas_profilesite.png';
+const metaImage = 'https://lucas.untethered4life.com/images/lucas_profilesite.png';
 const metaDescription =
   `Seasoned operational leader building, coaching, and inspiring customer facing technical teams. Let's build!`;
 
@@ -14,32 +14,13 @@ const defaultSEOConfig = {
     description: metaDescription,
     type: 'website',
     images: [
-      {
-        url: metaImage,
-        alt: 'lucas.untethered4life.com og-image',
-        width: 800,
-        height: 600,
-      },
-      {
-        url: metaImage,
-        alt: 'lucas.untethered4life.com og-image',
-        width: 1200,
-        height: 630,
-      },
-      {
-        url: metaImage,
-        alt: 'lucas.untethered4life.com og-image',
-        width: 1600,
-        height: 900,
-      },
+      { url: metaImage, alt: 'lucas.untethered4life.com og-image', width: 800, height: 600 },
+      { url: metaImage, alt: 'lucas.untethered4life.com og-image', width: 1200, height: 630 },
+      { url: metaImage, alt: 'lucas.untethered4life.com og-image', width: 1600, height: 900, } 
     ],
-    site_name: 'lucas.untethered4life.com',
+  site_name: 'lucas.untethered4life.com',
   },
-  twitter: {
-    handle: '@handle',
-    site: '@site',
-    cardType: 'summary_large_image',
-  },
+  twitter: { handle: '@handle', site: '@site', cardType: 'summary_large_image' },
 };
 
 export default defaultSEOConfig;
