@@ -51,7 +51,7 @@ export const SOCIAL_MEDIA: MenuItemProps[] = [
 // export const EXTERNAL_LINKS: MenuItemProps[] = [
 //   {
 //     title: 'Analytics',
-//     href: 'https://analytics.lucasmorris.com/share/LK5kiRuosw9pORLa/lucasmorris.site',
+//     href: 'https://analytics.lucasmorris.com/share/LK5kiRuosw9pORLa/lucas.untethered4life.com',
 //     icon: <AnalyticsIcon size={iconSize} />,
 //     isShow: true,
 //     isExternal: true,

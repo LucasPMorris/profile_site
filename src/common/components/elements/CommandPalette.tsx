@@ -109,7 +109,7 @@ const CommandPalette = () => {
 
   const handleFindGoogle = () => {
     const url =
-      'https://www.google.com/search?q=' + queryDebounce + '&ref=lucasmorris.site';
+      'https://www.google.com/search?q=' + queryDebounce + '&ref=lucas.untethered4life.com';
     window.open(url, '_blank');
   };
 

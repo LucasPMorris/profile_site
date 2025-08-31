@@ -14,7 +14,7 @@ const ProjectsDetailPage: NextPage<ProjectsDetailPageProps> = ({ project }) => {
   const PAGE_TITLE = project?.title;
   const PAGE_DESCRIPTION = project?.description;
 
-  const canonicalUrl = `https://lucasmorris.site/project/${project?.slug}`;
+  const canonicalUrl = `https://lucas.untethered4life.com/project/${project?.slug}`;
 
   return (
     <>

@@ -24,7 +24,7 @@ const SnippetsContentPage: NextPage<ContentPageProps> = ({ content, subContents 
 
   const sortedSubContents = subContents.sort((a, b) => a.frontMatter.id - b.frontMatter.id);
 
-  const canonicalUrl = `https://lucasmorris.site/snippets/${content?.slug}`;
+  const canonicalUrl = `https://lucas.untethered4life.com/snippets/${content?.slug}`;
 
   return (
     <>

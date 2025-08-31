@@ -16,24 +16,24 @@ const defaultSEOConfig = {
     images: [
       {
         url: metaImage,
-        alt: 'lucasmorris.site og-image',
+        alt: 'lucas.untethered4life.com og-image',
         width: 800,
         height: 600,
       },
       {
         url: metaImage,
-        alt: 'lucasmorris.site og-image',
+        alt: 'lucas.untethered4life.com og-image',
         width: 1200,
         height: 630,
       },
       {
         url: metaImage,
-        alt: 'lucasmorris.site og-image',
+        alt: 'lucas.untethered4life.com og-image',
         width: 1600,
         height: 900,
       },
     ],
-    site_name: 'lucasmorris.site',
+    site_name: 'lucas.untethered4life.com',
   },
   twitter: {
     handle: '@handle',

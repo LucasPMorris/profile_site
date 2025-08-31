@@ -17,7 +17,7 @@ interface BlogDetailPageProps { post: BlogDetailProps; };
 
 const BlogDetailPage: NextPage<BlogDetailPageProps> = ({ post }) => {
   const slug = `blog/${post?.slug}?id=${post?.id}`;
-  const canonicalUrl = `https://lucasmorris.site/${slug}`;
+  const canonicalUrl = `https://lucas.untethered4life.com/${slug}`;
   const description = formatExcerpt(post?.excerpt?.rendered);
 
   const incrementViews = async () => { await axios.post(`/api/views?&slug=${post?.slug}`); };

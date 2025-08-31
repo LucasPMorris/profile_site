@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://profile-site-rt4b.onrender.com/
+Host: https://lucas.untethered4life.com
 
 # Sitemaps
-Sitemap: https://profile-site-rt4b.onrender.com/sitemap.xml
+Sitemap: https://lucas.untethered4life.com/sitemap.xml
