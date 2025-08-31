@@ -20,7 +20,7 @@ const BlogDetailPage: NextPage<BlogDetailPageProps> = ({ post }) => {
   const canonicalUrl = `https://lucas.untethered4life.com/blog/${slug}`;
   const description = formatExcerpt(post?.excerpt?.rendered);
 
-  const incrementViews = async () => { await axios.post(`/api/views?&slug=${post?.slug}&type=blog`); };
+  const incrementViews = async () => { await axios.post(`/api/views?&slug=${slug}&type=blog`); };
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') { incrementViews(); }
