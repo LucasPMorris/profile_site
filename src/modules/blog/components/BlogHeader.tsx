@@ -31,7 +31,7 @@ const BlogHeader = ({ title, page_views_count, published_at, reading_time_minute
         {featuredImageUrl && (<img src={featuredImageUrl} alt="Header" className="absolute inset-0 h-full w-full object-cover"/>)}
 
         {/* Top-right stats */}
-        <div className="absolute top-4 right-4 z-10 flex gap-4 text-sm text-neutral-200 dark:bg-neutral-700">
+        <div className="absolute top-4 right-4 z-10 flex gap-4 text-sm text-neutral-200">
           <div className="flex rounded-full bg-black/0 px-3 py-1 text-xs text-neutral-200 bg-neutral-700">
             <div className='mr-3 text-[14px] text-neutral-200 dark:bg-neutral-700'>
               <TbCalendarBolt size={18} className="inline-block mr-1 text-neutral-200 dark:text-neutral-200" />
@@ -63,8 +63,7 @@ const BlogHeader = ({ title, page_views_count, published_at, reading_time_minute
         <div className="absolute inset-0 z-10 flex items-center px-4 py-6">
           {!isScrolled 
             ? (
-              <motion.h1 className="text-3xl font-semibold text-white dark:text-neutral-200" initial="initial" animate="animate"
-                         variants={titleVariants} transition={transition} >
+              <motion.h1 className="text-3xl font-semibold text-white dark:text-neutral-200" initial="initial" animate="animate" variants={titleVariants} transition={transition} >
                 {title}
               </motion.h1>)
             : (

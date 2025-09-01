@@ -11,7 +11,7 @@ export type stacksProps = { [key: string]: JSX.Element;};
 
 const iconSize = 20;
 
-// TODO: Complete this list! This also adds icons to the snippets sub-content items.
+// TODO-Pending: Complete this list! This also adds icons to the snippets sub-content items.
 // Also - consider breaking out software icons into a separate list?
 export const STACKS: stacksProps = {
   PHP: <SiPhp size={iconSize} className='text-blue-500' />,

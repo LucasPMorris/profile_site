@@ -24,8 +24,6 @@ const BlogCardNew = ({ id, title, featured_image_url, date, slug, content, excer
   const defaultImage = '/images/placeholder.png';
   const slideDownVariants = { hidden: { opacity: 0, y: -10 }, visible: { opacity: 1, y: 0 } };
 
-  console.log('BlogCardNew: ', featured_image_url);
-
   return (
     <Link href={`/blog/${slug}?id=${id}`}>
       <Card className='group relative flex w-full flex-col rounded-lg border shadow-sm dark:border-neutral-800 overflow-hidden'>

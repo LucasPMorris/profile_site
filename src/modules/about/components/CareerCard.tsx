@@ -48,11 +48,12 @@ const CareerCard = ({ position, company, company_legal_name, logo, location, loc
             </div>
           </div>
         </div>
+        {/* TODO: Add back show/hide button for responsibilities when I have added responsabilities. 
         <button
           onClick={() => setIsShowResponsibility(!isShowResponsibility)} className='-ml-1 mt-5 flex items-center gap-1 text-sm text-neutral-500'>
           <HiChevronRight size={18} className={ cn({ 'rotate-90 transition-all duration-300': isShowResponsibility })}/>
           {isShowResponsibility ? 'Hide' : 'Show'} Responsibilities
-        </button>
+        </button> */}
         <AnimatePresence>
           {isShowResponsibility && (
             <motion.ul

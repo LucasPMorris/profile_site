@@ -12,11 +12,12 @@ import BlogDetail from '@/modules/blog/components/BlogDetail';
 import { getBlogDetail } from '@/services/blog';
 import { mapPrismaPostToBlogDetail } from '@/common/libs/blog';
 import prisma from '@/common/libs/prisma';
+import Footer from '@/common/components/layouts/partials/Footer';
 
 interface BlogDetailPageProps { post: BlogDetailProps; };
 
 const BlogDetailPage: NextPage<BlogDetailPageProps> = ({ post }) => {
-  const slug = `${post?.slug}?id=${post?.id}`;
+  const slug = `${post?.slug}`;
   const canonicalUrl = `https://lucas.untethered4life.com/blog/${slug}`;
   const description = formatExcerpt(post?.excerpt?.rendered);
 
@@ -43,9 +44,10 @@ const BlogDetailPage: NextPage<BlogDetailPageProps> = ({ post }) => {
       />
       <Container data-aos='fade-up'>
         <BackButton url='/blog' />
-        {/* Metadata Block */}
+          {/* Metadata Block */}
         <BlogDetail {...post} />
       </Container>
+      <div className='flex justify-center items-center'><Footer /></div>
     </>
   );
 };

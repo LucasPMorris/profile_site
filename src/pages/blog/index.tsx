@@ -3,6 +3,7 @@ import { NextSeo } from 'next-seo';
 
 import Container from '@/common/components/elements/Container';
 import BlogListNew from '@/modules/blog';
+import Footer from '@/common/components/layouts/partials/Footer';
 
 const PAGE_TITLE = 'Blog';
 
@@ -13,6 +14,7 @@ const BlogPage: NextPage = () => {
       <Container className='xl:!-mt-5' data-aos='fade-up'>
         <BlogListNew />
       </Container>
+      <div className='flex justify-center items-center'><Footer /></div>
     </>
   );
 };

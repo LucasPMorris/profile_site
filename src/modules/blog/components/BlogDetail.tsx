@@ -20,7 +20,7 @@ const BlogDetail = ({ id, title, date, slug, content, tags_list, featured_image_
     <>
       <BlogHeader title={title?.rendered} comments_count={0} reading_time_minutes={readingTimeMinutes} published_at={date} page_views_count={viewsCount} featuredImageUrl={featured_image_url} tags_list={tags_list} />
       <div className='space-y-6 leading-[1.8] dark:text-neutral-300 '>{content?.rendered && <MDXComponent>{content?.markdown}</MDXComponent>}</div>
-      <Breakline className='!my-10' />
+      <Breakline className='!my-6' />
     </>
   );
 };

@@ -17,7 +17,19 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
     } catch (error) { return res.status(500).json({ error: 'Failed to fetch content meta' }); }
   } else if (req.method === 'POST') {
     try {
-      const contentMeta = await prisma.contentmeta.upsert({ where: { slug: slug as string }, update: { views: { increment: 1} }, create: {slug: slug as string, type: type as string, views: 1 }, select: { views: true } }); 
+      const contentMeta = await prisma.contentmeta.upsert({
+        where: { slug: slug as string },
+        update: { views: { increment: 1 } },
+        create: { slug: slug as string, type: type as string, views: 1 },
+        select: { views: true }
+      });
+
+      if (type === 'blog') {
+        await prisma.blogPost.updateMany({
+          where: { slug: slug as string },
+          data: { totalViewsCount: { increment: 1 } }
+        });
+      }
       return res.json(contentMeta);
     } catch (error) { return res.status(500).json({ error: 'Failed to update views count' }); }
   } else { return res.status(405).json({ error: 'Method not allowed' }); }

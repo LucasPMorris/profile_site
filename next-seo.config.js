@@ -1,5 +1,4 @@
 const canonicalUrl = 'https://lucas.untethered4life.com';
-// TODO: Replace with my Image
 const metaImage = 'https://lucas.untethered4life.com/images/lucas_profilesite.png';
 const metaDescription =
   `Seasoned operational leader building, coaching, and inspiring customer facing technical teams. Let's build!`;

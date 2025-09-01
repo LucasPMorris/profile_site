@@ -11,7 +11,7 @@ import Projects from '@/modules/projects';
 interface ProjectsPageProps {  projects: ProjectItemProps[]; }
 
 const PAGE_TITLE = 'Projects';
-const PAGE_DESCRIPTION = 'Several projects that I have worked on, both private and open source.';
+const PAGE_DESCRIPTION = 'A showcase of projects, from professional work to personal endeavors.';
 
 const ProjectsPage: NextPage<ProjectsPageProps> = ({ projects }) => {
   const [visibleProjects, setVisibleProjects] = useState(6);
