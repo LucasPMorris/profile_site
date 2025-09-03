@@ -38,7 +38,7 @@
     "**/*.ts",
     "**/*.tsx",
     "global.d.ts"
-  ],
+, "src/pages/api/_boot.js"  ],
   "exclude": [
     "node_modules"
   ]

@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic';
 import { DefaultSeo } from 'next-seo';
 import { ThemeProvider } from 'next-themes';
 import { useEffect } from 'react';
-import { startCronJobs } from '../utils/startCron.js';
 
 import 'tailwindcss/tailwind.css';
 import 'aos/dist/aos.css';
@@ -21,8 +20,6 @@ const ProgressBar = dynamic(
   () => import('src/common/components/elements/ProgressBar'),
   { ssr: false },
 );
-
-startCronJobs();
 
 const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
   useEffect(() => {

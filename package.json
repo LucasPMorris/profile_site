@@ -37,7 +37,6 @@
     "next-seo": "^6.8.0",
     "next-sitemap": "^4.2.3",
     "next-themes": "^0.2.1",
-    "node-cron": "^4.2.1",
     "nprogress": "^0.2.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
