@@ -65,12 +65,20 @@ const SpotifyStats = () => {
     },
     {
       title: 'Top Artists', styles: { bg: 'bg-purple-300/30 dark:bg-purple-800/30' },
-      data: data?.topArtists?.slice(0, 5).map((artist: ArtistProps): ArtistProps => ({ name: artist.name, artist_url: artist.artist_url, image: artist.image, })) ?? [],
+      data: data?.topArtists?.slice(0, 5).map((artist: ArtistProps): ArtistProps => ({ artistId: artist.artistId, name: artist.name, artist_url: artist.artist_url, image: artist.image, })) ?? [],
     },
     {
       title: 'Top Tracks', styles: { bg: 'bg-yellow-300/30 dark:bg-yellow-800/30' },
       data: data?.topTracks?.slice(0, 5).map((track: TrackProps): TrackProps => ({
-        album: track.album, artist: track.artist, songUrl: track.songUrl, title: track.title, release_date: track.release_date, explicit: track.explicit
+        trackId: track.trackId,
+        album: track.album,
+        common_album: track.common_album,
+        artists: track.artists,
+        songUrl: track.songUrl,
+        title: track.title,
+        release_date: track.release_date,
+        explicit: track.explicit,
+        isrc: ''
       })) ?? [],
     },
   ];
@@ -133,10 +141,10 @@ const SpotifyStats = () => {
                   <span className='absolute -top-2 -left-2 z-5000 flex h-6 w-6 items-center justify-center rounded-full bg-black text-xs font-bold text-white'>
                     #{(index % spotifyStats[2].data.length) + 1}
                   </span>
-                  <Image src={track.album.image?.url ?? fallback} alt={track.title} width={82} height={82} className='rounded-md' />
+                  <Image src={track.common_album?.image ?? fallback} alt={track.title} width={82} height={82} className='rounded-md' />
                   <div className='flex flex-col'>
                     <a href={track.songUrl} target='_blank' rel='noopener noreferrer' className='hover:underline'><span className='font-medium'>{track.title}</span></a>
-                    <span className='text-neutral-600 dark:text-neutral-400'>{track.artist}</span>
+                    <span className='text-neutral-600 dark:text-neutral-400'>{track.artists}</span>
                     {track.explicit && <span className='text-red-500'>🔞 Explicit</span>}
                   </div>
                   </li>
@@ -161,7 +169,7 @@ const SpotifyStats = () => {
                       </span>
                       <div className='flex flex-col items-center'>
                         <div className='relative w-20 h-20'>
-                          <Image src={artist.image?.url ?? fallback} alt={artist.name} width={82} height={82} className='rounded-full object-cover' />
+                          <Image src={artist.image ?? fallback} alt={artist.name} width={82} height={82} className='rounded-full object-cover' />
                         </div>
                           <a href={artist.artist_url} target='_blank' rel='noopener noreferrer' className='relative hover:underline text-center font-medium'>
                             <p className='inine-block px-2 rounded bg-neutral-50 dark:bg-dark'>{artist.name}</p>

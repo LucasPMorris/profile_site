@@ -109,3 +109,75 @@ model term {
   postId     Int
   post       blogPost @relation(fields: [postId], references: [id])
 }
+
+model spartist {
+  artist_id     String     @id
+  name          String
+  artist_url    String
+  image_url     String?
+  track_artists sptrackartist[]
+  album_artists spalbumartist[]
+}
+
+model spalbum {
+  album_id        String   @id
+  name            String
+  release_date    DateTime?
+  image_url       String?
+
+  album_artists   spalbumartist[]
+  tracks          sptrack[]       @relation("PrimaryAlbum")
+  common_tracks   sptrack[]       @relation("CommonAlbum")
+}
+
+model spalbumartist {
+  album_id  String
+  artist_id String
+
+  album     spalbum  @relation(fields: [album_id], references: [album_id], onDelete: Cascade)
+  artist    spartist @relation(fields: [artist_id], references: [artist_id], onDelete: Cascade)
+
+  @@id([album_id, artist_id])
+}
+
+model sptrack {
+  track_id        String   @id
+  album_id        String
+  common_album_id String?
+
+  title           String
+  duration        Int
+  release_date    DateTime?
+  song_url        String?
+  explicit        Boolean
+  isrc            String
+
+  album           spalbum  @relation("PrimaryAlbum", fields: [album_id], references: [album_id], onDelete: Cascade)
+  common_album    spalbum? @relation("CommonAlbum", fields: [common_album_id], references: [album_id])
+
+  plays           spplayhistory[]
+  track_artists   sptrackartist[]
+
+  @@index([track_id])
+  @@index([isrc])
+}
+
+model sptrackartist {
+  track_id  String
+  artist_id String
+  track     sptrack  @relation(fields: [track_id], references: [track_id])
+  artist    spartist @relation(fields: [artist_id], references: [artist_id])
+
+  @@id([track_id, artist_id])
+  @@index([artist_id])
+}
+
+model spplayhistory {
+  track_id  String
+  played_at DateTime
+  track     sptrack  @relation(fields: [track_id], references: [track_id])
+
+  @@id([track_id, played_at])
+  @@index([played_at])
+}
+

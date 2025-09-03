@@ -1,5 +1,5 @@
 import { BsLaptop, BsPhone, BsSpeaker } from 'react-icons/bs';
-import { DeviceInfoProps } from '../types/spotify';
+import { DeviceInfoProps } from '../types/spotify.tsx';
 
 const iconSize = 24;
 const iconClassName = 'w-auto text-neutral-800 dark:text-neutral-300';

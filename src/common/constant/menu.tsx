@@ -16,7 +16,7 @@ export const MENU_ITEMS: MenuItemProps[] = [
   { title: 'Dashboard', href: '/dashboard', icon: <DashboardIcon size={iconSize} />, isShow: true, isExternal: false, eventName: 'Pages: Dashboard', type: 'Pages' },
   { title: 'Projects', href: '/projects', icon: <ProjectIcon size={iconSize} />, isShow: true, isExternal: false, eventName: 'Pages: Projects', type: 'Pages' },
   { title: 'Blog', href: '/blog', icon: <BlogIcon size={iconSize} />, isShow: true, isExternal: false, eventName: 'Pages: Blog', type: 'Pages' },
-  // { title: 'Snippets', href: '/snippets', icon: <SnippetsIcon size={iconSize} />, isShow: true, isExternal: false, eventName: 'Pages: Snippets', type: 'Pages' },
+  { title: 'Snippets', href: '/snippets', icon: <SnippetsIcon size={iconSize} />, isShow: true, isExternal: false, eventName: 'Pages: Snippets', type: 'Pages' },
   { title: 'Contact', href: '/contact', icon: <ContactIcon size={iconSize} />, isShow: true, isExternal: false, eventName: 'Pages: Contact', type: 'Pages' },
 ];
 

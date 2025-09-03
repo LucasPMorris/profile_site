@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { getTopArtists, getTopTracks, getRecentlyPlayed } from '@/services/spotify';
+import { getTopArtists, getTopTracks, getRecentlyPlayed } from './../../services/spotify';
 
 export default async function handler( req: NextApiRequest, res: NextApiResponse ): Promise<void> {
   try {

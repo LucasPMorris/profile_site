@@ -20,14 +20,21 @@ export interface SongProps {
   };
 }
 
-export interface TrackProps { 
-  album: { name: string; image: { width: number; url: string; }; };
-  artist: string;
+export interface AlbumProps { albumId: string; name: string; release_date: Date; image: string }
+
+export interface TrackProps {
+  trackId: string;
+  isrc: string;
+  album: { albumId: string; name: string; release_date: Date, image: string };
+  common_album: AlbumProps | null;
+  artists: string;
   songUrl: string;
   title: string;
-  release_date: string;
+  release_date: Date;
   explicit: boolean;  
 }
+
+export interface RawRecentlyPlayedResponse { status: number; data: []; }
 
 export interface NowPlayingProps { songUrl: string; albumImageUrl: string | undefined; album: string; title: string; artist: string; }
 
@@ -35,18 +42,20 @@ export interface NowPlayingResponseProps { status: number; isPlaying: boolean; d
 
 export interface TopTracksResponseProps { status: number; data: TrackProps[]; }
 
-export interface ArtistProps { name: string; artist_url: string; image: { width: number; url: string; } }
+export interface ArtistProps { artistId: string, name: string; artist_url: string; image: string }
 
 export interface TopArtistsResponseProps { status: number; data: ArtistProps[]; }
 
 export interface TrackHistoryProps {
-  album: { name: string; images: { width: number; url: string; }[]; };
+  album: { albumId: string; name: string; image: string };
+  common_album: AlbumProps | null;
+  isrc: string;
   title: string;
-  artist: string;
+  artists: string;
   songUrl: string; 
-  played_at: string;
+  played_at: Date;
   explicit: boolean;
-  release_date: string; 
+  release_date: Date; 
 }
 
 export interface PlayHistoryResponseProps { status: number; data: TrackHistoryProps[]; }
