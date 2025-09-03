@@ -5,9 +5,9 @@ import { getTopArtists, getTopTracks, getRecentlyPlayed, getTopArtistsFromDB, ge
 export default async function handler( req: NextApiRequest, res: NextApiResponse ): Promise<void> {
   try {
     const results = await Promise.allSettled([
-      getRecentlyPlayedFromDB(),
-      getTopArtistsFromDB(),
-      getTopTracksFromDB()
+      getTopArtistsFromDB(),    
+      getTopTracksFromDB(),
+      getRecentlyPlayedFromDB()
     ]);
 
     const [topArtists, topTracks, recentlyPlayed] = results;
