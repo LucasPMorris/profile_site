@@ -12,8 +12,9 @@ export default async function handler(req, res) {
     
     await ingestSpotifyPlays();
     const endTime = Date.now();
-    console.log('Ingestion completed: ', endTime, 'Execution Time: ', endTime-startTime, 'ms');
-    res.status(200).json({ success: true, duration, message: 'Ingestion completed successfully' });
+    const duration = endTime - startTime;
+    console.log('Ingestion completed: ', endTime, 'Execution Time: ', duration, 'ms');
+    res.status(200).json({ success: true, message: 'Ingestion completed successfully' });
   } catch (error) {
     console.error('Error during ingestion:', error);
     res.status(500).json({ success: false, error: error.message });
