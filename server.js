@@ -1,0 +1,45 @@
+const express = require('express');
+const next = require('next');
+const cron = require('node-cron'); 
+
+const port = parseInt(process.env.PORT, 10) || 3000;
+const dev = process.env.NODE_ENV !== 'production';
+const app = next({ dev });
+const handle = app.getRequestHandler();
+
+app.prepare().then(() => {
+  const server = express();
+  const domain = dev ? 'http://localhost:3000' : 'https://lucas.untethered4life.com';
+  const url = `${domain}/api/getspotifyhistory`;
+
+  console.log(`Cron job will POST to: ${url}`);
+  console.log(`Running in ${dev ? 'development' : 'production'} mode`);
+  let isRunning = false;
+
+  async function runSpotifyIngestion() {
+    try {
+      const response = await fetch(url, { method: 'POST', headers: { 'x-cron-token': process.env.CRON_SECRET } })
+      const data = await response.json();
+      
+      if (!response.ok) { throw new Error(`HTTP ${response.status}: `, data); }
+      console.log('✅ Scheduled task response:', data);
+    
+    } catch (error) { console.error('❌ Error in scheduled task:', error); }
+  }
+
+  cron.schedule('*/30 * * * *', async () => {
+    if (isRunning) { console.warn(`⚠️ Skipping run — previous job still running`); return; }
+
+    isRunning = true;
+    
+    console.log(`⏱️ Attempting ingestion at ${new Date().toISOString()}`);
+    try{ await runSpotifyIngestion(); } finally { isRunning = false; }
+  });
+
+
+  server.all('*', (req, res) => { return handle(req, res); });
+  server.listen(port, (err) => {
+    if (err) throw err;
+    console.log(`> Ready on ${domain}`);
+  });
+}); 

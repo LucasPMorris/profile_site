@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { getTopArtists, getTopTracks, getRecentlyPlayed } from './../../services/spotify';
+import { getTopArtists, getTopTracks, getRecentlyPlayed, getTopArtistsFromDB, getTopTracksFromDB, getRecentlyPlayedFromDB } from './../../services/spotify';
 
 export default async function handler( req: NextApiRequest, res: NextApiResponse ): Promise<void> {
   try {
     const results = await Promise.allSettled([
-      getTopArtists(),
-      getTopTracks(),
-      getRecentlyPlayed()
+      getRecentlyPlayedFromDB(),
+      getTopArtistsFromDB(),
+      getTopTracksFromDB()
     ]);
 
     const [topArtists, topTracks, recentlyPlayed] = results;

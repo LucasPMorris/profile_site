@@ -209,12 +209,12 @@ export const getTopTracksFromDB = async (): Promise<TopTracksResponseProps> => {
     select: { isrc: true, album: true, plays: true, track_id: true, track_artists: { include: { artist: true } } }
   });
 
-  const isrcs = Array.from(new Set(rawIsrcs.map(t => t.isrc)));
+  const isrcs = Array.from(new Set(rawIsrcs.map((t: { isrc: string }) => t.isrc)));
 
   const playCounts = await Promise.all(
     isrcs.map(async (isrc) => {
-      const tracks = rawIsrcs.filter(t => t.isrc === isrc);
-      const trackIds = tracks.map(t => t.track_id);
+      const tracks = rawIsrcs.filter((t: { isrc: string }) => t.isrc === isrc);
+      const trackIds = tracks.map((t: { track_id: string }) => t.track_id);
       const count = await prisma.spplayhistory.count({ where: { track_id: { in: trackIds } } });
       return { isrc, count };
     })
@@ -228,8 +228,8 @@ export const getTopTracksFromDB = async (): Promise<TopTracksResponseProps> => {
   });
 
   const topTracksSorted = topPlayedISRCs.map(({ isrc }) => {
-    const candidates = topTracks.filter(t => t.isrc === isrc);
-    return candidates.sort((a, b) => b.plays.length - a.plays.length)[0];
+    const candidates = topTracks.filter((t: { isrc: string }) => t.isrc === isrc);
+    return candidates.sort((a: { plays: any[] }, b: { plays: any[] }) => b.plays.length - a.plays.length)[0];
   });  
 
   return {
@@ -245,7 +245,7 @@ export const getTopTracksFromDB = async (): Promise<TopTracksResponseProps> => {
           image: track.common_album.image_url ?? '',
           release_date: track.common_album.release_date ?? new Date()
         } : null, 
-      artists: track.track_artists.map(ta => ta.artist.name).join(', '),
+      artists: track.track_artists.map((ta: { artist: { name: string } }) => ta.artist.name).join(', '),
       songUrl: track.song_url ?? '',
       title: track.title,
       release_date: track.release_date || new Date(),
@@ -260,7 +260,7 @@ export const getRecentlyPlayedFromDB = async (): Promise<PlayHistoryResponseProp
     include: { track: { include: { album: true, common_album: true, track_artists: { include: { artist: true } } } } },
   });
 
-  const tracks: TrackHistoryProps[] = recentPlays.map((play) => {
+  const tracks: TrackHistoryProps[] = recentPlays.map((play: { track: any; played_at: Date }) => {
     const track = play.track;
     const album = track.album;
 
@@ -271,7 +271,7 @@ export const getRecentlyPlayedFromDB = async (): Promise<PlayHistoryResponseProp
       played_at: play.played_at,
       explicit: track.explicit,
       release_date: track.release_date ?? new Date(),
-      artists: track.track_artists.map(ta => ta.artist.name).join(', '),
+      artists: track.track_artists.map((ta: { artist: { name: string } }) => ta.artist.name).join(', '),
       album: { albumId: album.album_id, name: album.name, image: album.image_url ?? '' },
       isrc: track.isrc,
       common_album: track.common_album
