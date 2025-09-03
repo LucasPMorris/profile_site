@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') { return res.status(405).json({ message: 'Method not allowed' }); }
 
   const token = req.headers['x-cron-token'];
-  if (token !== process.env.X-CRON_SECRET) { return res.status(403).json({ message: 'Forbidden' }); }
+  if (token !== process.env.CRON_SECRET) { return res.status(403).json({ message: 'Forbidden' }); }
 
   try {
     const startTime = Date.now();
