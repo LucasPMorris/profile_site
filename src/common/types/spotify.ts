@@ -59,3 +59,24 @@ export interface TrackHistoryProps {
 }
 
 export interface PlayHistoryResponseProps { status: number; data: TrackHistoryProps[]; }
+
+export interface tempTrackDetail { 
+  album: { 
+    artists: { 
+      id: string;
+      name: string;
+      external_urls: { spotify: string; }
+      images: { url: string, width: number, height: number }[], 
+    }[]
+  },
+  artists: {
+    id: string,
+    name: string,
+    external_urls: { spotify: string }
+  }[] 
+  explicit: boolean,
+  external_ids: { isrc: string },
+  external_urls: { spotify: string },
+  id: string,
+  name: string,
+};

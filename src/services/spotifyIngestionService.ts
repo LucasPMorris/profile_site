@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import prisma from '../common/libs/prisma.ts';
 import { getArtistsByIds, getRecentlyPlayedFromSpotify } from './spotify.ts'; // your wrapper for the API call
+import { RawRecentlyPlayedResponse } from '@/common/types/spotify.ts';
 
 
 function writeFileForTest(filename: string, data: any): void {
@@ -44,8 +45,8 @@ const assignCommonAlbumUrls = async (dryRun = false): Promise<void> => {
     } else { console.log(`✅ Updated common_album_id for ${grouped.size} ISRCs`); }
 };
 
-export const ingestSpotifyPlays = async (): Promise<void> => {
-  const response = await getRecentlyPlayedFromSpotify();
+export const ingestSpotifyPlays = async ( manualIngestion: boolean = false, _manualData: RawRecentlyPlayedResponse = { status: 200, data: [] }): Promise<void> => {
+  const response = manualIngestion ? _manualData : await getRecentlyPlayedFromSpotify();
 
   if (response.status !== 200 || !response.data) {
     console.error('Failed to fetch recently played tracks from Spotify');
@@ -58,12 +59,12 @@ export const ingestSpotifyPlays = async (): Promise<void> => {
 
   for (const item of items as any[]) { // Using 'any' here because the raw structure from Spotify is not typed
     const { track, played_at } = item;
+
     const isrc = track.external_ids?.isrc;
     const albumArtistIds: string[] = track.album.artists.map((a: { id: string }) => a.id); // New after first run
     albumArtistIds.forEach(id => allArtistIds.add(id)); // New after first run
     track.artists.forEach((a: { id: string; }) => allArtistIds.add(a.id)); // New after first run
 
-    // Upsert album
     await prisma.spalbum.upsert({
       where: { album_id: track.album.id },
       update: { name: track.album.name, image_url: track.album.images[0]?.url, release_date: new Date(track.album.release_date) },
@@ -87,7 +88,13 @@ export const ingestSpotifyPlays = async (): Promise<void> => {
     await prisma.sptrack.upsert({
       where: { track_id: track.id },
       update: { title: track.name, isrc, album_id: track.album.id, explicit: track.explicit, song_url: track.external_urls.spotify, duration: Math.floor(track.duration_ms / 1000), release_date: new Date(track.album.release_date) },
-      create: { track_id: track.id, title: track.name, isrc: track.external_ids?.isrc, album_id: track.album.id, explicit: track.explicit, song_url: track.external_urls.spotify, duration: Math.floor(track.duration_ms / 1000), release_date: new Date(track.album.release_date) }
+      create: { track_id: track.id,
+                title: track.name, 
+                isrc: track.external_ids?.isrc,
+                album_id: track.album.id,
+                explicit: track.explicit,
+                song_url: track.external_urls.spotify, duration: Math.floor(track.duration_ms / 1000),
+                release_date: new Date(track.album.release_date) }
     } );
 
     // Upsert artists and track-artist relations
@@ -115,15 +122,5 @@ export const ingestSpotifyPlays = async (): Promise<void> => {
     await prisma.spartist.update({ where: { artist_id: artist.id }, data: { image_url: image?.url || null }});
   }
 
-  await assignCommonAlbumUrls();
+ if (!manualIngestion) await assignCommonAlbumUrls();
 };
-
-
-(async () => {
-  try {
-    await ingestSpotifyPlays();
-  } catch (err) {
-    console.error('Error during ingestion:', err);
-    process.exit(1);
-  }
-})();

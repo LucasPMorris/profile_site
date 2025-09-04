@@ -31,22 +31,23 @@ const getAccessToken = async (): Promise<AccessTokenResponseProps> => {
   return response.data;
 };
 
-export const getAvailableDevices = async (): Promise<DeviceResponseProps> => {
-  const { access_token } = await getAccessToken();
-  const response = await axios.get(AVAILABLE_DEVICES_ENDPOINT, { headers: { Authorization: `Bearer ${access_token}` } });
-  const status = response.status;
 
-  if (status === 204 || status > 400) { return { status, data: [] }; }
+// export const getAvailableDevices = async (): Promise<DeviceResponseProps> => {
+//   const { access_token } = await getAccessToken();
+//   const response = await axios.get(AVAILABLE_DEVICES_ENDPOINT, { headers: { Authorization: `Bearer ${access_token}` } });
+//   const status = response.status;
 
-  const responseData: DeviceDataProps = response.data;
-  const devices = responseData?.devices?.map((device) => ({
-    name: device.name, is_active: device.is_active, type: device.type,
-    model: PAIR_DEVICES[device?.type]?.model || 'Unknown Device',
-    id: PAIR_DEVICES[device?.type]?.id || 'LucasPMorris-device',
-  }));
+//   if (status === 204 || status > 400) { return { status, data: [] }; }
 
-  return { status, data: devices };
-};
+//   const responseData: DeviceDataProps = response.data;
+//   const devices = responseData?.devices?.map((device) => ({
+//     name: device.name, is_active: device.is_active, type: device.type,
+//     model: PAIR_DEVICES[device?.type]?.model || 'Unknown Device',
+//     id: PAIR_DEVICES[device?.type]?.id || 'LucasPMorris-device',
+//   }));
+
+//   return { status, data: devices };
+// };
 
 export const getNowPlaying = async (): Promise<NowPlayingResponseProps> => {
   const { access_token } = await getAccessToken();
@@ -171,9 +172,14 @@ export const getArtistsByIds = async (artistIds: string[]): Promise<any[]> => {
 export const getRecentlyPlayedFromSpotify = async (): Promise<RawRecentlyPlayedResponse> => {
   try {
     const { access_token } = await getAccessToken();  
-    const response = await axios.get(RECENTLY_PLAYED_ENDPOINT, { headers: { Authorization: `Bearer ${access_token}` } });
+    const lastSync = await prisma.spplayhistory.findFirst({ orderBy: { played_at: 'desc' }, select: { played_at: true } });
+    const afterTimestamp = lastSync?.played_at instanceof Date ? lastSync.played_at.getTime() : 0;
+
+    let url = `${RECENTLY_PLAYED_ENDPOINT}&after=${afterTimestamp}`;
+    
+    const response = await axios.get(url, { headers: { Authorization: `Bearer ${access_token}` } });
   
-    if (response.status === 204 || response.status > 400) {
+    if (response.status === 204 || response.status > 400 || Array.isArray(response.data) || !response.data.items) {
       console.warn('Recently played tracks empty or missing, error status:', response.status);
       return { status: response.status, data: [] };
     }

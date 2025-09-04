@@ -1,6 +1,6 @@
-const express = require('express');
-const next = require('next');
-const cron = require('node-cron'); 
+import express from 'express';
+import next from 'next';
+import { schedule } from 'node-cron'; 
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -27,7 +27,7 @@ app.prepare().then(() => {
     } catch (error) { console.error('❌ Error in scheduled task:', error); }
   }
 
-  cron.schedule('*/30 * * * *', async () => {
+  schedule('*/30 * * * *', async () => {
     if (isRunning) { console.warn(`⚠️ Skipping run — previous job still running`); return; }
 
     isRunning = true;
