@@ -83,14 +83,13 @@ const SpotifyStats = () => {
     },
   ];
 
-  // TODO: Remove when data ingestion is complete.
+  // TODO: Re-enable when Spotify performance is improved.
   const loading = true;
-
   if (!data || loading) {
     return (
       <section className='flex flex-col gap-y-2'>
         <SectionHeading title='Spotify' icon={<SpotifyIcon className='mr-1' />} />
-        <SectionSubHeading><div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>Multi year data ingestin occuring until 9/6/2025. Please check back then 💖.</div></SectionSubHeading>
+        <SectionSubHeading><div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>Multi year data ingestion occuring until 9/6/2025. Please check back then 💖.</div></SectionSubHeading>
         {/* <SectionSubHeading><div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>Loading the audio stats...</div></SectionSubHeading> */}
         {/* Skeleton cards or shimmer effect here */}
       </section>

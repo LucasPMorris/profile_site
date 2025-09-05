@@ -1,3 +1,4 @@
+'use server';
 import fs from 'fs';
 import path from 'path';
 import prisma from '../common/libs/prisma.ts';
@@ -65,6 +66,47 @@ const assignCommonAlbumUrls = async (dryRun = false): Promise<void> => {
     } else { console.log(`✅ Updated common_album_id for ${grouped.size} ISRCs`); }
 };
 
+export const aggregateDailyStats = async (): Promise<void> => {
+  const now = new Date();
+  const yesterday = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate() - 1
+  ));
+
+  const dateStr = yesterday.toISOString().split('T')[0];
+  const start = new Date(`${dateStr}T00:00:00.000Z`);
+  const end = new Date(`${dateStr}T23:59:59.999Z`);
+
+  // Check if stats already exist
+  const existing = await prisma.spdailyplaystats.findUnique({ where: { date: start } });
+  if (existing) { console.log(`🟡 Stats already exist for ${dateStr}, skipping.`); return; }
+
+  // Run your aggregation logic here
+  const plays = await prisma.spplayhistory.findMany({ where: { played_at: { gte: start, lte: end } }, include: { track: { include: { track_artists: true } } } });
+  
+  const hourlyPlays = Array(24).fill(0);
+  const trackCounts: Record<string, number> = {};
+  const artistCounts: Record<string, number> = {};
+
+  for (const play of plays) {
+    const hour = new Date(play.played_at).getUTCHours();
+    hourlyPlays[hour]++;
+
+    const trackId = play.track_id;
+    trackCounts[trackId] = (trackCounts[trackId] ?? 0) + 1;
+
+    for (const artist of play.track.track_artists) { artistCounts[artist.artist_id] = (artistCounts[artist.artist_id] ?? 0) + 1; }
+  }
+
+  const topTracks = Object.entries(trackCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([track_id, count]) => ({ track_id, count }));
+  const topArtists = Object.entries(artistCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([artist_id, count]) => ({ artist_id, count }));
+
+  await prisma.spdailyplaystats.create({ data: { date: start, weekday: start.toLocaleDateString('en-US', { weekday: 'short' }), hourly_plays: hourlyPlays, top_tracks: { create: topTracks }, top_artists: { create: topArtists } } });
+
+  console.log(`✅ Stats created for ${dateStr}`);
+};
+
 export const ingestSpotifyPlays = async ( manualIngestion: boolean = false, _manualData: RawRecentlyPlayedResponse = { status: 200, data: [] }): Promise<void> => {
   const response = manualIngestion ? _manualData : await getRecentlyPlayedFromSpotify();
 
@@ -127,3 +169,76 @@ export const ingestSpotifyPlays = async ( manualIngestion: boolean = false, _man
     await assignCommonAlbumUrls();
   } 
 };
+
+// No longer needed, used once and moved connecting pages to .archivedStuff
+
+// export const backFillNoPlayDays = async (): Promise<void> => {
+//   const firstPlay = await prisma.spplayhistory.findFirst({ orderBy: { played_at: 'asc' }, select: { played_at: true } });
+//   if (!firstPlay) { console.error('No play history found.'); return; }
+
+//   const start = new Date(firstPlay.played_at);
+//   const end = new Date();
+
+//   const everyDate: Date[] = [];
+//   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) { 
+//     const normalized = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+//     everyDate.push(normalized);
+//    }
+
+//   for (const date of everyDate) {
+//     const existing = await prisma.spdailyplaystats.findUnique({ where: { date } });
+//     if (existing) continue;
+
+//     await prisma.spdailyplaystats.create({ data: { date, weekday: date.toLocaleDateString('en-US', { weekday: 'short' }), hourly_plays: Array(24).fill(0) } });
+
+//     console.log(`🟦 Backfilled empty stats for ${date.toISOString().split('T')[0]}`);
+//   } 
+// }  
+
+// export const updateDailyStats = async (): Promise<void> => {
+//   const dates = await prisma.spplayhistory.findMany({ select: { played_at: true }, orderBy: { played_at: 'asc' } });
+//   const uniqueDates = Array.from(new Set( dates.map(d => d.played_at.toISOString().split('T')[0]) ));
+
+//   console.log(`Found ${uniqueDates.length} unique play dates from history.`);
+//   const existingStats = await prisma.spdailyplaystats.findMany({ select: { date: true } });
+//   const existingDates = new Set(existingStats.map(stat => stat.date.toISOString().split('T')[0]));
+//   const filteredDates = uniqueDates.filter(date => !existingDates.has(date));
+//   console.log(`Found ${filteredDates.length} new dates to process.`);
+  
+//   for (const dateStr of filteredDates) {
+//     const start = new Date(`${dateStr}T00:00:00.000Z`);
+//     const end = new Date(`${dateStr}T23:59:59.999Z`);
+
+//     const plays = await prisma.spplayhistory.findMany({ where: { played_at: { gte: start, lte: end } }, include: { track: { include: { track_artists: true } } }});
+
+//     const hourlyPlays = Array(24).fill(0);
+//     const trackCounts: Record<string, number> = {};
+//     const artistCounts: Record<string, number> = {};
+
+//     for (const play of plays) {
+//       console.log(`⏳ Normalizing stats for ${dateStr}`);
+//       const hour = new Date(play.played_at).getHours();
+//       hourlyPlays[hour]++;
+
+//       const trackId = play.track_id;
+//       trackCounts[trackId] = (trackCounts[trackId] ?? 0) + 1;
+
+//       for (const artist of play.track.track_artists) { artistCounts[artist.artist_id] = (artistCounts[artist.artist_id] ?? 0) + 1; }
+//     }
+
+//     const topTracks = Object.entries(trackCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([track_id, count]) => ({ track_id, count }));
+//     const topArtists = Object.entries(artistCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([artist_id, count]) => ({ artist_id, count }));
+
+//     await prisma.spdailyplaystats.create({
+//       data: {
+//         date: start,
+//         weekday: start.toLocaleDateString('en-US', { weekday: 'short' }),
+//         hourly_plays: hourlyPlays,
+//         top_tracks: { create: topTracks },
+//         top_artists: { create: topArtists }
+//       }
+//     });
+
+//     console.log(`✅ Normalized stats for ${dateStr}`);
+//   }
+// };

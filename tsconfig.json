@@ -38,7 +38,7 @@
     "**/*.ts",
     "**/*.tsx",
     "global.d.ts"
-, "src/pages/api/_boot.js", "src/services/spotifyIngestionService.ts", "src/services/spotify.ts"  ],
+, "src/pages/api/_boot.js", "src/services/spotifyIngestion.ts", "src/services/spotify.ts"  ],
   "exclude": [
     "node_modules"
   ]

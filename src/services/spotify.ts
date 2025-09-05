@@ -31,23 +31,22 @@ const getAccessToken = async (): Promise<AccessTokenResponseProps> => {
   return response.data;
 };
 
-// TODO: Re-enable when Spotify data ingestion is complete.
-// export const getAvailableDevices = async (): Promise<DeviceResponseProps> => {
-//   const { access_token } = await getAccessToken();
-//   const response = await axios.get(AVAILABLE_DEVICES_ENDPOINT, { headers: { Authorization: `Bearer ${access_token}` } });
-//   const status = response.status;
+export const getAvailableDevices = async (): Promise<DeviceResponseProps> => {
+  const { access_token } = await getAccessToken();
+  const response = await axios.get(AVAILABLE_DEVICES_ENDPOINT, { headers: { Authorization: `Bearer ${access_token}` } });
+  const status = response.status;
 
-//   if (status === 204 || status > 400) { return { status, data: [] }; }
+  if (status === 204 || status > 400) { return { status, data: [] }; }
 
-//   const responseData: DeviceDataProps = response.data;
-//   const devices = responseData?.devices?.map((device) => ({
-//     name: device.name, is_active: device.is_active, type: device.type,
-//     model: PAIR_DEVICES[device?.type]?.model || 'Unknown Device',
-//     id: PAIR_DEVICES[device?.type]?.id || 'LucasPMorris-device',
-//   }));
+  const responseData: DeviceDataProps = response.data;
+  const devices = responseData?.devices?.map((device) => ({
+    name: device.name, is_active: device.is_active, type: device.type,
+    model: PAIR_DEVICES[device?.type]?.model || 'Unknown Device',
+    id: PAIR_DEVICES[device?.type]?.id || 'LucasPMorris-device',
+  }));
 
-//   return { status, data: devices };
-// };
+  return { status, data: devices };
+};
 
 export const getNowPlaying = async (): Promise<NowPlayingResponseProps> => {
   const { access_token } = await getAccessToken();
@@ -211,6 +210,10 @@ export const getTopArtistsFromDB = async (): Promise<TopArtistsResponseProps> =>
 };
 
 export const getTopTracksFromDB = async (): Promise<TopTracksResponseProps> => {
+  const todaysDate = new Date();
+  const pastDate = new Date(todaysDate);
+  pastDate.setDate(todaysDate.getDate() - 30);
+
   const rawIsrcs = await prisma.sptrack.findMany({
     select: { isrc: true, album: true, plays: true, track_id: true, track_artists: { include: { artist: true } } }
   });
@@ -261,9 +264,14 @@ export const getTopTracksFromDB = async (): Promise<TopTracksResponseProps> => {
 };
 
 export const getRecentlyPlayedFromDB = async (): Promise<PlayHistoryResponseProps> => {
+  const todaysDate = new Date();
+  const pastDate = new Date(todaysDate);
+  pastDate.setDate(todaysDate.getDate() - 30); // 30 days ago
+  
   const recentPlays = await prisma.spplayhistory.findMany({
+    where: { played_at: { gte: pastDate, lte: todaysDate } },
     orderBy: { played_at: 'desc' },
-    include: { track: { include: { album: true, common_album: true, track_artists: { include: { artist: true } } } } },
+    include: { track: { include: { album: true, common_album: true, track_artists: { include: { artist: true } } } } }, 
   });
 
   const tracks: TrackHistoryProps[] = recentPlays.map((play: { track: any; played_at: Date }) => {

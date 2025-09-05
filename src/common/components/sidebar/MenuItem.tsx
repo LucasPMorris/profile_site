@@ -14,8 +14,6 @@ const MenuItem = ({ title, href, icon, onClick, className = '', children, hideIc
   const isExternalUrl = href?.includes('http');
   const isHashLink = href === '#';
   const router = useRouter();
-  const { resolvedTheme } = useTheme();
-  const isDarkTheme = resolvedTheme === 'dark' || resolvedTheme === 'system';  
 
   const activeClasses = `flex items-center gap-2 py-2 pl-4 pr-2.5 text-neutral-700 dark:text-neutral-400 hover:text-neutral-900 hover:dark:text-neutral-300 rounded-lg group ${
     router.pathname === href
@@ -35,7 +33,7 @@ const MenuItem = ({ title, href, icon, onClick, className = '', children, hideIc
         <div className='ml-0.5 flex-grow'>{title}</div>
         {children && <>{children}</>}
         {isActiveRoute && 
-            (<ExternalLinkIcon size={22} className={ clsx('animate-pulse', isDarkTheme ? 'text-neutral-400' : '')} />)}
+            (<ExternalLinkIcon size={22} className={ clsx('animate-pulse dark:text-neutral-400')} />)}
         {isExternalUrl && isHovered && (<ExternalLinkIcon size={22} className='-rotate-45 text-gray-500 lg:transition-all lg:duration-300' />)}
       </div>
     );

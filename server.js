@@ -10,15 +10,16 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
   const server = express();
   const domain = dev ? 'http://localhost:3000' : 'https://lucas.untethered4life.com';
-  const url = `${domain}/api/getspotifyhistory`;
+  const historyurl = `${domain}/api/getspotifyhistory`;
+  const dailyurl = `${domain}/api/aggregatedailystats`;
 
-  console.log(`Cron job will POST to: ${url}`);
+  console.log(`Cron job will POST to: ${historyurl} and ${dailyurl}`);
   console.log(`Running in ${dev ? 'development' : 'production'} mode`);
   let isRunning = false;
 
   async function runSpotifyIngestion() {
     try {
-      const response = await fetch(url, { method: 'POST', headers: { 'x-cron-token': process.env.CRON_SECRET } })
+      const response = await fetch(historyurl, { method: 'POST', headers: { 'x-cron-token': process.env.CRON_SECRET } })
       const data = await response.json();
       
       if (!response.ok) { throw new Error(`HTTP ${response.status}: `, data); }
@@ -27,16 +28,32 @@ app.prepare().then(() => {
     } catch (error) { console.error('❌ Error in scheduled task:', error); }
   }
 
+  async function aggregateDailyStats() {
+    try {
+      const response = await fetch(dailyurl, { method: 'POST', headers: { 'x-cron-token': process.env.CRON_SECRET } })
+      const data = await response.json();
+      
+      if (!response.ok) { throw new Error(`HTTP ${response.status}: `, data); }
+      console.log('✅ Scheduled task response:', data);
+    
+    } catch (error) { console.error('❌ Error in scheduled task:', error); }
+  }
+
+
   schedule('*/30 * * * *', async () => {
     if (isRunning) { console.warn(`⚠️ Skipping run — previous job still running`); return; }
 
     isRunning = true;
     
     console.log(`⏱️ Attempting ingestion at ${new Date().toISOString()}`);
-    try{ await runSpotifyIngestion(); } finally { isRunning = false; }
+    try { await runSpotifyIngestion(); } finally { isRunning = false; }
   });
 
-
+  schedule('10 */6 * * *', async () => {
+    console.log(`⏱️ Attempting daily stats aggregation at ${new Date().toISOString()}`);
+    await aggregateDailyStats();
+  });
+    
   server.all('*', (req, res) => { return handle(req, res); });
   server.listen(port, (err) => {
     if (err) throw err;
