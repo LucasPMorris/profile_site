@@ -1,6 +1,5 @@
 import { CareerProps } from '../types/careers';
 
-// TODO: Add Responsibilities for each role
 export const CAREERS: CareerProps[] = [
   {
     position: 'Technical Support Manager',
@@ -15,9 +14,11 @@ export const CAREERS: CareerProps[] = [
     industry: 'ota',
     link: 'https://fusionauth.io',
     responsibilities: [
-      'Did some Stuff',
-      'Did some Stuff',
-      'Did some Stuff'
+      'Lead and manage developer support engineers and ensure timely and effective resolution of customer issues related to identity and access management solutions.',
+      'Develop and implement support processes, best practices, and tools to enhance the customer support experience and improve team efficiency.',
+      'Involved in onboarding of key customers and providing technical expertise during integration of FusionAuth software systems.',
+      'Collaborate with cross-functional teams including engineering, product management, and sales to address customer needs and drive product improvements based on feedback.',
+      'Monitor and analyze support metrics to identify trends, areas for improvement, and opportunities for proactive customer engagement.',
     ],
   },
   {
@@ -33,9 +34,9 @@ export const CAREERS: CareerProps[] = [
     industry: 'Media',
     link: 'https://youtube.com/@untethered4life',
     responsibilities: [
-      'Did some Stuff',
-      'Did some Stuff',
-      'Did some Stuff'
+      'Record and edit videos for YouTube channel focused on reviews of cities, restaurants, trails and events in Colorado.',
+      'Managed all aspects of content creation including filming, editing, publishing, and promoting videos to grow channel audience.',
+      'Create working relationships with local businesses and leaders in the state to feature their offerings or mission in videos.'
     ],
   },
   {
@@ -51,9 +52,10 @@ export const CAREERS: CareerProps[] = [
     industry: 'Aviation',
     link: 'https://shotover.com/',
     responsibilities: [
-      'Did some Stuff',
-      'Did some Stuff',
-      'Did some Stuff'
+      'Managed a team of technicians to ensure the successful integration of augmented reality systems and gyro stablized FMV gimbals into various aircraft platforms, including helicopters and fixed-wing aircraft.',
+      'Responsible for developing and maintaing support team infrastructure and process from ticketing system, assett tracking, phone system, and others.',
+      'Tasked with merging and migrating two separate support teams and processes into one unified team and process after the acquisition of Churchill Navigation in 2017.',
+      'Oversee extensive mechanical part repair and refurbishment process to ensure all gimbal systems are maintained to the highest standards and minimize downtime for customers.',
     ],
   },
   {
@@ -69,9 +71,10 @@ export const CAREERS: CareerProps[] = [
     industry: 'Aviation',
     link: 'https://shotover.com/',
     responsibilities: [
-      'Did some Stuff',
-      'Did some Stuff',
-      'Did some Stuff'
+      'Manage a team of technicians to ensure the successful integration of augmented reality systems into various aircraft platforms, including helicopters and fixed-wing aircraft.',
+      'Responsible for developing and maintaing support team infrastructure and process from ticketing system, assett tracking, phone system, and others.',
+      'Lead initial ISO Certification efforts and responsible for ongoing adherence to ISO standards.',
+      'Oversaw class room and in-flight training programs for both internal staff and external customers, ensuring all personnel were proficient in the operation and maintenance of integrated systems.'
     ],
   },  
   {
@@ -87,9 +90,10 @@ export const CAREERS: CareerProps[] = [
     industry: 'Retail',
     link: 'https://officedepot.com/',
     responsibilities: [
-      'Did some Stuff',
-      'Did some Stuff',
-      'Did some Stuff'
+      'Management of all store operations including staffing, inventory control, and customer service excellence.',
+      'Mentored and developed a team of 20+ employees, fostering a positive work environment and promoting professional growth.',
+      'Measured and analyzed store performance metrics to implement strategies that increased sales and improved customer satisfaction.',
+      'Achieved Champion Circle status for 2013, which was the top 2.5% of stores nationwide based on sales and customer service metrics.'
     ],
   },
   {
@@ -105,9 +109,9 @@ export const CAREERS: CareerProps[] = [
     industry: 'Retail',
     link: 'https://www.reuters.com/article/business/gordon-brothers-buys-compusa-will-close-stores-idUSN07341340/',
     responsibilities: [
-      'Did some Stuff',
-      'Did some Stuff',
-      'Did some Stuff'
+      'Coordinated and supervised a team of CompTIA A+ and warranty repair certified computer technicians.',
+      'Managed inventory, ordering, and vendor relations for the technical services department.',
+      'Responsible for department revenue, budgeting, and customer satisfaction metrics.'
     ],
   },
   {
@@ -123,9 +127,9 @@ export const CAREERS: CareerProps[] = [
     industry: 'Telecommunications',
     link: 'https://www.echostar.com/',
     responsibilities: [
-      'Did some Stuff',
-      'Did some Stuff',
-      'Did some Stuff'
+      'Hosted training classes for potentially and of over 1000 technical representatives on satellite communication systems, enhancing their technical proficiency and service quality.',
+      'Managed, logged, and measured training completion, ensuring all technical staff met required certifications and skill levels.',
+      'Maintained and updated training materials to reflect the latest technological advancements and company policies, ensuring relevance and effectiveness of training programs.'
     ],
   },
 ];

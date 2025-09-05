@@ -4,6 +4,26 @@ import prisma from '../common/libs/prisma.ts';
 import { getArtistsByIds, getRecentlyPlayedFromSpotify } from './spotify.ts'; // your wrapper for the API call
 import { RawRecentlyPlayedResponse } from '@/common/types/spotify.ts';
 
+function dedupeById<T extends { [key: string]: any }>(records: T[], key: keyof T): T[] {
+  const seen = new Map<any, T>();
+  for (const record of records) {
+    if (!seen.has(record[key])) seen.set(record[key], record);
+  }
+  return Array.from(seen.values());
+}
+
+function dedupeByComposite<T>(records: T[], keys: (keyof T)[]): T[] {
+  const seen = new Set<string>();
+  const result: T[] = [];
+  for (const record of records) {
+    const compositeKey = keys.map(k => record[k]).join('|');
+    if (!seen.has(compositeKey)) { 
+      seen.add(compositeKey);
+      result.push(record);
+    }
+  }
+  return result;
+}
 
 function writeFileForTest(filename: string, data: any): void {
   const filePath = path.resolve(__dirname, filename);
@@ -57,70 +77,53 @@ export const ingestSpotifyPlays = async ( manualIngestion: boolean = false, _man
   const items = response.data;
   const allArtistIds = new Set<string>(); // New After first run
 
+  const albumsToInsert: { album_id: string; name: string; image_url: string | null; release_date: Date }[] = [];
+  const artistsToInsert: { artist_id: string; name: string; artist_url: string; }[] = [];
+  const albumArtistJoins: { album_id: string; artist_id: string; }[] = [];
+  const tracksToUpsert: { track_id: string; title: string; isrc: string | null; album_id: string; explicit: boolean; song_url: string | null; duration: number; release_date: Date; }[] = [];
+  const trackArtistJoins: { track_id: string; artist_id: string; }[] = [];
+  const playHistoryToInsert: { track_id: string; played_at: Date; }[] = [];
+
   for (const item of items as any[]) { // Using 'any' here because the raw structure from Spotify is not typed
     const { track, played_at } = item;
-
     const isrc = track.external_ids?.isrc;
-    const albumArtistIds: string[] = track.album.artists.map((a: { id: string }) => a.id); // New after first run
-    albumArtistIds.forEach(id => allArtistIds.add(id)); // New after first run
-    track.artists.forEach((a: { id: string; }) => allArtistIds.add(a.id)); // New after first run
 
-    await prisma.spalbum.upsert({
-      where: { album_id: track.album.id },
-      update: { name: track.album.name, image_url: track.album.images[0]?.url, release_date: new Date(track.album.release_date) },
-      create: { album_id: track.album.id, name: track.album.name, image_url: track.album.images[0]?.url, release_date: new Date(track.album.release_date) }
-    });
-
-    for (const artist of track.album.artists) {
-      await prisma.spartist.upsert({
-        where: { artist_id: artist.id },
-        update: { name: artist.name, artist_url: artist.external_urls.spotify },
-        create: { artist_id: artist.id, name: artist.name, artist_url: artist.external_urls.spotify }
-      });
-      await prisma.spalbumartist.upsert({
-        where: { album_id_artist_id: { album_id: track.album.id, artist_id: artist.id } },
-        update: {},
-        create: { album_id: track.album.id, artist_id: artist.id }
-      });
-    }
-
-    // Upsert track
-    await prisma.sptrack.upsert({
-      where: { track_id: track.id },
-      update: { title: track.name, isrc, album_id: track.album.id, explicit: track.explicit, song_url: track.external_urls.spotify, duration: Math.floor(track.duration_ms / 1000), release_date: new Date(track.album.release_date) },
-      create: { track_id: track.id,
-                title: track.name, 
-                isrc: track.external_ids?.isrc,
-                album_id: track.album.id,
-                explicit: track.explicit,
-                song_url: track.external_urls.spotify, duration: Math.floor(track.duration_ms / 1000),
-                release_date: new Date(track.album.release_date) }
-    } );
-
-    // Upsert artists and track-artist relations
-    for (const artist of track.artists) {
-      await prisma.spartist.upsert({ 
-        where: { artist_id: artist.id }, 
-        update: { name: artist.name, artist_url: artist.external_urls.spotify },
-        create: { artist_id: artist.id, name: artist.name, artist_url: artist.external_urls.spotify } });
-      await prisma.sptrackartist.upsert({ 
-        where: { track_id_artist_id: { track_id: track.id, artist_id: artist.id } }, 
-        update: {}, 
-        create: { track_id: track.id, artist_id: artist.id } } );
-    }
-
-    // Upsert play history
-    await prisma.spplayhistory.upsert({ where: { track_id_played_at: { track_id: track.id, played_at: new Date(played_at) } }, update: {}, create: { track_id: track.id, played_at: new Date(played_at) } } );
-  
+    albumsToInsert.push({ album_id: track.album.id, name: track.album.name, image_url: track.album.images[0]?.url ?? null, release_date: new Date(track.album.release_date) });    
+    track.album.artists.forEach((artist: any) => { artistsToInsert.push({ artist_id: artist.id, name: artist.name, artist_url: artist.external_urls.spotify }); albumArtistJoins.push({ album_id: track.album.id, artist_id: artist.id }); });
+    tracksToUpsert.push({ track_id: track.id, title: track.name, isrc, album_id: track.album.id, explicit: track.explicit, song_url: track.external_urls.spotify, duration: Math.floor(track.duration_ms / 1000), release_date: new Date(track.album.release_date) });
+    track.artists.forEach((artist: any) => { artistsToInsert.push({ artist_id: artist.id, name: artist.name, artist_url: artist.external_urls.spotify }); trackArtistJoins.push({ track_id: track.id, artist_id: artist.id }); });
+    playHistoryToInsert.push({ track_id: track.id, played_at: new Date(played_at) });    
   }
+
+  // Deduplicate
+  const uniqueAlbums = dedupeById(albumsToInsert, 'album_id');
+  const uniqueArtists = dedupeById(artistsToInsert, 'artist_id');
+  const uniqueAlbumJoins = dedupeByComposite(albumArtistJoins, ['album_id', 'artist_id']);
+  const uniqueTrackJoins = dedupeByComposite(trackArtistJoins, ['track_id', 'artist_id']);
+
+  // Bulk insert
+  await prisma.spalbum.createMany({ data: uniqueAlbums, skipDuplicates: true });
+  await prisma.spartist.createMany({ data: uniqueArtists, skipDuplicates: true });
+  await prisma.spalbumartist.createMany({ data: uniqueAlbumJoins, skipDuplicates: true });
+  await prisma.spplayhistory.createMany({ data: playHistoryToInsert, skipDuplicates: true });
+  await prisma.sptrack.createMany({ data: tracksToUpsert.map(({ isrc, ...rest }) => ({ ...rest, isrc: isrc ?? '' })), skipDuplicates: true });
+
+  // Upsert tracks and joins (still needs per-item logic)
+  for (const join of trackArtistJoins) { await prisma.sptrackartist.upsert({ where: { track_id_artist_id: { track_id: join.track_id, artist_id: join.artist_id } }, update: {}, create: join }); }
+  for (const join of uniqueTrackJoins) { await prisma.sptrackartist.upsert({ where: { track_id_artist_id: join }, update: {}, create: join }); }
 
   console.log(`Ingested ${items.length} plays`);
 
-  const enrichedArtists = await getArtistsByIds(Array.from(allArtistIds));
-  for (const artist of enrichedArtists) {
-    const image = artist.images?.find((image: { width: number }) => image.width === 160);
-    await prisma.spartist.update({ where: { artist_id: artist.id }, data: { image_url: image?.url || null }});
-  }
+  if (!manualIngestion) {
+    const artistsToUpdate = await prisma.spartist.findMany({ where: { image_url: null }, select: { artist_id: true } });
+    const idsToUpdate = new Set<string>(artistsToUpdate.map(a => a.artist_id));
 
- if (!manualIngestion) await assignCommonAlbumUrls();
+    const enrichedArtists = await getArtistsByIds(Array.from(idsToUpdate));
+    for (const artist of enrichedArtists) {
+      const image = artist.images?.find((image: { width: number }) => image.width === 160);
+      await prisma.spartist.update({ where: { artist_id: artist.id }, data: { image_url: image?.url || null }});
+    }
+    console.log(`🎨 Enriched ${enrichedArtists.length} artists with missing image_url`);
+    await assignCommonAlbumUrls();
+  } 
 };

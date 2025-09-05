@@ -21,38 +21,64 @@ export const STACKS: stacksProps = {
   'React.js': <SiReact size={iconSize} className='text-sky-500' />,
   TailwindCSS: <SiTailwindcss size={iconSize} className='text-cyan-300' />,
   PostgreSQL: <BiLogoPostgresql size={iconSize} style={{ color: 'rgb(0, 100, 165)' }} />,
-  Bash: <BsTerminalFill size={iconSize} className='text-dark' />,
   Regex: <BsRegex size={iconSize} className='text-white' />,
+  GraphQL: <SiGraphql size={iconSize} className='text-pink-600' />,
+  WordPress: <SiWordpress size={iconSize} />,
+  Prisma: <SiPrisma size={iconSize} className='text-emerald-500' />,
+  'Artificial Intelligence': ( <BsRobot size={iconSize} className='text-rose-500' /> ),
+  'Nuxt.js': <SiNuxtdotjs size={iconSize} className='text-green-400' />,
+  'Node.js': <SiNodedotjs size={iconSize} className='text-green-600' />,
+  Redux: <SiRedux size={iconSize} className='text-purple-500' />,
+  Webpack: <SiWebpack size={iconSize} className='text-blue-500' />,
+  'Styled Components': ( <SiStyledcomponents size={iconSize} className='text-pink-500' />),
+  Nginx: <SiNginx size={iconSize} className='text-green-500' />,
+  Jest: <SiJest size={iconSize} className='text-red-600' />,
+  CSS: <SiCss3 size={iconSize} className='text-blue-300' />,
+  Socket: <SiSocketdotio size={iconSize} />,
+  Express: <SiExpress size={iconSize} />,
+  Jquery: <SiJquery size={iconSize} />,
+
+  // These are applications/software I use
   VLC: <SiVlcmediaplayer size={iconSize} style={{ color: 'rgb(232, 94, 0)' }} />,
   NotepadPlusplus: <SiNotepadplusplus size={iconSize} style={{ color: 'rgb(0, 128, 0)' }} />,
   Gimp: <SiGimp size={iconSize} style={{ color: 'rgb(161, 136, 127)' }} />,
   Chrome: <SiGooglechrome size={iconSize} className='text-neutral-600' />,
   Insomnia: <SiInsomnia size={iconSize} style={{ color: 'rgb(58, 50, 130)' }} />, // Brighter color
   VSCode: <SiVisualstudiocode size={iconSize} style={{ color: 'rgb(0, 122, 204)' }} />,
-//  Bootstrap: ( <BsFillBootstrapFill size={iconSize} className='text-purple-500' /> ),
-  GraphQL: <SiGraphql size={iconSize} className='text-pink-600' />,
+  Bash: <BsTerminalFill size={iconSize} className='text-dark' />,
+
+  /*
+  Git:
+  Excel:
+  PowerPoint:
+  Word:
+  Outlook:
+  Slack:
+  Figma:
+  Jira:
+  Confluence:
+  Trello:
+  HubSpot:
+  Salesforce:
+  vTiger:
+  Zoho:
+  ZenDesk:
+  Docker:
+  Kubernetes:
+  Terraform:
+  
+  */
+
 //  Apollo: <SiApollographql size={iconSize} />,
-  WordPress: <SiWordpress size={iconSize} />,
+//  Bootstrap: ( <BsFillBootstrapFill size={iconSize} className='text-purple-500' /> ),
 //  Laravel: <SiLaravel size={iconSize} className='text-red-500' />,
 //  'Material UI': <SiMui size={iconSize} className='text-sky-400' />,
 //  Vite: <SiVite size={iconSize} className='text-purple-500' />,
-//  Prisma: <SiPrisma size={iconSize} className='text-emerald-500' />,
 //  Firebase: <SiFirebase size={iconSize} className='text-yellow-500' />,
-  'Artificial Intelligence': ( <BsRobot size={iconSize} className='text-rose-500' /> ),
 //  Angular: <SiAngular size={iconSize} className='text-red-500' />,
 //  'Vue.js': <SiVuedotjs size={iconSize} className='text-green-500' />,
-  'Nuxt.js': <SiNuxtdotjs size={iconSize} className='text-green-400' />,
-  'Node.js': <SiNodedotjs size={iconSize} className='text-green-600' />,
 //  Gatsby: <SiGatsby size={iconSize} className='text-purple-600' />,
-  Redux: <SiRedux size={iconSize} className='text-purple-500' />,
-  Webpack: <SiWebpack size={iconSize} className='text-blue-500' />,
-  'Styled Components': ( <SiStyledcomponents size={iconSize} className='text-pink-500' />),
 //  PWA: <SiPwa size={iconSize} className='text-amber-600' />,
-  Nginx: <SiNginx size={iconSize} className='text-green-500' />,
-  Jest: <SiJest size={iconSize} className='text-red-600' />,
 //  Storybook: <SiStorybook size={iconSize} className='text-amber-500' />,
-  CSS: <SiCss3 size={iconSize} className='text-blue-300' />,
-  Socket: <SiSocketdotio size={iconSize} />,
-  Express: <SiExpress size={iconSize} />,
-  Jquery: <SiJquery size={iconSize} />,
+
 };

@@ -12,7 +12,7 @@ import { fetcher } from '@/services/fetcher';
 import { ArtistProps, TrackProps } from '@/common/types/spotify';
 import clsx from 'clsx';
 
-const fallback = '/default-fallback.png';
+const fallback = '/spotify-icon.svg';
 
 type OverviewStat = { name: string; value: string | number };
 type SpotifyStatItem = OverviewStat | ArtistProps | TrackProps;
@@ -83,13 +83,18 @@ const SpotifyStats = () => {
     },
   ];
 
-  if (!data) {
+  // TODO: Remove when data ingestion is complete.
+  const loading = true;
+
+  if (!data || loading) {
     return (
       <section className='flex flex-col gap-y-2'>
         <SectionHeading title='Spotify' icon={<SpotifyIcon className='mr-1' />} />
-        <SectionSubHeading><div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>Loading you audio stats...</div></SectionSubHeading>
+        <SectionSubHeading><div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>Multi year data ingestin occuring until 9/6/2025. Please check back then 💖.</div></SectionSubHeading>
+        {/* <SectionSubHeading><div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>Loading the audio stats...</div></SectionSubHeading> */}
         {/* Skeleton cards or shimmer effect here */}
       </section>
+      
     );
   }
 
