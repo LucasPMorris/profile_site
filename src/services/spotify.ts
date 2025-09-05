@@ -31,7 +31,7 @@ const getAccessToken = async (): Promise<AccessTokenResponseProps> => {
   return response.data;
 };
 
-
+// TODO: Re-enable when Spotify data ingestion is complete.
 // export const getAvailableDevices = async (): Promise<DeviceResponseProps> => {
 //   const { access_token } = await getAccessToken();
 //   const response = await axios.get(AVAILABLE_DEVICES_ENDPOINT, { headers: { Authorization: `Bearer ${access_token}` } });
