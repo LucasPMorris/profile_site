@@ -64,7 +64,7 @@ const NowPlayingBar = () => {
                 </div>
               </div>
             </Popover.Button>
-            <DevicePopover isShow={isShowDeviceList} devices={devicesData} />
+            <DevicePopover isShow={isShowDeviceList} devices={[]} />
           </Popover>
         )}
       </div>
