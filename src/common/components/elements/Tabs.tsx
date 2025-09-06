@@ -18,7 +18,7 @@ export const Tabs = ({ tabs }: TabsProps) => {
         {tabs.map((tab, index) => (
           <button key={index} className={`flex-1 px-4 py-2 text-center font-medium border-x border-t border-neutral-800 dark:border-neutral-400'} ${
               activeTab === index
-                ? 'bg-[rgba(106,106,128)] text-neutral-100 dark:bg-[rgba(106,106,128)] dark:text-neutral-900'
+                ? 'bg-[rgba(106,106,128)] text-neutral-100 dark:text-neutral-900'
                 : 'bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-400 hover:dark:text-neutral-200'
             } ${ index === 0 ? 'md:rounded-tl' : index === tabs.length - 1 ? 'md:rounded-tr' : '' }`}
             onClick={() => handleTabClick(index)}

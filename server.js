@@ -23,7 +23,7 @@ app.prepare().then(() => {
       const data = await response.json();
       
       if (!response.ok) { throw new Error(`HTTP ${response.status}: `, data); }
-      console.log('✅ Scheduled task response:', data);
+      console.log('✅ Scheduled spotify ingestion response:', data);
     
     } catch (error) { console.error('❌ Error in scheduled task:', error); }
   }
@@ -34,7 +34,7 @@ app.prepare().then(() => {
       const data = await response.json();
       
       if (!response.ok) { throw new Error(`HTTP ${response.status}: `, data); }
-      console.log('✅ Scheduled task response:', data);
+      console.log('✅ Scheduled aggregate daily stats response:', data);
     
     } catch (error) { console.error('❌ Error in scheduled task:', error); }
   }
@@ -45,7 +45,7 @@ app.prepare().then(() => {
 
     isRunning = true;
     
-    console.log(`⏱️ Attempting ingestion at ${new Date().toISOString()}`);
+    console.log(`⏱️ Attempting data ingestion at ${new Date().toISOString()}`);
     try { await runSpotifyIngestion(); } finally { isRunning = false; }
   });
 
