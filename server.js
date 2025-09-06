@@ -33,7 +33,7 @@ app.prepare().then(() => {
       const response = await fetch(dailyurl, { method: 'POST', headers: { 'x-cron-token': process.env.CRON_SECRET } })
       const data = await response.json();
       
-      if (!response.ok) { throw new Error(`HTTP ${response.status}: `, data); }
+      if (!response.ok) { throw new Error(`HTTP ${response.status}: `, JSON.stringify(data)); }
       console.log('✅ Scheduled aggregate daily stats response:', data);
     
     } catch (error) { console.error('❌ Error in scheduled task:', error); }

@@ -75,7 +75,7 @@ const assignCommonAlbumUrls = async (dryRun = false): Promise<void> => {
     } else { console.log(`✅ Updated common_album_id for ${grouped.size} ISRCs`); }
 };
 
-export const aggregateDailyStats = async (): Promise<void> => {
+export const aggregateDailyStats = async (targetDate: Date): Promise<void> => {
   const now = new Date();
   const yesterday = new Date(Date.UTC(
     now.getUTCFullYear(),
@@ -87,9 +87,8 @@ export const aggregateDailyStats = async (): Promise<void> => {
   const start = new Date(`${dateStr}T00:00:00.000Z`);
   const end = new Date(`${dateStr}T23:59:59.999Z`);
 
-  // Check if stats already exist
-  const existing = await prisma.spdailyplaystats.findUnique({ where: { date: start } });
-  if (existing) { console.log(`🟡 Stats already exist for ${dateStr}, skipping.`); return; }
+  // Delete existing stats and update
+  await prisma.spdailyplaystats.deleteMany({ where: { date: start } });
 
   // Run your aggregation logic here
   const plays = await prisma.spplayhistory.findMany({ where: { played_at: { gte: start, lte: end } }, include: { track: { include: { track_artists: true } } } });
