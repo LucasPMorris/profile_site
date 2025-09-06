@@ -9,9 +9,11 @@ import { loadMdxFiles } from '@/common/libs/mdx';
 import { MdxFileContentProps } from '@/common/types/snippets';
 import ContentDetail from '@/modules/snippets/components/ContentDetail';
 import ContentDetailHeader from '@/modules/snippets/components/ContentDetailHeader';
+import axios from 'axios';
+import { useEffect } from 'react';
 
 const SnippetsContentDetailPage: NextPage<{ data: MdxFileContentProps }> = ({ data }) => {
-  const { content, frontMatter } = data;
+  const { slug, content, frontMatter } = data;
 
   const router = useRouter();
   const currentUrl = router.asPath;
@@ -22,6 +24,13 @@ const SnippetsContentDetailPage: NextPage<{ data: MdxFileContentProps }> = ({ da
   const PAGE_TITLE = meta?.title;
   const PAGE_DESCRIPTION = `Snippets ${meta?.category} - ${PAGE_TITLE} with detailed explanations`;
 
+  const incrementViews = async () => { await axios.post(`/api/views?&slug=${slug}&type=snippet`); };
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production') { incrementViews(); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <>
       <NextSeo
@@ -31,7 +40,7 @@ const SnippetsContentDetailPage: NextPage<{ data: MdxFileContentProps }> = ({ da
           type: 'article',
           article: { publishedTime: meta?.updated_at,  modifiedTime: meta?.updated_at, authors: ['Lucas Morris'] },
           images: [ { url: meta?.cover_url as string }],
-          siteName: 'Lucas Morris',
+          siteName: PAGE_DESCRIPTION,
         }}
       />
       <Container data-aos='fade-up' className='mb-10'>

@@ -1,7 +1,4 @@
-interface PageHeadingProps {
-  title: string;
-  description?: string;
-}
+interface PageHeadingProps { title: string; description?: string; }
 
 const PageHeading = ({ title, description }: PageHeadingProps) => {
   return (

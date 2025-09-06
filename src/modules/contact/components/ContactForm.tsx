@@ -49,13 +49,13 @@ const ContactForm = () => {
           <input className='w-full rounded-md border border-neutral-400 px-3 py-2 focus:outline-none dark:border-neutral-700' type='email' placeholder='Email*' name='email' value={formData.email} onChange={handleChange} required/>
         </div>
         <textarea className='w-full rounded-md border border-neutral-400 px-3 py-2 focus:outline-none dark:border-neutral-700' rows={5} placeholder='Message*' name='message' value={formData.message} onChange={handleChange} required />
-        <Button className={clsx('flex justify-center bg-neutral-800 py-2.5 hover:scale-[101%] hover:bg-neutral-900 dark:bg-neutral-50 dark:text-neutral-950 hover:dark:bg-neutral-50' )}
+        <Button className={clsx('flex justify-center bg-neutral-700 py-2.5 hover:scale-[101%] hover:bg-neutral-900 dark:bg-neutral-50 dark:text-neutral-950 hover:dark:bg-neutral-50' )}
                 type='submit' icon={<></>} data-umami-event='Send Contact Message' disabled={isSubmitDisabled} >
           {isLoading ? 'Sending Message...' : 'Send Message'}
         </Button>
       </div>
 
-      <div className='my-5 flex items-center gap-2 dark:text-neutral-400'>
+      <div className='my-5 flex items-center gap-2 text-neutral-700 dark:text-neutral-400'>
         <ClockIcon />
         <div className='text-sm'><span className='font-medium'>Avg. response:</span> 12-24 Hours (Working Hours, GMT-6)
         </div>

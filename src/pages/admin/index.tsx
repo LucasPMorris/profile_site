@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import prisma from '@/common/libs/prisma';
 import { BlogItemProps } from '@/common/types/blog';
@@ -62,7 +64,6 @@ export default function AdminDashboard({ posts }: { posts: BlogItemProps[] }) {
               </label>
             </div>
             {/* <input type="file" placeholder="" accept="image/*" onChange={handleFileChange} className='rgba(106, 106, 128, 1)'/> */}
-          
         </div>        
       </div>      
     </div>

@@ -1,15 +1,16 @@
 {
-  "name": "lucasmorris.site",
+  "name": "lucas.untethered4life.com",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "node server.js",
     "build": "next build",
     "postbuild": "next-sitemap",
-    "start": "next start",
+    "start": "NODE_ENV=production node server.js",
     "lint": "next lint",
     "typecheck": "tsc --noEmit --incremental false",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "ingest": "NODE_ENV=development ts-node -r tsconfig-paths/register src/services/spotifyIngestionService.ts"
   },
   "dependencies": {
     "@babel/types": "^7.28.2",
@@ -20,10 +21,11 @@
     "@monaco-editor/react": "^4.7.0",
     "@prisma/client": "^6.14.0",
     "aos": "^3.0.0-beta.6",
-    "axios": "^1.10.0",
+    "axios": "^1.11.0",
     "clsx": "^1.2.1",
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.1",
+    "express": "^4.19.2",
     "firebase": "^12.1.0",
     "formidable": "^3.5.4",
     "framer-motion": "^12.23.12",
@@ -36,6 +38,7 @@
     "next-seo": "^6.8.0",
     "next-sitemap": "^4.2.3",
     "next-themes": "^0.2.1",
+    "node-cron": "^4.2.1",
     "nprogress": "^0.2.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
@@ -58,11 +61,9 @@
     "swr": "^2.3.6",
     "tailwind-merge": "^1.14.0",
     "tailwind-scrollbar-hide": "^1.3.1",
+    "tsconfig-paths": "^4.2.0",
     "typewriter-effect": "^2.22.0",
-    "usehooks-ts": "^2.16.0",
-    "uuid": "^9.0.1",
-    "yarn": "^1.22.22",
-    "zustand": "^4.5.7"
+    "usehooks-ts": "^2.16.0"
   },
   "devDependencies": {
     "@emotion/react": "^11.14.0",
@@ -77,7 +78,6 @@
     "@types/react-scroll": "^1.8.10",
     "@types/react-slick": "^0.23.13",
     "@types/react-syntax-highlighter": "^15.5.13",
-    "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "autoprefixer": "^10.4.14",
     "eslint": "8.40.0",
@@ -90,6 +90,7 @@
     "prettier-plugin-tailwindcss": "^0.5.14",
     "prisma": "^6.14.0",
     "tailwindcss": "^3.3.2",
+    "ts-node": "^10.9.2",
     "typescript": "5.0.4"
   },
   "overrides": {

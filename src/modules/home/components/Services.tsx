@@ -8,14 +8,6 @@ import SectionHeading from '@/common/components/elements/SectionHeading';
 const Services = () => {
   return (
     <section className='space-y-5'>
-      <div className='space-y-3'>
-        <SectionHeading title="What I've been working on" />
-        <p className='leading-[1.8] text-neutral-800 dark:text-neutral-300 md:leading-loose'>
-          I assist brands, companies, institutions, and startups in creating
-          exceptional digital experiences for their businesses through strategic
-          development services.
-        </p>
-      </div>
       <Card className='space-y-4 rounded-xl border border-neutral-400 bg-neutral-100 p-8 dark:border-none dark:bg-[#1e1e1e]'>
         <div className='flex items-center gap-2'>
           <RocketIcon size={24} />

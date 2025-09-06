@@ -13,7 +13,6 @@ This website is built using:
 - 🔰 TypeScript
 - 💠 Tailwind CSS 3
 - 🗂 Prisma Client
-- 🦫 Zustand
 - 〰️ SWR
 - ➰ Framer Motion
 - 💢 React Icons
@@ -78,7 +77,7 @@ This repository uses several environment variables. Please copy .env.example int
 
 ```
 BUNDLE_ANALYZER=false
-SITE_URL=https://lucasmorris.site
+SITE_URL=https://lucas.untethered4life.com
 
 # Blog
 BLOG_API_URL=

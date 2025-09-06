@@ -2,12 +2,11 @@ import Link from 'next/link';
 import { FiCalendar, FiClock, FiVideo } from 'react-icons/fi';
 
 const BookACall = () => {
-  // TODO: Make my own cal.com link
   return (
     <div className='space-y-5 pb-2'>
       <h3 className='text-lg font-medium'>Book a Call</h3>
       <Link href='https://cal.com/lucas-morris/30min' target='_blank' data-aos-duration='1000'
-        className='flex cursor-pointer flex-col space-y-5 rounded-2xl border border-neutral-400 bg-white bg-gradient-to-tr px-6 py-5 transition-all duration-300 hover:scale-[101%] hover:shadow-sm dark:border-teal-500 dark:from-teal-950 dark:to-teal-800 dark:text-white'>
+        className='flex cursor-pointer flex-col space-y-5 rounded-2xl border bg-white text-neutral-200 bg-gradient-to-tr px-6 py-5 transition-all duration-300 hover:scale-[101%] hover:shadow-sm border-teal-300 from-teal-800 to-teal-600 dark:border-teal-500 dark:from-teal-950 dark:to-teal-800 dark:text-white'>
         <div className='flex items-start justify-between gap-5'>
           <div className='space-y-1'>
             <div className='flex items-center gap-2 text-base font-medium md:text-lg'><span>1 on 1 Chit-chat Session</span></div>

@@ -22,7 +22,6 @@ const ProgressBar = dynamic(
 );
 
 const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
-  
   useEffect(() => {
     AOS.init({ duration: 800, delay: 50 });
   }, []);

@@ -10,7 +10,6 @@ import { MenuItemProps } from '../types/menu';
 
 const iconSize = 20;
 
-// TODO: Decide which menu items to use
 export const MENU_ITEMS: MenuItemProps[] = [
   { title: 'Home', href: '/', icon: <HomeIcon size={iconSize} />, isShow: true, isExternal: false, eventName: 'Pages: Home', type: 'Pages' },
   { title: 'My Story', href: '/about', icon: <ProfileIcon size={iconSize} />, isShow: true, isExternal: false, eventName: 'Pages: About', type: 'Pages' },  
@@ -52,7 +51,7 @@ export const SOCIAL_MEDIA: MenuItemProps[] = [
 // export const EXTERNAL_LINKS: MenuItemProps[] = [
 //   {
 //     title: 'Analytics',
-//     href: 'https://analytics.lucasmorris.com/share/LK5kiRuosw9pORLa/lucasmorris.site',
+//     href: 'https://analytics.lucasmorris.com/share/LK5kiRuosw9pORLa/lucas.untethered4life.com',
 //     icon: <AnalyticsIcon size={iconSize} />,
 //     isShow: true,
 //     isExternal: true,

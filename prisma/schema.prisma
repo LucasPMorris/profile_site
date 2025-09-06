@@ -109,3 +109,174 @@ model term {
   postId     Int
   post       blogPost @relation(fields: [postId], references: [id])
 }
+
+model spartist {
+  artist_id     String     @id
+  name          String
+  artist_url    String
+  image_url     String?
+
+  track_artists sptrackartist[]
+  album_artists spalbumartist[]
+  daily_stats   spdailyartiststat[]
+  artiststats  artiststat[]
+}
+
+model spalbum {
+  album_id        String   @id
+  name            String
+  release_date    DateTime?
+  image_url       String?
+
+  album_artists   spalbumartist[]
+  tracks          sptrack[]       @relation("PrimaryAlbum")
+  common_tracks   sptrack[]       @relation("CommonAlbum")
+}
+
+model spalbumartist {
+  album_id  String
+  artist_id String
+
+  album     spalbum  @relation(fields: [album_id], references: [album_id], onDelete: Cascade)
+  artist    spartist @relation(fields: [artist_id], references: [artist_id], onDelete: Cascade)
+
+  @@id([album_id, artist_id])
+}
+
+model sptrack {
+  track_id        String   @id
+  album_id        String
+  common_album_id String?
+
+  title           String
+  duration        Int
+  release_date    DateTime?
+  song_url        String?
+  explicit        Boolean
+  isrc            String
+
+  album           spalbum  @relation("PrimaryAlbum", fields: [album_id], references: [album_id], onDelete: Cascade)
+  common_album    spalbum? @relation("CommonAlbum", fields: [common_album_id], references: [album_id])
+
+  plays           spplayhistory[]
+  track_artists   sptrackartist[]
+  daily_stats     spdailytrackstat[]
+  trackstats   trackstat[]
+
+  @@index([track_id])
+  @@index([isrc])
+}
+
+model sptrackartist {
+  track_id  String
+  artist_id String
+  track     sptrack  @relation(fields: [track_id], references: [track_id])
+  artist    spartist @relation(fields: [artist_id], references: [artist_id])
+
+  @@id([track_id, artist_id])
+  @@index([artist_id])
+}
+
+model spplayhistory {
+  track_id  String
+  played_at DateTime
+  track     sptrack  @relation(fields: [track_id], references: [track_id])
+
+  @@id([track_id, played_at])
+  @@index([played_at])
+}
+
+model spdailyplaystats {
+  id           Int       @id @default(autoincrement())
+  date         DateTime  @unique
+  weekday      String
+  hourly_plays Json
+
+  top_tracks   spdailytrackstat[]
+  top_artists  spdailyartiststat[]
+}
+
+model spdailytrackstat {
+  id         Int      @id @default(autoincrement())
+  stats_id   Int
+  track_id   String
+  count      Int
+
+  track      sptrack  @relation(fields: [track_id], references: [track_id])
+  stats      spdailyplaystats @relation(fields: [stats_id], references: [id])
+
+  @@unique([stats_id, track_id])
+}
+
+model spdailyartiststat {
+  id         Int      @id @default(autoincrement())
+  stats_id   Int
+  artist_id  String
+  count      Int
+
+  artist     spartist @relation(fields: [artist_id], references: [artist_id])
+  stats      spdailyplaystats @relation(fields: [stats_id], references: [id])
+
+  @@unique([stats_id, artist_id])
+}
+
+model yearbucket {
+  id           Int           @id @default(autoincrement())
+  year         Int
+  range_start  DateTime
+  range_end    DateTime
+  monthbuckets monthbucket[]
+  artiststats  artiststat[]  @relation("YearArtistStats")
+  trackstats   trackstat[]   @relation("YearTrackStats")
+}
+
+model monthbucket {
+  id           Int           @id @default(autoincrement())
+  month        Int           // 1–12
+  range_start  DateTime
+  range_end    DateTime
+  yearbucketid Int
+  yearbucket   yearbucket    @relation(fields: [yearbucketid], references: [id])
+  weekbuckets  weekbucket[]
+  artiststats  artiststat[]  @relation("MonthArtistStats")
+  trackstats   trackstat[]   @relation("MonthTrackStats")
+}
+
+model weekbucket {
+  id            Int           @id @default(autoincrement())
+  week          Int           // ISO week number
+  range_start   DateTime
+  range_end     DateTime
+  monthbucketid Int
+  monthbucket   monthbucket   @relation(fields: [monthbucketid], references: [id])
+  artiststats   artiststat[]  @relation("WeekArtistStats")
+  trackstats    trackstat[]   @relation("WeekTrackStats")
+}
+
+model artiststat {
+  id            Int       @id @default(autoincrement())
+  artist_id     String
+  count         Int
+  bucket_scope  String    // 'year' | 'month' | 'week'
+  yearbucketid  Int?      
+  monthbucketid Int?      
+  weekbucketid  Int?      
+  artist        spartist  @relation(fields: [artist_id], references: [artist_id])
+  yearbucket    yearbucket?   @relation("YearArtistStats", fields: [yearbucketid], references: [id])
+  monthbucket   monthbucket?  @relation("MonthArtistStats", fields: [monthbucketid], references: [id])
+  weekbucket    weekbucket?   @relation("WeekArtistStats", fields: [weekbucketid], references: [id])
+}
+
+model trackstat {
+  id            Int       @id @default(autoincrement())
+  track_id      String
+  count         Int
+  bucket_scope  String    // 'year' | 'month' | 'week'
+  yearbucketid  Int?      
+  monthbucketid Int?      
+  weekbucketid  Int?      
+  track         sptrack   @relation(fields: [track_id], references: [track_id])
+  yearbucket    yearbucket?   @relation("YearTrackStats", fields: [yearbucketid], references: [id])
+  monthbucket   monthbucket?  @relation("MonthTrackStats", fields: [monthbucketid], references: [id])
+  weekbucket    weekbucket?   @relation("WeekTrackStats", fields: [weekbucketid], references: [id])
+}

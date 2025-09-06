@@ -15,8 +15,9 @@ const NowPlayingBar = () => {
   const [isShowDeviceList, setShowDeviceList] = useState(false);
   const [isShowPlayingInfo, setShowPlayingInfo] = useState(false);
   const { data: playingData } = useSWR<NowPlayingProps>('/api/now-playing', fetcher );
-  const { data: devicesData = [] } = useSWR<DeviceProps[]>( '/api/available-devices', fetcher );
-  const activeDevice = devicesData?.find((device) => device.is_active);
+// TODO: Add back when data ingestion is complete.
+// const { data: devicesData = [] } = useSWR<DeviceProps[]>( '/api/available-devices', fetcher );
+// const activeDevice = devicesData?.find((device) => device.is_active);
   const handleOpenSongUrl = (url?: string) => { url && window.open(url, '_blank'); };
 
   if (!playingData?.songUrl) return null;
@@ -56,12 +57,14 @@ const NowPlayingBar = () => {
               <div className='flex items-center gap-1'>
                 <SpotifyIcon size={16} className='mr-0.5' />
                 <div>
-                  Listening on{' '}
-                  <span className='font-medium'>{activeDevice?.name}</span>
+                  {/* TODO: Switch when data ingestion is complete. */}
+                  Listening on PC
+                  {/* Listening on{' '} */}
+                  {/* <span className='font-medium'>{activeDevice?.name}</span> */}
                 </div>
               </div>
             </Popover.Button>
-            <DevicePopover isShow={isShowDeviceList} devices={devicesData} />
+            <DevicePopover isShow={isShowDeviceList} devices={[]} />
           </Popover>
         )}
       </div>

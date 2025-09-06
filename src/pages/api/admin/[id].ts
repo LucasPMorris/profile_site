@@ -11,14 +11,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === 'PUT') {
-    const { title, contentMarkdown } = req.body;
+    const { title, slug, contentMarkdown } = req.body;
     const contentHtml = await marked(contentMarkdown || '');
 
     const updatedPost = await prisma.blogPost.update({
       where: { id },
       data: {
         title,
-        slug: title.toLowerCase().replace(/\s+/g, '-'),
+        slug: slug || title.toLowerCase().replace(/\s+/g, '-'),
         contentMarkdown,
         contentHtml,
         modified: new Date(),

@@ -14,7 +14,8 @@ const ViewOptions = ({option, setViewOption, icon, type }: ViewOptionsProps) => 
         isActive && 'bg-neutral-200 dark:bg-neutral-700 dark:!text-neutral-200',
       )}
       onClick={() => setViewOption(type)}
-      data-umami-event={`Change Blog View to ${type}`}
+      // TODO-Pending: decide if I want to use umami analytics event tracking
+      // data-umami-event={`Change Blog View to ${type}`}
     >
       {icon}
     </button>

@@ -17,7 +17,7 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
       components={{
         a: (props) => (<a className='cursor-pointer text-teal-500 hover:text-teal-400 hover:underline' {...props} />),
         p: (props) => <div {...props} />,
-        h2: (props) => (<h2 className='text-xl font-medium dark:text-neutral-300' {...props} />),
+        h2: (props) => (<h2 className='text-2xl font-medium dark:text-neutral-300' {...props} />),
         h3: (props) => (<h3 className='pt-4 text-[18px] font-medium leading-snug dark:text-neutral-300' {...props} />),
         ul: (props) => (<ul className='list-disc space-y-3 pb-2 pl-10' {...props} />),
         ol: (props) => (<ol className='list-decimal space-y-3 pb-2 pl-10' {...props} />),
@@ -25,7 +25,7 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
           const isBlock = !!className || String(children).includes('\n');
           return isBlock
             ? (<CodeBlock className={className}>{children}</CodeBlock>)
-            : (<code className='rounded bg-neutral-200 px-1 py-0.5 font-mono text-sm dark:bg-neutral-800'>{children}</code>
+            : (<code className='rounded bg-neutral-400/70 px-1 py-0.5 font-mono text-sm dark:bg-neutral-800'>{children}</code>
           );
         },
         hr: () => (<hr className='my-6 border-t-1 border-neutral-700' />),
@@ -33,6 +33,7 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
         table: (props) => <Table {...props} />,
         th: (props) => (<th className='border px-3 py-1 text-left dark:border-neutral-600'>{props.children}</th>),
         td: (props) => (<td className='border px-3 py-1 dark:border-neutral-600'>{props.children}</td>),
+        div: (props) => (<div>{props.children}</div>)
       }}
     >
       {children}

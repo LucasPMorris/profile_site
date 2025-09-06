@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
-import querystring from 'querystring';
+import querystring, { stringify } from 'querystring';
 
 import { PAIR_DEVICES } from '@/common/constant/devices';
-import { AccessTokenResponseProps, DeviceDataProps, DeviceResponseProps, NowPlayingResponseProps, SongProps, TopTracksResponseProps, TrackProps, TopArtistsResponseProps, ArtistProps, PlayHistoryResponseProps, TrackHistoryProps } from '@/common/types/spotify';
-import MenuItem from '@/common/components/sidebar/MenuItem';
-
-
-// Note: Here is where you edit the Spotify App https://developer.spotify.com/dashboard/4f34998e79e743ea93550fd3994f4040
+import { SpotifyDataResponseProps } from '@/common/types/spotify';
+import { AccessTokenResponseProps, DeviceDataProps, DeviceResponseProps, NowPlayingResponseProps, SongProps, TopTracksResponseProps, TrackProps, TopArtistsResponseProps, ArtistProps, PlayHistoryResponseProps, TrackHistoryProps, RawRecentlyPlayedResponse } from '@/common/types/spotify';
+import prisma from '@/common/libs/prisma';
 
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
@@ -17,11 +15,11 @@ const TOKEN = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64');
 const BASE_URL = 'https://api.spotify.com/v1';
 const AVAILABLE_DEVICES_ENDPOINT = `${BASE_URL}/me/player/devices`;
 const NOW_PLAYING_ENDPOINT = `${BASE_URL}/me/player/currently-playing`;
-const TOP_TRACKS_ENDPOINT = `${BASE_URL}/me/top/tracks`;
-const TOP_ARTISTS_ENDPOINT = `${BASE_URL}/me/top/artists?limit=5&time_range=long_term`;
 const RECENTLY_PLAYED_ENDPOINT = `${BASE_URL}/me/player/recently-played?limit=50`;
 
 const TOKEN_ENDPOINT = `https://accounts.spotify.com/api/token`;
+
+// TODO: Copy common_album.image_url to an artist's image_url if that artist does not have an image_url.
 
 const getAccessToken = async (): Promise<AccessTokenResponseProps> => {
   const response = await axios.post(
@@ -41,9 +39,7 @@ export const getAvailableDevices = async (): Promise<DeviceResponseProps> => {
 
   const responseData: DeviceDataProps = response.data;
   const devices = responseData?.devices?.map((device) => ({
-    name: device.name,
-    is_active: device.is_active,
-    type: device.type,
+    name: device.name, is_active: device.is_active, type: device.type,
     model: PAIR_DEVICES[device?.type]?.model || 'Unknown Device',
     id: PAIR_DEVICES[device?.type]?.id || 'LucasPMorris-device',
   }));
@@ -73,84 +69,106 @@ export const getNowPlaying = async (): Promise<NowPlayingResponseProps> => {
   return { status, isPlaying, data: { album, albumImageUrl, artist, songUrl, title } };
 };
 
-export const getTopTracks = async (): Promise<TopTracksResponseProps> => {
-  try {
-    const { access_token } = await getAccessToken();
-    const response = await axios.get(`${TOP_TRACKS_ENDPOINT}?limit=10`, { headers: { Authorization: `Bearer ${access_token}` }, });
+export const getArtistsByIds = async (artistIds: string[]): Promise<any[]> => {
+  if (artistIds.length === 0) { return []; }
+  
+  const { access_token } = await getAccessToken();
+  const chunks = [];
+  for (let i = 0; i < artistIds.length; i += 50) { chunks.push(artistIds.slice(i, i + 50)); }
+  
+  const artistResponses = await Promise.allSettled( chunks.map(chunk => axios.get(`https://api.spotify.com/v1/artists?ids=${chunk.join(',')}`, { headers: { Authorization: `Bearer ${access_token}` } }) ) );
 
-    if (response.status === 204 || response.status > 400) {
-      console.warn('Top Tracks returned empty or error status:', response.status);
-      return { status: response.status, data: [] };
-    }
-
-    const tracks: TrackProps[] = response.data.items.map((track: any) => ({
-      album: { name: track.album.name, image: track.album.images.find( (image: { width: number }) => image.width === 64 ) },
-      artist: track.artists.map((artist: { name: string }) => artist.name).join(', '),
-      songUrl: track.external_urls.spotify,
-      title: track.name,
-      release_date: track.release_date,
-      explicit: track.explicit
-    }));
-
-    return { status: response.status, data: tracks };
-  } catch (err) {
-    console.error('getTopTracks failed:', err);
-    return { status: 500, data: [] };
-  }
+  const artists = artistResponses.filter((r: any) => r.status === 'fulfilled').flatMap((r: any) => r.value.data.artists);
+  const failed = artistResponses.filter(r => r.status === 'rejected');
+  if (failed.length) console.warn('Some artist fetches failed:', failed);
+  return artists;
 }
 
-export const getTopArtists = async (): Promise<TopArtistsResponseProps> => {
+export const getRecentlyPlayedFromSpotify = async (): Promise<RawRecentlyPlayedResponse> => {
   try {
-    const { access_token } = await getAccessToken();
-    const response = await axios.get(TOP_ARTISTS_ENDPOINT, { headers: { Authorization: `Bearer ${access_token}` } });
+    const { access_token } = await getAccessToken();  
+    const lastSync = await prisma.spplayhistory.findFirst({ orderBy: { played_at: 'desc' }, select: { played_at: true } });
+    const afterTimestamp = lastSync?.played_at instanceof Date ? lastSync.played_at.getTime() : 0;
+
+    let url = `${RECENTLY_PLAYED_ENDPOINT}&after=${afterTimestamp}`;
+    
+    const response = await axios.get(url, { headers: { Authorization: `Bearer ${access_token}` } });
   
-    if (response.status === 204 || response.status > 400) {
-      console.warn('Top Artists returned empty or error status:', response.status);
+    if (response.status === 204 || response.status > 400 || Array.isArray(response.data) || !response.data.items) {
+      console.warn('Recently played tracks empty or missing, error status:', response.status);
       return { status: response.status, data: [] };
     }
 
-    const artists: ArtistProps[] = response.data.items.map((artist: any) => ({
-      image: artist.images.find( (image: { width: number }) => image.width === 160 ),
-      artist: artist.name,
-      external_urls: artist.external_urls.spotify,
-      name: artist.name,
-    }));
-
-    return { status: response.status, data: artists };
-  
-  } catch (error) {
-    console.error('Error fetching artists:', error);
-    return { status: 500, data: [] };
-  }
-};
-
-export const getRecentlyPlayed = async (): Promise<PlayHistoryResponseProps> => {
-  try {
-    const { access_token } = await getAccessToken();
-    const response = await axios.get(RECENTLY_PLAYED_ENDPOINT, { headers: { Authorization: `Bearer ${access_token}` } });
-  
-    if (response.status === 204 || response.status > 400) {
-      console.warn('Recently played tracks empty or error status:', response.status);
-      return { status: response.status, data: [] };
-    }
-
-    const tracks: TrackHistoryProps[] = response.data.items.map((item: any) => {
-      const track = item.track;
-      return {
-        album: { name: track.album.name, images: track.album.images.find( (image: { width: number }) => image.width === 64 ) },
-        played_at: item.played_at,
-        artist: track.name,
-        image: track.album.images.find( (image: { width: number }) => image.width === 64 ),
-        explicit: track.explicit,
-        release_date: track.release_date,
-        songUrl: track.external_urls.spotify,
-        title: track.name,
-      };
-    });
-
-    return { status: response.status, data: tracks };
+    return { status: 200, data: response.data.items }; // raw Spotify items
   } catch (error) {
     console.error('Error fetching recently played tracks:', error);
     return { status: 500, data: [] };
   }
-}
+};
+
+export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date): Promise<SpotifyDataResponseProps> => {
+  const stats = await prisma.spdailyplaystats.findMany({ 
+    where: { date: { gte: startDate, lte: endDate }},
+    include: { top_tracks: { include: { track: { include: { album: true, common_album: true, track_artists: { include: { artist: true } } } } } }, top_artists: { include: { artist: true } } } 
+  });
+  
+  const allTrackStats = stats.flatMap(s => s.top_tracks);
+  const allArtistStats = stats.flatMap(s => s.top_artists);
+
+  // Aggregate counts across days
+  const trackMap = new Map<string, { track: any, count: number }>();
+  for (const stat of allTrackStats) {
+    const key = stat.track_id;
+    const existing = trackMap.get(key);
+    if (existing) { existing.count += stat.count; }
+    else { trackMap.set(key, { track: stat.track, count: stat.count }); }
+  }
+
+  const artistMap = new Map<string, { artist: any, count: number }>();
+  for (const stat of allArtistStats) {
+    const key = stat.artist_id;
+    const existing = artistMap.get(key);
+    if (existing) { existing.count += stat.count; }
+    else { artistMap.set(key, { artist: stat.artist, count: stat.count }); }
+  }
+
+  const heatmapData = stats.map(stat => ({
+      date: stat.date.toISOString().split('T')[0],
+      weekday: stat.weekday,
+      hourly_plays: Array.isArray(stat.hourly_plays) ? stat.hourly_plays as number[] : [],
+  }));
+
+  const totalTrackCount = allTrackStats.length;
+  const totalArtistCount = allArtistStats.length;
+
+  const topArtists = Array.from(artistMap.values()).sort((a, b) => b.count - a.count).slice(0, 10).map(({ artist }) =>  ({
+    artistId: artist.artist_id,
+    name: artist.name,
+    image: artist.image_url ?? "images/spotify-icon.svg", // Provide a fallback value for null
+    artist_url: artist.artist_url
+  }));
+
+  const topTracks = Array.from(trackMap.values()).sort((a, b) => b.count - a.count).slice(0, 10).map(({ track }) => ({
+    trackId: track.track_id,
+    isrc: track.isrc,
+    album: { 
+      albumId: track.album.album_id,
+      name: track.album.name,
+      release_date: track.album.release_date ? track.album.release_date : new Date(),
+      image: track.album.image_url ?? 'images/spotify-icno.svg' },
+    common_album: track.common_album ? {
+        albumId: track.common_album.album_id, 
+        name: track.common_album.name,
+        image: track.common_album.image_url ?? 'images/spotify-icon.svg',
+        release_date: track.common_album.release_date ?? new Date()
+      } : null,
+    artists: track.track_artists.map((ta: { artist: { name: string } }) => ta.artist.name).join(', '),
+    songUrl: track.song_url ?? '',
+    title: track.title,
+    release_date: track.release_date || new Date(),
+    explicit: track.explicit
+  }));
+ 
+
+return { status: 200, data: { topArtists, topTracks, playFrequency: heatmapData, meta: {totalTrackCount, totalArtistCount} } }
+};

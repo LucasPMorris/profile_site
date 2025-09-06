@@ -6,8 +6,7 @@ import PageHeading from '@/common/components/elements/PageHeading';
 import About from '@/modules/about';
 
 const PAGE_TITLE = 'About';
-const PAGE_DESCRIPTION =
-  'An insightful glimpse into who I am – because every detail adds depth to the canvas of life.';
+const PAGE_DESCRIPTION = 'My story, resume, and career history.';
 
 const AboutPage: NextPage = () => {
   return (
