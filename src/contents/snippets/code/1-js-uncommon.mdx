@@ -10,31 +10,144 @@ source: null
 cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
 source_url: null
 created_at: '2023-09-12'
-updated_at: '2023-09-12'
+updated_at: '2025-09-06'
 is_playground: true
 ---
 
 These snippets aren't as common but are still very useful in everyday JavaScript programming. These snippets are necessary to know but due to their less common nature a reference is nice!
 
----
-
-> Multi-line Comment
-```
-/*
-This is a multi-line comment, it will be ignored by the interpreter
-*/
-```
-**Function:** Used to comment out multiple lines or write longer explanations. Note that within a componenents return statement you will need to use `{/* comment */}` instead.
+<br/>
 
 ---
 
-> Ternary Operator
+<br/>
+
+> Nullish Coalescing Operator
+```javascript
+const username = user.name ?? 'Anonymous';
 ```
-{ (x + 5 === 10)
-    ? <span>X equals 5</span>
-    : <span>X does not equal 5</span> 
-}
-```
-**Function:** A shorthand for an if-else statement. It evaluates a condition and returns one of two values based on whether the condition is true or false.
+**Function:** Returns the right side if left side is null or undefined (but not for falsy values like 0 or '').
+
+<br/>
 
 ---
+
+<br/>
+
+> Optional Chaining
+```javascript
+const city = user?.address?.city;
+```
+**Function:** Safely access nested object properties without throwing errors if intermediate values are null/undefined.
+
+<br/>
+
+---
+
+<br/>
+
+> Array.from() with Mapping
+```javascript
+const range = Array.from({length: 5}, (_, i) => i + 1); // [1,2,3,4,5]
+```
+**Function:** Create arrays from array-like objects or with a mapping function for generating sequences.
+
+<br/>
+
+---
+
+<br/>
+
+> Object.entries() for Iteration
+```javascript
+Object.entries(obj).forEach(([key, value]) => {
+  console.log(`${key}: ${value}`);
+});
+```
+**Function:** Convert object to array of [key, value] pairs for easy iteration over object properties.
+
+<br/>
+
+---
+
+<br/>
+
+> Rest in Object Destructuring
+```javascript
+const {name, age, ...otherProps} = user;
+```
+**Function:** Extract specific properties and collect remaining properties into a new object.
+
+<br/>
+
+---
+
+<br/>
+
+> Computed Property Names
+```javascript
+const propName = 'dynamicKey';
+const obj = { [propName]: 'value' };
+```
+**Function:** Use variables as object property names by wrapping them in square brackets.
+
+<br/>
+
+---
+
+<br/>
+
+> Array.reduce() for Object Creation
+```javascript
+const lookup = items.reduce((acc, item) => {
+  acc[item.id] = item;
+  return acc;
+}, {});
+```
+**Function:** Transform an array into an object, useful for creating lookup tables or grouping.
+
+<br/>
+
+---
+
+<br/>
+
+> Short-circuit Assignment
+```javascript
+user.preferences ||= { theme: 'light' };
+user.count ??= 0;
+```
+**Function:** Assign values only if current value is falsy (||=) or nullish (??=).
+
+<br/>
+
+---
+
+<br/>
+
+> Function Composition
+```javascript
+const pipe = (...fns) => value => fns.reduce((acc, fn) => fn(acc), value);
+const process = pipe(trim, toLowerCase, capitalize);
+```
+**Function:** Combine multiple functions into a single function that applies them in sequence.
+
+<br/>
+
+---
+
+<br/>
+
+> Debounce Function
+```javascript
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+};
+```
+**Function:** Limit function execution frequency, useful for search inputs or resize events.
+
+<br/>

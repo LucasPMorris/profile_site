@@ -1,23 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
-  BsEye as Eye, 
-  BsEyeSlash as EyeOff, 
-  BsCode as Code, 
-  BsTypeH1 as Heading1, 
-  BsTypeH2 as Heading2, 
-  BsTypeH3 as Heading3,
-  BsListUl as List,
-  BsListOl as ListOrdered,
-  BsBlockquoteLeft as Quote,
-  BsLink45Deg as Link,
-  BsImage as Image,
-  BsTable as Table,
-  BsSave as Save,
-  BsUpload as Upload,
-  BsArrowsAngleContract as Minimize,
-  BsArrowsAngleExpand as Maximize,
-  BsMouse as Mouse,
-  BsPencil as Edit3
+  BsEye as Eye, BsEyeSlash as EyeOff, BsCode as Code, BsTypeH1 as Heading1, BsTypeH2 as Heading2, BsTypeH3 as Heading3, BsListUl as List, BsListOl as ListOrdered, BsBlockquoteLeft as Quote,
+  BsLink45Deg as Link, BsImage as Image, BsTable as Table, BsSave as Save, BsUpload as Upload, BsArrowsAngleContract as Minimize, BsArrowsAngleExpand as Maximize, BsMouse as Mouse, BsPencil as Edit3
 } from 'react-icons/bs';
 import MDXComponent from '@/common/components/elements/MDXComponent';
 import content from '@/pages/api/content';
@@ -83,11 +67,7 @@ const MDXPreview: React.FC<MDXPreviewProps> = ({ content, isVisualMode, onConten
       if (!isVisualMode || !isMounted()) return;
       
       e.preventDefault();
-      setDragState({
-        isDragging: true,
-        startX: e.clientX,
-        startWidth: width
-      });
+      setDragState({ isDragging: true, startX: e.clientX, startWidth: width });
       
       if (typeof document !== 'undefined') {
         document.body.style.cursor = 'col-resize';
@@ -162,11 +142,7 @@ const MDXPreview: React.FC<MDXPreviewProps> = ({ content, isVisualMode, onConten
     );
   };
 
-  const parseAndRenderContent = useCallback((content: string) => {
-    if (!isMounted()) {
-      // Fallback for SSR - use your MDXComponent
-      return <MDXComponent>{content}</MDXComponent>;
-    }
+  const parseAndRenderContent = useCallback((content: string) => { if (!isMounted()) { return <MDXComponent>{content}</MDXComponent>; }
 
     // Enhanced parsing to detect two-column layouts
     if (content.includes('class="w-') && content.includes('</div>') && isVisualMode) {
@@ -183,18 +159,8 @@ const MDXPreview: React.FC<MDXPreviewProps> = ({ content, isVisualMode, onConten
           <div>
             {beforeFlex && <MDXComponent>{beforeFlex}</MDXComponent>}
             <div className="flex gap-4 resize-container">
-              <ResizableColumn 
-                width={50} 
-                isFirst={true}
-              >
-                {firstColumn}
-              </ResizableColumn>
-              <ResizableColumn 
-                width={50} 
-                isFirst={false}
-              >
-                {secondColumn}
-              </ResizableColumn>
+              <ResizableColumn width={50} isFirst={true}>{firstColumn}</ResizableColumn>
+              <ResizableColumn width={50} isFirst={false}>{secondColumn}</ResizableColumn>
             </div>
             {afterFlex && <MDXComponent>{afterFlex}</MDXComponent>}
           </div>
@@ -245,14 +211,7 @@ You can write *italic text*, **bold text**, and even \`inline code\`.
 
 > This is a blockquote that will be styled according to your theme.`);
 
-  const [metadata, setMetadata] = useState({
-    title: '',
-    slug: '',
-    featuredImageUrl: '',
-    sticky: false,
-    tags: '',
-    excerpt: ''
-  });
+  const [metadata, setMetadata] = useState({ title: '', slug: '', featuredImageUrl: '', sticky: false, tags: '', excerpt: '' });
 
   const [isPreviewVisible, setIsPreviewVisible] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -310,23 +269,16 @@ You can write *italic text*, **bold text**, and even \`inline code\`.
       const response = await fetch('/api/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: metadata.title,
-          slug: metadata.slug,
-          contentMarkdown: content,
-          featuredImageUrl: metadata.featuredImageUrl,
-          sticky: metadata.sticky,
-          tags: metadata.tags,
-          excerpt: metadata.excerpt
-        })
+        body: JSON.stringify({ title: metadata.title, slug: metadata.slug,
+          contentMarkdown: content, featuredImageUrl: metadata.featuredImageUrl,
+          sticky: metadata.sticky, tags: metadata.tags, excerpt: metadata.excerpt})
       });
 
       if (response.ok) {
         setSavedStatus('Saved successfully!');
         setTimeout(() => setSavedStatus(''), 3000);
-      } else {
-        setSavedStatus('Save failed');
-      }
+      } else { setSavedStatus('Save failed'); }
+    
     } catch (error) {
       setSavedStatus('Save failed');
       console.error('Save error:', error);
@@ -352,7 +304,8 @@ You can write *italic text*, **bold text**, and even \`inline code\`.
       <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800">
         <h1 className="text-xl font-semibold dark:text-white">MDX Content Editor</h1>
         <div className="flex items-center gap-2">
-          {savedStatus && (
+          {/* TODO-Pending:This waas to the admin route and creating temporary posts over and over again. May use but disabling for now. */}
+          {/* {savedStatus && (
             <span className={`text-sm px-2 py-1 rounded ${
               savedStatus.includes('Saving') ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
               savedStatus.includes('success') ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
@@ -360,7 +313,7 @@ You can write *italic text*, **bold text**, and even \`inline code\`.
             }`}>
               {savedStatus}
             </span>
-          )}
+          )} */}
           <button
             onClick={() => setIsVisualMode(!isVisualMode)}
             className={`p-2 rounded transition-colors ${
@@ -372,84 +325,38 @@ You can write *italic text*, **bold text**, and even \`inline code\`.
           >
             {isVisualMode ? <Code /> : <Edit3 />}
           </button>
-          <button
-            onClick={() => setIsPreviewVisible(!isPreviewVisible)}
-            className="p-2 rounded bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 transition-colors"
-            title={isPreviewVisible ? 'Hide Preview' : 'Show Preview'}
-          >
+          <button onClick={() => setIsPreviewVisible(!isPreviewVisible)} className="p-2 rounded bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 transition-colors" title={isPreviewVisible ? 'Hide Preview' : 'Show Preview'} >
             {isPreviewVisible ? <EyeOff /> : <Eye />}
           </button>
-          <button
-            onClick={() => setIsFullscreen(!isFullscreen)}
-            className="p-2 rounded bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 transition-colors"
-            title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
-          >
+          <button onClick={() => setIsFullscreen(!isFullscreen)} className="p-2 rounded bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 transition-colors" title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'} >
             {isFullscreen ? <Minimize /> : <Maximize />}
           </button>
-          <button
-            onClick={handleSave}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-          >
-            <Save />
-            Save Post
-          </button>
+          {/* TODO-Pending: Will verify this save function at some point, disabled alongside the "auto-save" feature for now */}
+          {/* <button onClick={handleSave}className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors" >
+            <Save />Save Post
+          </button> */}
         </div>
       </div>
 
       {/* Metadata Form */}
       <div className="p-4 border-b border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <input
-            type="text"
-            placeholder="Post Title"
-            value={metadata.title}
-            onChange={(e) => setMetadata({...metadata, title: e.target.value})}
-            className="px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded bg-white dark:bg-neutral-700 dark:text-white"
-          />
-          <input
-            type="text"
-            placeholder="Slug"
-            value={metadata.slug}
-            onChange={(e) => setMetadata({...metadata, slug: e.target.value})}
-            className="px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded bg-white dark:bg-neutral-700 dark:text-white"
-          />
-          <input
-            type="text"
-            placeholder="Featured Image URL"
-            value={metadata.featuredImageUrl}
-            onChange={(e) => setMetadata({...metadata, featuredImageUrl: e.target.value})}
-            className="px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded bg-white dark:bg-neutral-700 dark:text-white"
-          />
+          <input type="text" placeholder="Post Title" value={metadata.title} onChange={(e) => setMetadata({...metadata, title: e.target.value})} className="px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded bg-white dark:bg-neutral-700 dark:text-white" />
+          <input type="text" placeholder="Slug" value={metadata.slug} onChange={(e) => setMetadata({...metadata, slug: e.target.value})} className="px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded bg-white dark:bg-neutral-700 dark:text-white" />
+          <input type="text" placeholder="Featured Image URL" value={metadata.featuredImageUrl} onChange={(e) => setMetadata({...metadata, featuredImageUrl: e.target.value})} className="px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded bg-white dark:bg-neutral-700 dark:text-white" />
         </div>
         <div className="flex items-center gap-4 mt-3">
           <label className="flex items-center gap-2 text-sm dark:text-neutral-300">
-            <input
-              type="checkbox"
-              checked={metadata.sticky}
-              onChange={(e) => setMetadata({...metadata, sticky: e.target.checked})}
-              className="rounded"
-            />
-            Sticky Post
+            <input type="checkbox" checked={metadata.sticky} onChange={(e) => setMetadata({...metadata, sticky: e.target.checked})} className="rounded" />Sticky Post
           </label>
-          <input
-            type="text"
-            placeholder="Tags (comma separated)"
-            value={metadata.tags}
-            onChange={(e) => setMetadata({...metadata, tags: e.target.value})}
-            className="flex-1 px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded bg-white dark:bg-neutral-700 dark:text-white"
-          />
+          <input type="text" placeholder="Tags (comma separated)" value={metadata.tags} onChange={(e) => setMetadata({...metadata, tags: e.target.value})} className="flex-1 px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded bg-white dark:bg-neutral-700 dark:text-white" />
         </div>
       </div>
 
       {/* Toolbar */}
       <div className="flex items-center gap-1 p-2 border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 overflow-x-auto">
         {toolbarItems.map((item, index) => (
-          <button
-            key={index}
-            onClick={item.action}
-            className="p-2 rounded hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
-            title={item.title}
-          >
+          <button key={index} onClick={item.action} className="p-2 rounded hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors" title={item.title} >
             <item.icon className="w-4 h-4 dark:text-neutral-300" />
           </button>
         ))}
@@ -481,21 +388,9 @@ You can write *italic text*, **bold text**, and even \`inline code\`.
             </div>
             <div className="flex-1 overflow-auto p-4 bg-neutral-50 dark:bg-neutral-900">
               <div className="max-w-none">
-                {metadata.title && (
-                  <h1 className="text-3xl font-bold mb-4 dark:text-white">{metadata.title}</h1>
-                )}
-                {metadata.featuredImageUrl && (
-                  <img 
-                    src={metadata.featuredImageUrl} 
-                    alt={metadata.title}
-                    className="w-full max-h-64 object-cover rounded mb-6"
-                  />
-                )}
-                <MDXPreview 
-                  content={content}
-                  isVisualMode={isVisualMode} 
-                  onContentChange={handleContentChange}
-                />
+                {metadata.title && (<h1 className="text-3xl font-bold mb-4 dark:text-white">{metadata.title}</h1> )}
+                {metadata.featuredImageUrl && ( <img src={metadata.featuredImageUrl} alt={metadata.title} className="w-full max-h-64 object-cover rounded mb-6" /> )}
+                <MDXPreview content={content} isVisualMode={isVisualMode} onContentChange={handleContentChange} />
               </div>
             </div>
           </div>
@@ -507,9 +402,10 @@ You can write *italic text*, **bold text**, and even \`inline code\`.
         <div className="text-sm text-neutral-500 dark:text-neutral-400">
           {content.length} characters | {content.split(/\s+/).length} words
         </div>
-        <div className="text-sm text-neutral-500 dark:text-neutral-400">
+        {/* TODO-Pending: Removed alongside the other save functions in this file. */}
+        {/* <div className="text-sm text-neutral-500 dark:text-neutral-400">
           Press Ctrl+S to save • {isVisualMode ? 'Visual mode active' : 'Code mode'}
-        </div>
+        </div> */}
       </div>
     </div>
   );

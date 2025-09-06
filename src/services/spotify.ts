@@ -19,8 +19,6 @@ const RECENTLY_PLAYED_ENDPOINT = `${BASE_URL}/me/player/recently-played?limit=50
 
 const TOKEN_ENDPOINT = `https://accounts.spotify.com/api/token`;
 
-// TODO: Copy common_album.image_url to an artist's image_url if that artist does not have an image_url.
-
 const getAccessToken = async (): Promise<AccessTokenResponseProps> => {
   const response = await axios.post(
     TOKEN_ENDPOINT,

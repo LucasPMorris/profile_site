@@ -5,36 +5,260 @@ chapter_title: 'PostgreSQL'
 title: 'Uncommon Snippets'
 category: 'Code'
 language: 'PostgreSQL'
-difficulty: 'Easy'
+difficulty: 'Medium'
 source: null
 cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
 source_url: null
 created_at: '2023-09-15'
-updated_at: '2023-09-15'
+updated_at: '2025-09-06'
 is_playground: true
 ---
 
 These snippets aren't as common but are still very useful in everyday PostgreSQL usage. These snippets are necessary to know but due to their less common nature a reference is nice!
 
----
-
-> Multi-line Comment
-```
-/*
-This is a multi-line comment, it will be ignored by the interpreter
-*/
-```
-**Function:** Used to comment out multiple lines or write longer explanations. Note that within a componenents return statement you will need to use `{/* comment */}` instead.
+<br/>
 
 ---
 
-> Ternary Operator
+<br/>
+
+> Window Functions for Rankings
+```sql
+SELECT 
+  name,
+  salary,
+  department,
+  RANK() OVER (PARTITION BY department ORDER BY salary DESC) as dept_rank,
+  ROW_NUMBER() OVER (ORDER BY salary DESC) as overall_rank,
+  LAG(salary) OVER (PARTITION BY department ORDER BY salary DESC) as prev_salary
+FROM employees;
 ```
-{ (x + 5 === 10)
-    ? <span>X equals 5</span>
-    : <span>X does not equal 5</span> 
-}
-```
-**Function:** A shorthand for an if-else statement. It evaluates a condition and returns one of two values based on whether the condition is true or false.
+**Function:** Rank records within groups or overall. Window functions don't require GROUP BY and keep all rows.
+
+<br/>
 
 ---
+
+<br/>
+
+> Recursive CTE for Hierarchical Data
+```sql
+WITH RECURSIVE org_chart AS (
+  -- Base case: top-level managers
+  SELECT id, name, manager_id, 1 as level, name as path
+  FROM employees 
+  WHERE manager_id IS NULL
+  
+  UNION ALL
+  
+  -- Recursive case: find direct reports
+  SELECT e.id, e.name, e.manager_id, oc.level + 1, oc.path || ' -> ' || e.name
+  FROM employees e
+  INNER JOIN org_chart oc ON e.manager_id = oc.id
+)
+SELECT * FROM org_chart ORDER BY level, name;
+```
+**Function:** Traverse hierarchical data like organization charts, category trees, or threaded comments.
+
+<br/>
+
+---
+
+<br/>
+
+> JSON Operations
+```sql
+-- Query JSON data
+SELECT 
+  data->>'name' as name, 
+  (data->>'age')::int as age,
+  data->'preferences'->>'theme' as theme
+FROM users 
+WHERE data->>'status' = 'active';
+
+-- Update JSON fields
+UPDATE users 
+SET data = jsonb_set(data, '{preferences,theme}', '"dark"')
+WHERE id = 1;
+
+-- Add to JSON array
+UPDATE users 
+SET data = jsonb_set(data, '{tags}', (data->'tags') || '["new_tag"]'::jsonb)
+WHERE id = 1;
+```
+**Function:** Work with JSON columns efficiently. PostgreSQL has excellent JSON support for semi-structured data.
+
+<br/>
+
+---
+
+<br/>
+
+> Advanced Aggregations
+```sql
+SELECT 
+  department,
+  COUNT(*) as total_employees,
+  string_agg(name, ', ' ORDER BY name) as employee_list,
+  array_agg(salary ORDER BY salary DESC) as salary_array,
+  percentile_cont(0.5) WITHIN GROUP (ORDER BY salary) as median_salary,
+  mode() WITHIN GROUP (ORDER BY department) as most_common_dept
+FROM employees
+GROUP BY department;
+```
+**Function:** Use advanced aggregate functions for arrays, string concatenation, and statistical calculations.
+
+<br/>
+
+---
+
+<br/>
+
+> Full-Text Search
+```sql
+-- Create search index
+ALTER TABLE articles ADD COLUMN search_vector tsvector;
+UPDATE articles SET search_vector = to_tsvector('english', title || ' ' || content);
+CREATE INDEX idx_search ON articles USING GIN(search_vector);
+
+-- Search query with ranking
+SELECT 
+  title, 
+  ts_rank(search_vector, query) as rank,
+  ts_headline('english', content, query) as snippet
+FROM articles, to_tsquery('english', 'postgres & database') as query
+WHERE search_vector @@ query
+ORDER BY rank DESC;
+```
+**Function:** Implement sophisticated full-text search with ranking, stemming, and highlighted snippets.
+
+<br/>
+
+---
+
+<br/>
+
+> LATERAL Joins for Correlated Subqueries
+```sql
+SELECT u.name, recent_posts.title, recent_posts.created_at
+FROM users u
+CROSS JOIN LATERAL (
+  SELECT title, created_at
+  FROM posts p
+  WHERE p.user_id = u.id
+  ORDER BY created_at DESC
+  LIMIT 3
+) recent_posts
+WHERE u.active = true;
+```
+**Function:** Get related records for each row efficiently. LATERAL allows subqueries to reference outer query columns.
+
+<br/>
+
+---
+
+<br/>
+
+> Generate Series for Missing Data
+```sql
+-- Fill in missing dates with zero values
+SELECT 
+  date_series::date as date, 
+  COALESCE(daily_sales, 0) as sales
+FROM generate_series('2023-01-01'::date, '2023-01-31'::date, '1 day') as date_series
+LEFT JOIN (
+  SELECT sale_date, SUM(amount) as daily_sales
+  FROM sales
+  WHERE sale_date BETWEEN '2023-01-01' AND '2023-01-31'
+  GROUP BY sale_date
+) s ON date_series::date = s.sale_date
+ORDER BY date_series;
+```
+**Function:** Generate sequences of dates, numbers, or timestamps to fill gaps in data analysis.
+
+<br/>
+
+---
+
+<br/>
+
+> Table Partitioning for Performance
+```sql
+-- Create partitioned table
+CREATE TABLE sales_partitioned (
+  id SERIAL,
+  sale_date DATE NOT NULL,
+  amount DECIMAL(10,2),
+  customer_id INTEGER
+) PARTITION BY RANGE (sale_date);
+
+-- Create partitions
+CREATE TABLE sales_2023_q1 PARTITION OF sales_partitioned
+FOR VALUES FROM ('2023-01-01') TO ('2023-04-01');
+
+CREATE TABLE sales_2023_q2 PARTITION OF sales_partitioned
+FOR VALUES FROM ('2023-04-01') TO ('2023-07-01');
+
+-- Automatic partition pruning in queries
+SELECT * FROM sales_partitioned 
+WHERE sale_date BETWEEN '2023-01-15' AND '2023-02-15';
+```
+**Function:** Improve performance on large tables by splitting them into smaller, manageable partitions.
+
+<br/>
+
+---
+
+<br/>
+
+> Advisory Locks for Application Logic
+```sql
+-- Try to acquire lock (non-blocking)
+SELECT pg_try_advisory_lock(12345) as lock_acquired;
+
+-- Acquire lock (blocking)
+SELECT pg_advisory_lock(12345);
+
+-- Check current locks
+SELECT locktype, objid, mode, granted 
+FROM pg_locks 
+WHERE locktype = 'advisory';
+
+-- Release lock
+SELECT pg_advisory_unlock(12345);
+```
+**Function:** Implement application-level locking to prevent concurrent execution of critical sections.
+
+<br/>
+
+---
+
+<br/>
+
+> Custom Aggregate Functions
+```sql
+-- Create a custom aggregate for concatenating with separator
+CREATE OR REPLACE FUNCTION concat_ws_agg_sfunc(text, text, text)
+RETURNS text AS $$
+BEGIN
+  IF $1 IS NULL THEN
+    RETURN $3;
+  ELSE
+    RETURN $1 || $2 || $3;
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE AGGREGATE concat_ws_agg(text, text) (
+  sfunc = concat_ws_agg_sfunc,
+  stype = text
+);
+
+-- Usage
+SELECT department, concat_ws_agg(', ', name) as employee_names
+FROM employees
+GROUP BY department;
+```
+**Function:** Create custom aggregate functions for specialized data processing needs.
+
+<br/>

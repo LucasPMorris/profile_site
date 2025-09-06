@@ -22,18 +22,11 @@ const HeaderTop = () => {
     <header>
       <div className='mx-8 hidden items-center justify-between gap-5 py-8 lg:flex'>
         <div className='flex items-center gap-5'>
-          <Image
-            src='/images/luke_avatar.png' alt='Lucas Morris' priority
-            width={40} height={40} className='rounded-full rotate-3 border-2 border-neutral-700 dark:border-neutral-600 lg:hover:scale-105'
-          />
+          <Image src='/images/luke_avatar.png' alt='Lucas Morris' priority width={40} height={40} className='rounded-full rotate-3 border-2 border-neutral-700 dark:border-neutral-600 lg:hover:scale-105'/>
           {!showMenu && (
             <div className='flex items-center gap-3'>
-              <Link href='/' passHref>
-                <h2 className='flex-grow  text-lg font-medium lg:text-xl'>Lucas Morris</h2>
-              </Link>
-              <Tooltip title='Verified'>
-                <VerifiedIcon size={18} className='text-blue-400' data-aos='flip-right' />
-              </Tooltip>
+              <Link href='/' passHref><h2 className='flex-grow  text-lg font-medium lg:text-xl'>Lucas Morris</h2></Link>
+              <Tooltip title='Verified'><VerifiedIcon size={18} className='text-blue-400' data-aos='flip-right' /></Tooltip>
             </div>
           )}
         </div>
@@ -44,10 +37,7 @@ const HeaderTop = () => {
               {menus.map((menu, index) => (
                 <Link
                   key={index} href={menu.href} passHref
-                  className={clsx(
-                    'text-neutral-800 hover:text-neutral-900 dark:text-neutral-400 hover:dark:text-neutral-100',
-                    router.pathname === menu?.href && '!text-neutral-800 dark:!text-neutral-100' )}
-                >
+                  className={clsx('text-neutral-800 hover:text-neutral-900 dark:text-neutral-400 hover:dark:text-neutral-100', router.pathname === menu?.href && '!text-neutral-800 dark:!text-neutral-100' )} >
                   <div>{menu.title}</div>
                 </Link>
               ))}
@@ -56,10 +46,7 @@ const HeaderTop = () => {
 
           {!showMenu && (<><ThemeToggleButton /></>)}
 
-          <button
-            className='flex items-center gap-2 rounded-md border p-2 backdrop-blur border-neutral-400 dark:border-neutral-700 dark:bg-neutral-900'
-            onClick={() => setShowMenu(!showMenu)}
-          >
+          <button className='flex items-center gap-2 rounded-md border p-2 backdrop-blur border-neutral-400 dark:border-neutral-700 dark:bg-neutral-900' onClick={() => setShowMenu(!showMenu)} >
             {showMenu ? <CloseIcon size={18} /> : <MenuIcon size={18} />}
           </button>
         </div>

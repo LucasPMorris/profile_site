@@ -5,36 +5,346 @@ chapter_title: 'PostgreSQL'
 title: 'Personal Favorites'
 category: 'Code'
 language: 'PostgreSQL'
-difficulty: 'Easy'
+difficulty: 'Medium'
 source: null
 cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
 source_url: null
 created_at: '2023-09-16'
-updated_at: '2023-09-16'
+updated_at: '2025-09-06'
 is_playground: true
 ---
 
-These are my favorite PostgreSQL snippets. Some are common, others are obscure, or I just happen to use them a lot.
+These are my favorite PostgreSQL snippets. Some are common, others are obscure, or I just happen to use them a lot in my projects.
+
+<br/>
 
 ---
 
-> Multi-line Comment
+<br/>
+
+> Smart Pagination with Cursor-Based Approach
+```sql
+-- Instead of OFFSET (slow for large offsets)
+-- Use cursor-based pagination for better performance
+SELECT id, name, created_at
+FROM posts 
+WHERE created_at < '2023-09-01 12:00:00'::timestamp
+ORDER BY created_at DESC 
+LIMIT 20;
+
+-- For next page, use the last created_at from previous results
+SELECT id, name, created_at
+FROM posts 
+WHERE created_at < '2023-08-31 10:30:00'::timestamp
+ORDER BY created_at DESC 
+LIMIT 20;
 ```
-/*
-This is a multi-line comment, it will be ignored by the interpreter
-*/
-```
-**Function:** Used to comment out multiple lines or write longer explanations. Note that within a componenents return statement you will need to use `{/* comment */}` instead.
+**Function:** Efficient pagination that performs well even with millions of records. Much faster than OFFSET for large datasets.
+
+<br/>
 
 ---
 
-> Ternary Operator
+<br/>
+
+> Database Health Check Queries
+```sql
+-- Check table sizes and bloat
+SELECT 
+  schemaname,
+  tablename,
+  pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as total_size,
+  pg_size_pretty(pg_relation_size(schemaname||'.'||tablename)) as table_size,
+  pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename) - pg_relation_size(schemaname||'.'||tablename)) as index_size
+FROM pg_tables
+WHERE schemaname = 'public'
+ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
+
+-- Check slow queries (requires pg_stat_statements)
+SELECT 
+  query,
+  calls,
+  total_time,
+  mean_time,
+  (total_time/calls)::numeric(10,2) as avg_time_ms
+FROM pg_stat_statements
+ORDER BY mean_time DESC
+LIMIT 10;
+
+-- Check index usage efficiency
+SELECT 
+  schemaname,
+  tablename,
+  indexname,
+  idx_tup_read,
+  idx_tup_fetch,
+  CASE WHEN idx_tup_read > 0 
+    THEN (idx_tup_fetch::float / idx_tup_read * 100)::numeric(5,2) 
+    ELSE 0 
+  END as efficiency_percent
+FROM pg_stat_user_indexes
+ORDER BY efficiency_percent DESC;
 ```
-{ (x + 5 === 10)
-    ? <span>X equals 5</span>
-    : <span>X does not equal 5</span> 
-}
-```
-**Function:** A shorthand for an if-else statement. It evaluates a condition and returns one of two values based on whether the condition is true or false.
+**Function:** Essential queries for monitoring database performance, identifying bottlenecks, and optimizing queries.
+
+<br/>
 
 ---
+
+<br/>
+
+> Safe Schema Migrations for Production
+```sql
+-- Add column with default safely (large tables)
+BEGIN;
+-- Step 1: Add column without default
+ALTER TABLE users ADD COLUMN status VARCHAR(20);
+
+-- Step 2: Update in batches to avoid long locks
+DO $$
+DECLARE
+  batch_size INT := 1000;
+  rows_updated INT;
+BEGIN
+  LOOP
+    UPDATE users SET status = 'active' 
+    WHERE status IS NULL AND id IN (
+      SELECT id FROM users WHERE status IS NULL LIMIT batch_size
+    );
+    GET DIAGNOSTICS rows_updated = ROW_COUNT;
+    EXIT WHEN rows_updated = 0;
+    COMMIT;
+  END LOOP;
+END $$;
+
+-- Step 3: Add NOT NULL constraint
+ALTER TABLE users ALTER COLUMN status SET NOT NULL;
+-- Step 4: Add default for future inserts
+ALTER TABLE users ALTER COLUMN status SET DEFAULT 'active';
+COMMIT;
+
+-- Create index concurrently (doesn't block writes)
+CREATE INDEX CONCURRENTLY idx_users_status_active 
+ON users(status) WHERE status = 'active';
+```
+**Function:** Perform schema changes safely without blocking application traffic during deployments.
+
+<br/>
+
+---
+
+<br/>
+
+> Bulk Data Operations
+```sql
+-- Efficient bulk insert with conflict handling
+INSERT INTO user_preferences (user_id, preference_key, preference_value)
+SELECT user_id, 'theme', 'dark'
+FROM users 
+WHERE created_at > CURRENT_DATE - INTERVAL '30 days'
+ON CONFLICT (user_id, preference_key) 
+DO UPDATE SET 
+  preference_value = EXCLUDED.preference_value,
+  updated_at = NOW();
+
+-- Bulk update using VALUES clause
+UPDATE products SET 
+  price = v.new_price,
+  updated_at = NOW()
+FROM (VALUES 
+  (1, 29.99),
+  (2, 49.99),
+  (3, 19.99)
+) AS v(product_id, new_price)
+WHERE products.id = v.product_id;
+
+-- Import CSV data efficiently
+COPY products(name, price, category, description)
+FROM '/path/to/products.csv'
+DELIMITER ','
+CSV HEADER;
+```
+**Function:** Handle large data imports and batch updates efficiently, much faster than row-by-row operations.
+
+<br/>
+
+---
+
+<br/>
+
+> Advanced Data Validation
+```sql
+-- Email validation constraint
+ALTER TABLE users ADD CONSTRAINT valid_email 
+CHECK (email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$');
+
+-- Conditional unique constraint (only for active users)
+CREATE UNIQUE INDEX users_email_unique_active
+ON users(email) WHERE active = true;
+
+-- Age validation with custom error message
+ALTER TABLE users ADD CONSTRAINT valid_age 
+CHECK (age >= 0 AND age <= 150);
+
+-- JSON schema validation
+ALTER TABLE user_settings ADD CONSTRAINT valid_settings_json
+CHECK (
+  jsonb_typeof(settings) = 'object' AND
+  settings ? 'theme' AND
+  settings->>'theme' IN ('light', 'dark', 'auto')
+);
+
+-- Cross-table validation using triggers
+CREATE OR REPLACE FUNCTION check_order_total()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.total != (
+    SELECT COALESCE(SUM(quantity * price), 0)
+    FROM order_items
+    WHERE order_id = NEW.id
+  ) THEN
+    RAISE EXCEPTION 'Order total does not match sum of line items';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER validate_order_total
+  BEFORE INSERT OR UPDATE ON orders
+  FOR EACH ROW EXECUTE FUNCTION check_order_total();
+```
+**Function:** Implement robust data integrity rules to prevent bad data and maintain consistency.
+
+<br/>
+
+---
+
+<br/>
+
+> Complex Date/Time Calculations
+```sql
+-- Business days calculation
+SELECT 
+  order_date,
+  CASE 
+    WHEN EXTRACT(dow FROM order_date) IN (0,6) THEN 'Weekend'
+    WHEN EXTRACT(hour FROM order_date) BETWEEN 9 AND 17 THEN 'Business Hours'
+    ELSE 'After Hours'
+  END as business_period,
+  -- Calculate business days between dates
+  (
+    SELECT COUNT(*)
+    FROM generate_series(order_date::date, delivery_date::date, '1 day'::interval) as day
+    WHERE EXTRACT(dow FROM day) NOT IN (0,6)
+  ) as business_days_to_delivery,
+  -- Age calculation
+  AGE(NOW(), order_date) as order_age,
+  -- Time zone conversions
+  order_date AT TIME ZONE 'UTC' AT TIME ZONE 'America/New_York' as ny_time
+FROM orders;
+
+-- Find working hours overlap between time zones
+WITH timezone_hours AS (
+  SELECT 
+    generate_series(0, 23) as hour_utc,
+    (generate_series(0, 23) + 5) % 24 as hour_ny,
+    (generate_series(0, 23) + 8) % 24 as hour_london
+)
+SELECT hour_utc, hour_ny, hour_london
+FROM timezone_hours
+WHERE hour_ny BETWEEN 9 AND 17  -- NY business hours
+  AND hour_london BETWEEN 9 AND 17; -- London business hours
+```
+**Function:** Handle complex business logic involving dates, time zones, and business hours calculations.
+
+<br/>
+
+---
+
+<br/>
+
+> Performance Optimization Techniques
+```sql
+-- Use EXISTS instead of IN for better performance with large datasets
+SELECT u.id, u.name
+FROM users u
+WHERE EXISTS (
+  SELECT 1 FROM orders o WHERE o.user_id = u.id AND o.created_at > CURRENT_DATE - INTERVAL '30 days'
+);
+
+-- Materialized view for expensive calculations
+CREATE MATERIALIZED VIEW user_analytics AS
+SELECT 
+  u.id,
+  u.name,
+  COUNT(o.id) as total_orders,
+  SUM(o.total) as total_spent,
+  AVG(o.total) as avg_order_value,
+  MAX(o.created_at) as last_order_date,
+  -- Calculate customer lifetime value
+  CASE 
+    WHEN COUNT(o.id) > 0 THEN 
+      SUM(o.total) * (COUNT(o.id)::float / EXTRACT(days FROM AGE(NOW(), MIN(o.created_at))) * 365)
+    ELSE 0 
+  END as estimated_clv
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+GROUP BY u.id, u.name;
+
+-- Refresh materialized view (can be scheduled)
+REFRESH MATERIALIZED VIEW CONCURRENTLY user_analytics;
+
+-- Analyze query performance
+EXPLAIN (ANALYZE, BUFFERS) 
+SELECT * FROM user_analytics 
+WHERE total_spent > 1000 
+ORDER BY estimated_clv DESC;
+```
+**Function:** Optimize query performance using various PostgreSQL features and best practices.
+
+<br/>
+
+---
+
+<br/>
+
+> Data Archiving and Cleanup Strategy
+```sql
+-- Archive old data before deletion
+CREATE TABLE orders_archive (LIKE orders INCLUDING ALL);
+
+-- Move old orders to archive
+WITH archived_orders AS (
+  DELETE FROM orders 
+  WHERE created_at < CURRENT_DATE - INTERVAL '2 years'
+  RETURNING *
+)
+INSERT INTO orders_archive SELECT * FROM archived_orders;
+
+-- Vacuum and analyze after large operations
+VACUUM ANALYZE orders;
+
+-- Set up automatic partition management
+CREATE OR REPLACE FUNCTION create_monthly_partition(table_name text, start_date date)
+RETURNS void AS $$
+DECLARE
+  partition_name text;
+  end_date date;
+BEGIN
+  end_date := start_date + INTERVAL '1 month';
+  partition_name := table_name || '_' || to_char(start_date, 'YYYY_MM');
+  
+  EXECUTE format('CREATE TABLE %I PARTITION OF %I 
+                  FOR VALUES FROM (%L) TO (%L)',
+                 partition_name, table_name, start_date, end_date);
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create partitions for next 12 months
+SELECT create_monthly_partition('sales_partitioned', 
+  generate_series(CURRENT_DATE, CURRENT_DATE + INTERVAL '12 months', INTERVAL '1 month')::date
+);
+```
+**Function:** Implement data lifecycle management with archiving, partitioning, and automated cleanup strategies.
+
+<br/>

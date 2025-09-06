@@ -5,36 +5,447 @@ chapter_title: 'Terminal'
 title: 'Personal Favorites'
 category: 'Code'
 language: 'Bash'
-difficulty: 'Easy'
+difficulty: 'Medium'
 source: null
 cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
 source_url: null
 created_at: '2023-09-18'
-updated_at: '2023-09-18'
+updated_at: '2025-09-06'
 is_playground: true
 ---
 
-These are my favorite bash and teminal snippets. Some are common, others are obscure, or I just happen to use them a lot.
+These are my favorite terminal snippets. Some are common, others are obscure, or I just happen to use them a lot in my development workflow.
+
+<br/>
 
 ---
 
-> Multi-line Comment
+<br/>
+
+> Git Workflow Power Commands
+```bash
+# My essential git aliases
+alias gs='git status'
+alias gp='git push'
+alias gl='git log --oneline --graph --decorate --all'
+alias gd='git diff'
+alias ga='git add .'
+alias gc='git commit -m'
+alias gco='git checkout'
+alias gb='git branch'
+
+# Undo last commit but keep changes
+git reset --soft HEAD~1
+
+# Interactive rebase to clean up history
+git rebase -i HEAD~5
+
+# Stash with descriptive message
+git stash push -m "WIP: implementing user authentication"
+
+# Find commits that changed a specific file
+git log --follow -p -- filename.js
+
+# See what changed in last commit
+git show --stat
+
+# Cherry-pick a commit from another branch
+git cherry-pick commit-hash
+
+# Clean up merged branches
+git branch --merged | grep -v "\*\|main\|master" | xargs -n 1 git branch -d
 ```
-/*
-This is a multi-line comment, it will be ignored by the interpreter
-*/
-```
-**Function:** Used to comment out multiple lines or write longer explanations. Note that within a componenents return statement you will need to use `{/* comment */}` instead.
+**Function:** Streamline Git workflow with powerful aliases and commands for managing code history efficiently.
+
+<br/>
 
 ---
 
-> Ternary Operator
-```
-{ (x + 5 === 10)
-    ? <span>X equals 5</span>
-    : <span>X does not equal 5</span> 
+<br/>
+
+> Development Server Management
+```bash
+# Quick HTTP server with specific port
+serve_here() {
+  local port=${1:-8000}
+  echo "Serving current directory on http://localhost:$port"
+  python3 -m http.server "$port"
+}
+
+# Kill process on specific port
+kill_port() {
+  local port="$1"
+  local pid=$(lsof -ti:$port)
+  if [ -n "$pid" ]; then
+    kill -9 "$pid"
+    echo "Killed process $pid on port $port"
+  else
+    echo "No process found on port $port"
+  fi
+}
+
+# Monitor file changes and restart command
+watch_and_restart() {
+  local pattern="$1"
+  local command="$2"
+  
+  if command -v entr >/dev/null 2>&1; then
+    find . -name "$pattern" | entr -r sh -c "$command"
+  else
+    echo "Install 'entr' for file watching: brew install entr"
+  fi
+}
+
+# Quick port availability check
+port_check() {
+  local port="$1"
+  if nc -z localhost "$port" 2>/dev/null; then
+    echo "Port $port is in use"
+    lsof -i:$port
+  else
+    echo "Port $port is available"
+  fi
+}
+
+# Start development environment
+dev_start() {
+  echo "Starting development environment..."
+  kill_port 3000  # Clean up any existing processes
+  npm install     # Ensure dependencies are up to date
+  npm start &     # Start in background
+  echo "Development server started on http://localhost:3000"
 }
 ```
-**Function:** A shorthand for an if-else statement. It evaluates a condition and returns one of two values based on whether the condition is true or false.
+**Function:** Manage development servers efficiently, handle port conflicts, and automate common development tasks.
+
+<br/>
 
 ---
+
+<br/>
+
+> File and Directory Power Tools
+```bash
+# Create directory and navigate to it
+mkcd() {
+  mkdir -p "$1" && cd "$1"
+}
+
+# Find files and open in editor
+ff() {
+  local files=$(find . -name "*$1*" -type f | head -10)
+  if [ -n "$files" ]; then
+    echo "$files"
+    echo "Open first result? (y/n)"
+    read -r response
+    if [[ "$response" == "y" ]]; then
+      echo "$files" | head -1 | xargs $EDITOR
+    fi
+  else
+    echo "No files found matching: $1"
+  fi
+}
+
+# Create timestamped backup of file
+backup() {
+  local file="$1"
+  local backup_name="${file}.backup.$(date +%Y%m%d_%H%M%S)"
+  cp "$file" "$backup_name"
+  echo "Backup created: $backup_name"
+}
+
+# Quick file size check
+size() {
+  if [ -f "$1" ]; then
+    ls -lh "$1" | awk '{print $5}'
+  elif [ -d "$1" ]; then
+    du -sh "$1"
+  else
+    echo "File or directory not found: $1"
+  fi
+}
+
+# Extract path components
+path_info() {
+  local path="$1"
+  echo "Full path: $path"
+  echo "Directory: $(dirname "$path")"
+  echo "Filename: $(basename "$path")"
+  echo "Extension: ${path##*.}"
+  echo "Name without extension: $(basename "$path" .${path##*.})"
+}
+```
+**Function:** Enhance file and directory operations with convenient shortcuts and information extraction.
+
+<br/>
+
+---
+
+<br/>
+
+> Log Analysis and Debugging
+```bash
+# Tail multiple log files with labels
+tail_logs() {
+  if [ $# -eq 0 ]; then
+    echo "Usage: tail_logs file1.log file2.log ..."
+    return 1
+  fi
+  
+  for log in "$@"; do
+    if [ -f "$log" ]; then
+      echo "=== Watching $log ==="
+      tail -f "$log" &
+    fi
+  done
+  wait
+}
+
+# Search logs with context and highlighting
+search_logs() {
+  local pattern="$1"
+  local log_file="${2:-*.log}"
+  
+  grep -rn --color=always -A 3 -B 3 "$pattern" $log_file | less -R
+}
+
+# Extract error patterns from logs
+extract_errors() {
+  local log_file="$1"
+  local output_file="${2:-errors_$(date +%Y%m%d_%H%M%S).txt}"
+  
+  grep -E "(ERROR|FATAL|Exception|Error)" "$log_file" > "$output_file"
+  echo "Errors extracted to: $output_file"
+  echo "Error count: $(wc -l < "$output_file")"
+}
+
+# Monitor log file for specific patterns
+monitor_pattern() {
+  local pattern="$1"
+  local log_file="$2"
+  
+  echo "Monitoring $log_file for pattern: $pattern"
+  tail -f "$log_file" | grep --line-buffered "$pattern" | while read -r line; do
+    echo "[$(date '+%H:%M:%S')] MATCH: $line"
+    # Could add notifications here (e.g., osascript for macOS notifications)
+  done
+}
+
+# Log analysis summary
+log_summary() {
+  local log_file="$1"
+  echo "=== Log Summary for $log_file ==="
+  echo "Total lines: $(wc -l < "$log_file")"
+  echo "Errors: $(grep -c -E "(ERROR|FATAL)" "$log_file")"
+  echo "Warnings: $(grep -c "WARN" "$log_file")"
+  echo "Info: $(grep -c "INFO" "$log_file")"
+  echo ""
+  echo "Top error messages:"
+  grep -E "(ERROR|FATAL)" "$log_file" | cut -d' ' -f4- | sort | uniq -c | sort -nr | head -5
+}
+```
+**Function:** Powerful log analysis tools for debugging applications and monitoring system health.
+
+<br/>
+
+---
+
+<br/>
+
+> System Monitoring and Performance
+```bash
+# Quick system health check
+health_check() {
+  echo "=== System Health Check ==="
+  echo "Uptime: $(uptime | awk '{print $3,$4}' | sed 's/,//')"
+  echo "Load: $(uptime | awk -F'load average:' '{print $2}')"
+  echo "Memory: $(free -h | awk '/^Mem:/ {printf "%s/%s (%.1f%%)\n", $3, $2, $3/$2*100}')"
+  echo "Disk: $(df -h / | awk 'NR==2 {printf "%s/%s (%s)\n", $3, $2, $5}')"
+  echo "Processes: $(ps aux | wc -l)"
+  echo ""
+  echo "Top CPU processes:"
+  ps aux | sort -nrk 3,3 | head -5 | awk '{printf "  %-10s %5s%% %s\n", $1, $3, $11}'
+}
+
+# Monitor specific process
+watch_process() {
+  local process_name="$1"
+  local interval="${2:-2}"
+  
+  while true; do
+    clear
+    echo "=== Monitoring: $process_name ==="
+    echo "Time: $(date)"
+    echo ""
+    ps aux | grep "$process_name" | grep -v grep | while read -r line; do
+      echo "$line" | awk '{printf "PID: %s, CPU: %s%%, MEM: %s%%, CMD: %s\n", $2, $3, $4, $11}'
+    done
+    echo ""
+    echo "Press Ctrl+C to stop"
+    sleep "$interval"
+  done
+}
+
+# Directory size analyzer
+disk_usage() {
+  local dir="${1:-.}"
+  echo "Analyzing disk usage in: $dir"
+  du -sh "$dir"/* 2>/dev/null | sort -hr | head -20
+}
+
+# Network connection monitor
+net_monitor() {
+  echo "=== Active Network Connections ==="
+  netstat -tuln | grep LISTEN | awk '{print $1, $4}' | sort
+  echo ""
+  echo "=== Established Connections ==="
+  netstat -tun | grep ESTABLISHED | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -nr
+}
+```
+**Function:** Monitor system performance, track processes, and analyze resource usage efficiently.
+
+<br/>
+
+---
+
+<br/>
+
+> Docker and Container Management
+```bash
+# Docker cleanup utilities
+docker_cleanup() {
+  echo "Cleaning up Docker system..."
+  docker system prune -af
+  docker volume prune -f
+  echo "Docker cleanup complete"
+}
+
+# Quick container shell access
+dsh() {
+  local container="$1"
+  local shell="${2:-/bin/bash}"
+  
+  if docker ps | grep -q "$container"; then
+    docker exec -it "$container" "$shell"
+  else
+    echo "Container '$container' not found or not running"
+    echo "Available containers:"
+    docker ps --format "table {{.Names}}\t{{.Status}}"
+  fi
+}
+
+# Monitor container resources
+docker_stats() {
+  local container="$1"
+  if [ -n "$container" ]; then
+    docker stats "$container"
+  else
+    docker stats --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}\t{{.BlockIO}}"
+  fi
+}
+
+# Container log analyzer
+docker_logs() {
+  local container="$1"
+  local lines="${2:-100}"
+  
+  docker logs --tail "$lines" -f "$container" | while read -r line; do
+    echo "[$(date '+%H:%M:%S')] $line"
+  done
+}
+
+# Quick container info
+docker_info() {
+  local container="$1"
+  echo "=== Container Info: $container ==="
+  docker inspect "$container" | jq '.[] | {
+    Name: .Name,
+    State: .State.Status,
+    Image: .Config.Image,
+    Ports: .NetworkSettings.Ports,
+    Mounts: .Mounts
+  }'
+}
+```
+**Function:** Streamline Docker workflow with container management, monitoring, and debugging utilities.
+
+<br/>
+
+---
+
+<br/>
+
+> Productivity and Automation
+```bash
+# Quick calculator
+calc() {
+  echo "scale=2; $*" | bc
+}
+
+# Generate secure passwords
+genpass() {
+  local length="${1:-16}"
+  openssl rand -base64 "$length" | tr -d "=+/" | cut -c1-"$length"
+}
+
+# Quick QR code generation (requires qrencode)
+qr() {
+  local text="$1"
+  if command -v qrencode >/dev/null 2>&1; then
+    echo "$text" | qrencode -t ansiutf8
+  else
+    echo "Install qrencode: brew install qrencode"
+  fi
+}
+
+# Weather in terminal (requires curl)
+weather() {
+  local city="${1:-}"
+  curl -s "wttr.in/$city?format=3"
+}
+
+# Quick note taking
+note() {
+  local note_file="$HOME/.quick_notes"
+  if [ $# -eq 0 ]; then
+    cat "$note_file"
+  else
+    echo "$(date '+%Y-%m-%d %H:%M:%S'): $*" >> "$note_file"
+    echo "Note saved"
+  fi
+}
+
+# URL shortener (requires curl)
+shorten_url() {
+  local url="$1"
+  curl -s "http://tinyurl.com/api-create.php?url=$url"
+  echo
+}
+
+# Extract text from PDF (requires pdftotext)
+pdf_text() {
+  local pdf_file="$1"
+  if command -v pdftotext >/dev/null 2>&1; then
+    pdftotext "$pdf_file" - | less
+  else
+    echo "Install poppler-utils: apt-get install poppler-utils"
+  fi
+}
+
+# Batch rename files
+batch_rename() {
+  local pattern="$1"
+  local replacement="$2"
+  
+  for file in *"$pattern"*; do
+    if [ -f "$file" ]; then
+      new_name="${file/$pattern/$replacement}"
+      mv "$file" "$new_name"
+      echo "Renamed: $file -> $new_name"
+    fi
+  done
+}
+```
+**Function:** Boost daily productivity with utilities for calculations, passwords, notes, and file management.
+
+<br/>

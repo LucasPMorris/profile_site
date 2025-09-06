@@ -5,36 +5,157 @@ chapter_title: 'Javascript'
 title: 'Personal Favorites'
 category: 'Code'
 language: 'JavaScript'
-difficulty: 'Easy'
+difficulty: 'Medium'
 source: null
 cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
 source_url: null
-created_at: '2023-09-12'
-updated_at: '2023-09-12'
+created_at: '2023-09-13'
+updated_at: '2025-09-06'
 is_playground: true
 ---
 
-These are my favorite Javascript snippets. Some are common, others are obscure, or I just happen to use them a lot.
+These are my favorite JavaScript snippets. Some are common, others are obscure, or I just happen to use them a lot in my projects.
+
+<br/>
 
 ---
 
-> Multi-line Comment
+<br/>
+
+> Deep Clone Object
+```javascript
+const deepClone = obj => JSON.parse(JSON.stringify(obj));
+// Or for better handling:
+const deepClone = obj => structuredClone(obj);
 ```
-/*
-This is a multi-line comment, it will be ignored by the interpreter
-*/
-```
-**Function:** Used to comment out multiple lines or write longer explanations. Note that within a componenents return statement you will need to use `{/* comment */}` instead.
+**Function:** Create a complete copy of an object including nested objects. structuredClone() is newer and handles more data types.
+
+<br/>
 
 ---
 
-> Ternary Operator
+<br/>
+
+> Group Array by Property
+```javascript
+const groupBy = (array, key) => 
+  array.reduce((groups, item) => {
+    const group = item[key];
+    groups[group] = groups[group] || [];
+    groups[group].push(item);
+    return groups;
+  }, {});
 ```
-{ (x + 5 === 10)
-    ? <span>X equals 5</span>
-    : <span>X does not equal 5</span> 
-}
-```
-**Function:** A shorthand for an if-else statement. It evaluates a condition and returns one of two values based on whether the condition is true or false.
+**Function:** Group array elements by a specific property value. Super useful for organizing data.
+
+<br/>
 
 ---
+
+<br/>
+
+> Retry Function with Exponential Backoff
+```javascript
+const retry = async (fn, retries = 3, delay = 1000) => {
+  try {
+    return await fn();
+  } catch (error) {
+    if (retries > 0) {
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return retry(fn, retries - 1, delay * 2);
+    }
+    throw error;
+  }
+};
+```
+**Function:** Automatically retry failed async operations with increasing delays between attempts.
+
+<br/>
+
+---
+
+<br/>
+
+> Memoization for Expensive Functions
+```javascript
+const memoize = fn => {
+  const cache = new Map();
+  return (...args) => {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) return cache.get(key);
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  };
+};
+```
+**Function:** Cache function results to avoid expensive recalculations with the same inputs.
+
+<br/>
+
+---
+
+<br/>
+
+> Promise.allSettled() for Error Handling
+```javascript
+const results = await Promise.allSettled([
+  fetch('/api/users'),
+  fetch('/api/posts'),
+  fetch('/api/comments')
+]);
+
+const successful = results
+  .filter(result => result.status === 'fulfilled')
+  .map(result => result.value);
+```
+**Function:** Run multiple promises and get all results, even if some fail. Better than Promise.all() for fault tolerance.
+
+<br/>
+
+---
+
+<br/>
+
+> Custom Hook Pattern (React-like)
+```javascript
+const useLocalStorage = (key, defaultValue) => {
+  const [value, setValue] = useState(() => {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : defaultValue;
+  });
+
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+
+  return [value, setValue];
+};
+```
+**Function:** Reusable state management pattern that syncs with localStorage. Great for persisting user preferences.
+
+<br/>
+
+---
+
+<br/>
+
+> Intersection Observer for Lazy Loading
+```javascript
+const observeElement = (element, callback) => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        callback(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  });
+  
+  observer.observe(element);
+  return () => observer.unobserve(element);
+};
+```
+**Function:** Efficiently detect when elements enter the viewport for lazy loading images or infinite scroll.
+
+<br/>

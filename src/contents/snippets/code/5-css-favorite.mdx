@@ -5,36 +5,242 @@ chapter_title: 'CSS'
 title: 'Personal Favorites'
 category: 'Code'
 language: 'CSS'
-difficulty: 'Easy'
+difficulty: 'Medium'
 source: null
 cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
 source_url: null
 created_at: '2023-09-14'
-updated_at: '2023-09-14'
+updated_at: '2025-09-06'
 is_playground: false
 ---
 
-These are my favorite CSS snippets. Some are common, others are obscure, or I just happen to use them a lot.
+These are my favorite CSS snippets. Some are common, others are obscure, or I just happen to use them a lot in my projects.
+
+<br/>
 
 ---
 
-> Multi-line Comment
-```
-/*
-This is a multi-line comment, it will be ignored by the interpreter
-*/
-```
-**Function:** Used to comment out multiple lines or write longer explanations. Note that within a componenents return statement you will need to use `{/* comment */}` instead.
+<br/>
 
----
+> Perfect Scrollbar Styling
+```css
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
 
-> Ternary Operator
-```
-{ (x + 5 === 10)
-    ? <span>X equals 5</span>
-    : <span>X does not equal 5</span> 
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 ```
-**Function:** A shorthand for an if-else statement. It evaluates a condition and returns one of two values based on whether the condition is true or false.
+**Function:** Creates beautiful custom scrollbars that work across browsers. Much better than default ugly scrollbars.
+
+<br/>
 
 ---
+
+<br/>
+
+> Dark Mode Toggle
+```css
+:root {
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --accent-color: #007bff;
+}
+
+[data-theme="dark"] {
+  --bg-color: #1a1a1a;
+  --text-color: #e0e0e0;
+  --accent-color: #4dabf7;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+```
+**Function:** Elegant dark mode implementation using CSS custom properties and data attributes.
+
+<br/>
+
+---
+
+<br/>
+
+> Glassmorphism Card
+```css
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+```
+**Function:** Modern glassmorphism effect that looks amazing on any background. Perfect for cards and modals.
+
+<br/>
+
+---
+
+<br/>
+
+> Animated Loading Skeleton
+```css
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 2s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-text {
+  height: 1em;
+  border-radius: 4px;
+  margin-bottom: 0.5em;
+}
+```
+**Function:** Creates smooth loading skeletons that give users immediate feedback while content loads.
+
+<br/>
+
+---
+
+<br/>
+
+> Perfect Button Hover Effects
+```css
+.fancy-button {
+  position: relative;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.fancy-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.fancy-button:hover::before {
+  left: 100%;
+}
+
+.fancy-button:hover {
+  transform: translateY(-2px);
+}
+```
+**Function:** Beautiful button with shine effect and lift animation. Feels premium and responsive.
+
+<br/>
+
+---
+
+<br/>
+
+> Responsive Grid Layout
+```css
+.auto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.auto-grid > * {
+  min-height: 200px;
+}
+```
+**Function:** Self-adjusting grid that automatically fits columns based on available space. No media queries needed!
+
+<br/>
+
+---
+
+<br/>
+
+> Text Gradient Effect
+```css
+.gradient-text {
+  background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+```
+**Function:** Animated gradient text effect that creates eye-catching headings and call-to-action text.
+
+<br/>
+
+---
+
+<br/>
+
+> CSS Container with Perfect Ratios
+```css
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.card {
+  aspect-ratio: 16/9;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+```
+**Function:** Creates a responsive card grid with perfect aspect ratios and smooth hover animations.
+
+<br/>

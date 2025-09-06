@@ -35,7 +35,7 @@ const Profile = ({ isScrolled = false }: ProfileProps) => {
 
   return (
     <MenuContext.Provider value={{ hideNavbar }}>
-      <div className={clsx('fixed z-20 w-full bg-light p-5 shadow-sm dark:border-b dark:border-neutral-800 dark:bg-neutral-800/40 sm:shadow-none lg:relative lg:border-none lg:!bg-transparent lg:p-0', expandMenu && 'pb-0' ) }>
+      <div className={clsx('fixed z-20 w-full bg-light p-5 shadow-sm dark:border-b dark:border-neutral-800 dark:bg-neutral-800 sm:shadow-none lg:relative lg:border-none lg:!bg-transparent lg:p-0', expandMenu && 'pb-0' ) }>
         <div className='flex items-start justify-between lg:flex-col lg:space-y-4'>
           <ProfileHeader expandMenu={expandMenu} imageSize={getImageSize()} />
 
@@ -51,7 +51,6 @@ const Profile = ({ isScrolled = false }: ProfileProps) => {
           <AnimatePresence>
             {expandMenu && (
               <div className='space-y-5 pt-6'>
-                <SearchBox />
                 <MobileMenu />
               </div>
             )}

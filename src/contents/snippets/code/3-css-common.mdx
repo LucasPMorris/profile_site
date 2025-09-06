@@ -2,7 +2,7 @@
 id: 3
 chapter_id: 1
 chapter_title: 'CSS'
-title: 'Common Snippits'
+title: 'Common Snippets'
 category: 'Code'
 language: 'CSS'
 difficulty: 'Easy'
@@ -10,31 +10,183 @@ source: null
 cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
 source_url: null
 created_at: '2023-09-13'
-updated_at: '2023-09-13'
+updated_at: '2025-09-06'
 is_playground: false
+<br/>
+
 ---
+
+<br/>
 
 These snippets are incredibly common and are useful in everyday CSS programming. Some of these will become so familiar that you will not even think about them anymore, others it is just easy some time to cut and paste!
 
----
-
-> Multi-line Comment
-```
-/*
-This is a multi-line comment, it will be ignored by the interpreter
-*/
-```
-**Function:** Used to comment out multiple lines or write longer explanations. Note that within a componenents return statement you will need to use `{/* comment */}` instead.
+<br/>
 
 ---
 
-> Ternary Operator
-```
-{ (x + 5 === 10)
-    ? <span>X equals 5</span>
-    : <span>X does not equal 5</span> 
+<br/>
+
+> Flexbox Center
+```css
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 ```
-**Function:** A shorthand for an if-else statement. It evaluates a condition and returns one of two values based on whether the condition is true or false.
+**Function:** Centers content both horizontally and vertically using flexbox. Works for any content size.
+
+<br/>
 
 ---
+
+<br/>
+
+> CSS Grid Center
+```css
+.grid-center {
+  display: grid;
+  place-items: center;
+}
+```
+**Function:** Alternative centering method using CSS Grid. `place-items` is shorthand for both axes.
+
+<br/>
+
+---
+
+<br/>
+
+> Responsive Container
+```css
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+```
+**Function:** Creates a responsive container that centers itself and has max width with padding on smaller screens.
+
+<br/>
+
+---
+
+<br/>
+
+> Hide Element Visually but Keep for Screen Readers
+```css
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+```
+**Function:** Hides content visually while keeping it accessible to screen readers for better accessibility.
+
+<br/>
+
+---
+
+<br/>
+
+> Smooth Scrolling
+```css
+html {
+  scroll-behavior: smooth;
+}
+```
+**Function:** Enables smooth scrolling for anchor links and programmatic scrolling.
+
+<br/>
+
+---
+
+<br/>
+
+> Button Reset
+```css
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+```
+**Function:** Removes default button styling to create a clean base for custom button designs.
+
+<br/>
+
+---
+
+<br/>
+
+> Aspect Ratio Box
+```css
+.aspect-ratio {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+}
+```
+**Function:** Maintains a specific aspect ratio regardless of content. Modern alternative to padding-top hack.
+
+<br/>
+
+---
+
+<br/>
+
+> Truncate Text with Ellipsis
+```css
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+```
+**Function:** Cuts off text that doesn't fit and adds "..." to indicate there's more content.
+
+<br/>
+
+---
+
+<br/>
+
+> Focus Visible Only
+```css
+button:focus {
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 2px solid blue;
+}
+```
+**Function:** Removes outline for mouse users but keeps it for keyboard navigation, improving both UX and accessibility.
+
+<br/>
+
+---
+
+<br/>
+
+> Disable Text Selection
+```css
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+```
+**Function:** Prevents users from selecting text, useful for UI elements like buttons or interactive components.
+
+<br/>

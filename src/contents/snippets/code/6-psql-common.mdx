@@ -10,31 +10,174 @@ source: null
 cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
 source_url: null
 created_at: '2023-09-15'
-updated_at: '2023-09-15'
+updated_at: '2025-09-06'
 is_playground: true
 ---
 
 These snippets are incredibly common and are very useful in everyday PostgreSQL usage. Some of these will become so familiar that you will not even think about them anymore, others it is just easy some time to cut and paste!
 
----
-
-> Multi-line Comment
-```
-/*
-This is a multi-line comment, it will be ignored by the interpreter
-*/
-```
-**Function:** Used to comment out multiple lines or write longer explanations. Note that within a componenents return statement you will need to use `{/* comment */}` instead.
+<br/>
 
 ---
 
-> Ternary Operator
+<br/>
+
+> Basic SELECT with WHERE
+```sql
+SELECT id, name, email 
+FROM users 
+WHERE active = true 
+  AND created_at > '2023-01-01'
+ORDER BY created_at DESC
+LIMIT 50;
 ```
-{ (x + 5 === 10)
-    ? <span>X equals 5</span>
-    : <span>X does not equal 5</span> 
-}
-```
-**Function:** A shorthand for an if-else statement. It evaluates a condition and returns one of two values based on whether the condition is true or false.
+**Function:** Basic query pattern with filtering, ordering, and limiting results. Most common SQL operation.
+
+<br/>
 
 ---
+
+<br/>
+
+> JOIN Tables
+```sql
+SELECT u.name, p.title, p.created_at
+FROM users u
+INNER JOIN posts p ON u.id = p.user_id
+WHERE u.active = true;
+```
+**Function:** Combine data from multiple tables using relationships. INNER JOIN only returns matching records.
+
+<br/>
+
+---
+
+<br/>
+
+> LEFT JOIN for Optional Relationships
+```sql
+SELECT u.name, COUNT(p.id) as post_count
+FROM users u
+LEFT JOIN posts p ON u.id = p.user_id
+GROUP BY u.id, u.name;
+```
+**Function:** Include all users even if they have no posts. LEFT JOIN preserves all records from the left table.
+
+<br/>
+
+---
+
+<br/>
+
+> INSERT with RETURNING
+```sql
+INSERT INTO users (name, email, created_at)
+VALUES ('John Doe', 'john@example.com', NOW())
+RETURNING id, created_at;
+```
+**Function:** Insert data and immediately return specified columns, useful for getting auto-generated IDs.
+
+<br/>
+
+---
+
+<br/>
+
+> UPDATE with Conditions
+```sql
+UPDATE users 
+SET last_login = NOW(), 
+    login_count = login_count + 1
+WHERE email = 'user@example.com';
+```
+**Function:** Modify existing records with conditions. Can update multiple columns and use expressions.
+
+<br/>
+
+---
+
+<br/>
+
+> UPSERT (INSERT ON CONFLICT)
+```sql
+INSERT INTO user_preferences (user_id, theme, language)
+VALUES (1, 'dark', 'en')
+ON CONFLICT (user_id) 
+DO UPDATE SET 
+  theme = EXCLUDED.theme,
+  language = EXCLUDED.language;
+```
+**Function:** Insert if record doesn't exist, update if it does. Prevents duplicate key errors.
+
+<br/>
+
+---
+
+<br/>
+
+> Basic Aggregation
+```sql
+SELECT 
+  COUNT(*) as total_users,
+  COUNT(CASE WHEN active THEN 1 END) as active_users,
+  AVG(age) as average_age
+FROM users;
+```
+**Function:** Get summary statistics using COUNT, SUM, AVG, MIN, MAX with optional conditional counting.
+
+<br/>
+
+---
+
+<br/>
+
+> Date/Time Filtering
+```sql
+SELECT *
+FROM orders
+WHERE created_at >= CURRENT_DATE - INTERVAL '7 days'
+  AND created_at < CURRENT_DATE;
+```
+**Function:** Filter records by date ranges using PostgreSQL's date/time functions and intervals.
+
+<br/>
+
+---
+
+<br/>
+
+> CASE Statement
+```sql
+SELECT 
+  name,
+  age,
+  CASE 
+    WHEN age < 18 THEN 'Minor'
+    WHEN age < 65 THEN 'Adult'
+    ELSE 'Senior'
+  END as age_group
+FROM users;
+```
+**Function:** Conditional logic in SELECT statements, like if-else for SQL queries.
+
+<br/>
+
+---
+
+<br/>
+
+> Common Table Expression (CTE)
+```sql
+WITH recent_orders AS (
+  SELECT user_id, COUNT(*) as order_count
+  FROM orders
+  WHERE created_at > CURRENT_DATE - INTERVAL '30 days'
+  GROUP BY user_id
+)
+SELECT u.name, ro.order_count
+FROM users u
+JOIN recent_orders ro ON u.id = ro.user_id;
+```
+**Function:** Create temporary named result set for complex queries. Makes queries more readable and reusable.
+
+<br/>

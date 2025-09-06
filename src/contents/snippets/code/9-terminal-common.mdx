@@ -1,40 +1,219 @@
 ---
-id: 9
+id: 11
 chapter_id: 3
 chapter_title: 'Terminal'
-title: 'Common Snippets'
+title: 'Personal Favorites'
 category: 'Code'
 language: 'Bash'
-difficulty: 'Easy'
+difficulty: 'Medium'
 source: null
 cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
 source_url: null
-created_at: '2023-09-17'
-updated_at: '2023-09-17'
+created_at: '2023-09-18'
+updated_at: '2025-09-06'
 is_playground: true
 ---
 
-These snippets are incredibly common are very useful when writing bash scripts or utilizing the terminal. Some of these will become so familiar that you will not even think about them anymore, others it is just easy some time to cut and paste!
+These are my favorite terminal snippets. Some are common, others are obscure, or I just happen to use them a lot in my development workflow.
+
+<br/>
 
 ---
 
-> Multi-line Comment
+<br/>
+
+> Git Workflow Shortcuts
+```bash
+# My favorite git aliases
+alias gs='git status'
+alias gp='git push'
+alias gl='git log --oneline --graph --decorate'
+alias gd='git diff'
+alias ga='git add .'
+alias gc='git commit -m'
+
+# Undo last commit (keep changes)
+git reset --soft HEAD~1
+
+# Interactive rebase for cleaning history
+git rebase -i HEAD~3
+
+# Stash with message
+git stash push -m "work in progress on feature X"
 ```
-/*
-This is a multi-line comment, it will be ignored by the interpreter
-*/
-```
-**Function:** Used to comment out multiple lines or write longer explanations. Note that within a componenents return statement you will need to use `{/* comment */}` instead.
+**Function:** Speed up Git workflow with aliases and powerful commands for managing commit history and temporary changes.
+
+<br/>
 
 ---
 
-> Ternary Operator
+<br/>
+
+> Development Server Shortcuts
+```bash
+# Quick HTTP server for static files
+python3 -m http.server 8000
+# or
+npx serve .
+
+# Find and kill process on port
+lsof -ti:3000 | xargs kill -9
+
+# Monitor file changes and restart server
+find . -name "*.js" | entr -r npm start
+
+# Quick port check
+nc -zv localhost 3000
 ```
-{ (x + 5 === 10)
-    ? <span>X equals 5</span>
-    : <span>X does not equal 5</span> 
-}
-```
-**Function:** A shorthand for an if-else statement. It evaluates a condition and returns one of two values based on whether the condition is true or false.
+**Function:** Quickly serve files, manage development servers, and handle port conflicts during development.
+
+<br/>
 
 ---
+
+<br/>
+
+> File and Directory Shortcuts
+```bash
+# Create directory and cd into it
+mkcd() { mkdir -p "$1" && cd "$1"; }
+
+# Find file and open in editor
+ff() { find . -name "*$1*" -type f | head -5; }
+
+# Quick backup of file
+bak() { cp "$1" "$1.bak.$(date +%Y%m%d_%H%M%S)"; }
+
+# Get file size in human readable format
+alias du='du -h'
+alias df='df -h'
+```
+**Function:** Convenient functions for common file operations, finding files, and creating backups.
+
+<br/>
+
+---
+
+<br/>
+
+> Log Analysis Made Easy
+```bash
+# Follow multiple log files
+tail -f /var/log/*.log
+
+# Search logs with context
+grep -A 5 -B 5 "ERROR" app.log
+
+# Count occurrences of patterns
+grep -c "404" access.log
+
+# Show unique IPs from access log
+awk '{print $1}' access.log | sort | uniq -c | sort -nr
+
+# Filter logs by time range
+sed -n '/2023-09-06 10:00/,/2023-09-06 11:00/p' app.log
+```
+**Function:** Efficiently analyze log files, find errors, count patterns, and extract specific time ranges.
+
+<br/>
+
+---
+
+<br/>
+
+> System Monitoring Favorites
+```bash
+# Monitor disk usage and alert
+watch -n 30 'df -h | grep -E "(8[0-9]|9[0-9])%"'
+
+# Show top CPU processes
+ps aux | sort -nrk 3,3 | head -5
+
+# Memory usage by process
+ps aux | sort -nrk 4,4 | head -5
+
+# Network connections summary
+ss -tuln | grep LISTEN | wc -l
+
+# Check system load
+uptime | awk '{print $NF}'
+```
+**Function:** Monitor system health, track resource usage, and quickly identify performance bottlenecks.
+
+<br/>
+
+---
+
+<br/>
+
+> Docker and Container Management
+```bash
+# Clean up Docker system
+docker system prune -a
+
+# Get shell in running container
+docker exec -it container_name /bin/bash
+
+# View container logs with timestamps
+docker logs -t container_name
+
+# Monitor container stats
+docker stats
+
+# Quick container inspection
+docker inspect container_name | jq '.[0].State'
+```
+**Function:** Efficiently manage Docker containers, debug issues, and monitor container resource usage.
+
+<br/>
+
+---
+
+<br/>
+
+> Environment and Configuration
+```bash
+# Quickly edit and reload bash config
+alias bashrc='vim ~/.bashrc && source ~/.bashrc'
+
+# Show environment variables for debugging
+env | grep -i node
+
+# Quick PATH manipulation
+export PATH="$HOME/.local/bin:$PATH"
+
+# Set temporary environment for command
+NODE_ENV=development npm start
+
+# Check which command is being used
+which node
+type node
+```
+**Function:** Manage shell configuration, environment variables, and debug PATH issues during development.
+
+<br/>
+
+---
+
+<br/>
+
+> Productivity Boosters
+```bash
+# History search with fzf (if installed)
+ctrl-r # then type to search
+
+# Quick calculator
+calc() { echo "scale=2; $*" | bc; }
+
+# Generate random password
+genpass() { openssl rand -base64 ${1:-12}; }
+
+# Weather in terminal
+curl wttr.in/your_city
+
+# Quick notes
+note() { echo "$(date): $*" >> ~/.notes; }
+```
+**Function:** Boost productivity with quick calculations, password generation, and note-taking directly in terminal.
+
+<br/>

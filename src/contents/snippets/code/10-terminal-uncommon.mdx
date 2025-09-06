@@ -5,36 +5,388 @@ chapter_title: 'Terminal'
 title: 'Uncommon Snippets'
 category: 'Code'
 language: 'Bash'
-difficulty: 'Easy'
+difficulty: 'Medium'
 source: null
 cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
 source_url: null
 created_at: '2023-09-18'
-updated_at: '2023-09-18'
+updated_at: '2025-09-06'
 is_playground: true
 ---
 
 These snippets aren't as common but are still very useful when writing bash scripts or utilizing the terminal. These snippets are necessary to know but due to their less common nature a reference is nice!
 
----
-
-> Multi-line Comment
-```
-/*
-This is a multi-line comment, it will be ignored by the interpreter
-*/
-```
-**Function:** Used to comment out multiple lines or write longer explanations. Note that within a componenents return statement you will need to use `{/* comment */}` instead.
+<br/>
 
 ---
 
-> Ternary Operator
+<br/>
+
+> Advanced Find Operations
+```bash
+# Find files modified in last 7 days
+find . -type f -mtime -7
+
+# Find and execute command on results
+find . -name "*.log" -exec rm {} \;
+find . -name "*.js" -exec grep -l "console.log" {} \;
+
+# Find large files (>100MB)
+find . -type f -size +100M -ls
+
+# Find files by permission and fix them
+find . -type f -perm 777 -exec chmod 644 {} \;
+
+# Find empty directories and remove them
+find . -type d -empty -delete
 ```
-{ (x + 5 === 10)
-    ? <span>X equals 5</span>
-    : <span>X does not equal 5</span> 
+**Function:** Powerful file searching with conditions for size, modification time, permissions, and batch operations.
+
+<br/>
+
+---
+
+<br/>
+
+> Text Processing with awk
+```bash
+# Sum values in a column
+awk '{sum += $3} END {print "Total:", sum}' data.txt
+
+# Calculate average
+awk '{sum += $2; count++} END {print "Average:", sum/count}' numbers.txt
+
+# Print specific columns with custom formatting
+awk '{printf "%-20s %10.2f\n", $1, $3}' data.txt
+
+# Use custom field separator for CSV
+awk -F',' '{if(NR>1) print $2, $4}' data.csv
+
+# Filter rows and perform calculations
+awk '$3 > 100 {print $1, $3, $3*1.1}' sales.txt
+
+# Count occurrences of values
+awk '{count[$1]++} END {for(i in count) print i, count[i]}' data.txt
+```
+**Function:** Process text files column-wise, perform calculations, and analyze data patterns efficiently.
+
+<br/>
+
+---
+
+<br/>
+
+> Advanced sed Operations
+```bash
+# Replace text in-place with backup
+sed -i.bak 's/old_text/new_text/g' file.txt
+
+# Delete lines matching pattern
+sed '/pattern/d' file.txt
+
+# Insert line after match
+sed '/pattern/a\New line to insert' file.txt
+
+# Print only lines between patterns
+sed -n '/START/,/END/p' file.txt
+
+# Replace entire line when pattern matches
+sed '/pattern/c\Replacement line' file.txt
+
+# Remove empty lines
+sed '/^$/d' file.txt
+
+# Add line numbers
+sed = file.txt | sed 'N;s/\n/\t/'
+```
+**Function:** Edit files programmatically, manipulate text structure, and perform complex text transformations.
+
+<br/>
+
+---
+
+<br/>
+
+> Network Analysis and Monitoring
+```bash
+# Monitor network connections in real-time
+watch -n 1 'netstat -tuln'
+
+# Check which process is using a specific port
+lsof -i :8080
+netstat -tlnp | grep :8080
+
+# Test network connectivity and timing
+ping -c 4 google.com
+traceroute google.com
+
+# Monitor network traffic
+iftop
+nethogs
+
+# Check DNS resolution
+nslookup google.com
+dig google.com
+
+# Test port connectivity
+nc -zv hostname 80
+telnet hostname 80
+```
+**Function:** Diagnose network issues, monitor connections, and test connectivity between systems.
+
+<br/>
+
+---
+
+<br/>
+
+> Process Control and Monitoring
+```bash
+# Run command with timeout
+timeout 30s long_running_command
+
+# Retry command until it succeeds
+until ping -c1 google.com; do sleep 1; done
+
+# Run command and retry on failure with exponential backoff
+retry_command() {
+  local max_attempts=5
+  local attempt=1
+  local delay=1
+  
+  while [ $attempt -le $max_attempts ]; do
+    if "$@"; then
+      return 0
+    fi
+    
+    echo "Attempt $attempt failed. Retrying in ${delay}s..."
+    sleep $delay
+    attempt=$((attempt + 1))
+    delay=$((delay * 2))
+  done
+  
+  echo "Command failed after $max_attempts attempts"
+  return 1
+}
+
+# Monitor CPU usage of specific process
+watch -n 1 'ps aux | grep process_name'
+
+# Background job management
+jobs -l
+fg %1
+bg %1
+disown %1
+```
+**Function:** Control process execution, implement retry logic, and manage long-running tasks effectively.
+
+<br/>
+
+---
+
+<br/>
+
+> File Comparison and Synchronization
+```bash
+# Compare directories recursively
+diff -r --brief dir1/ dir2/
+
+# Show differences side by side
+diff -y --width=200 file1.txt file2.txt
+
+# Compare files ignoring whitespace
+diff -w file1.txt file2.txt
+
+# Synchronize directories
+rsync -av --delete source/ destination/
+
+# Find duplicate files
+find . -type f -exec md5sum {} + | sort | uniq -d -w32
+
+# Merge sorted files
+sort file1.txt file2.txt | uniq > merged.txt
+
+# Show unique lines in each file
+comm -3 <(sort file1.txt) <(sort file2.txt)
+```
+**Function:** Compare files and directories, synchronize data, and identify duplicates or differences.
+
+<br/>
+
+---
+
+<br/>
+
+> System Resource Monitoring
+```bash
+# Monitor disk I/O in real-time
+iostat -x 1
+
+# Check memory usage breakdown
+free -h
+cat /proc/meminfo
+
+# Monitor process tree
+pstree -p
+
+# Check system load and processes
+uptime
+top -c
+
+# Monitor file system usage
+df -h
+du -sh */ | sort -hr
+
+# Check open file limits
+ulimit -a
+
+# Monitor system calls
+strace -p PID
+```
+**Function:** Monitor system performance, diagnose resource bottlenecks, and track system behavior.
+
+<br/>
+
+---
+
+<br/>
+
+> Advanced Bash Scripting Patterns
+```bash
+# Function with error handling and logging
+log_and_run() {
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] Running: $*" >&2
+  if ! "$@"; then
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: Command failed: $*" >&2
+    return 1
+  fi
+}
+
+# Read file line by line with error handling
+read_file_safely() {
+  local file="$1"
+  if [[ ! -f "$file" ]]; then
+    echo "Error: File '$file' not found" >&2
+    return 1
+  fi
+  
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    echo "Processing: $line"
+    # Process each line here
+  done < "$file"
+}
+
+# Command line argument parsing
+while getopts "hf:v" opt; do
+  case $opt in
+    h) echo "Usage: $0 [-h] [-f file] [-v]"; exit 0 ;;
+    f) input_file="$OPTARG" ;;
+    v) verbose=true ;;
+    \?) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
+  esac
+done
+
+# Check if required commands exist
+check_dependencies() {
+  local deps=("$@")
+  for cmd in "${deps[@]}"; do
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+      echo "Error: Required command '$cmd' not found" >&2
+      return 1
+    fi
+  done
+}
+
+# Usage: check_dependencies git curl jq
+```
+**Function:** Write robust bash scripts with proper error handling, logging, and argument validation.
+
+<br/>
+
+---
+
+<br/>
+
+> Archive and Backup Operations
+```bash
+# Create timestamped backup
+backup_with_timestamp() {
+  local source="$1"
+  local backup_dir="$2"
+  local timestamp=$(date +%Y%m%d_%H%M%S)
+  local basename=$(basename "$source")
+  
+  tar -czf "${backup_dir}/${basename}_${timestamp}.tar.gz" -C "$(dirname "$source")" "$basename"
+}
+
+# Extract various archive formats
+extract() {
+  if [ -f "$1" ]; then
+    case $1 in
+      *.tar.bz2) tar xjf "$1" ;;
+      *.tar.gz)  tar xzf "$1" ;;
+      *.bz2)     bunzip2 "$1" ;;
+      *.rar)     unrar x "$1" ;;
+      *.gz)      gunzip "$1" ;;
+      *.tar)     tar xf "$1" ;;
+      *.tbz2)    tar xjf "$1" ;;
+      *.tgz)     tar xzf "$1" ;;
+      *.zip)     unzip "$1" ;;
+      *.Z)       uncompress "$1" ;;
+      *.7z)      7z x "$1" ;;
+      *)         echo "'$1' cannot be extracted" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+}
+
+# Incremental backup with rsync
+incremental_backup() {
+  local source="$1"
+  local destination="$2"
+  local link_dest="$3"  # Previous backup for hard links
+  
+  rsync -av --link-dest="$link_dest" "$source/" "$destination/"
 }
 ```
-**Function:** A shorthand for an if-else statement. It evaluates a condition and returns one of two values based on whether the condition is true or false.
+**Function:** Create automated backups, handle various archive formats, and implement incremental backup strategies.
+
+<br/>
 
 ---
+
+<br/>
+
+> Remote System Administration
+```bash
+# SSH with connection multiplexing
+ssh -o ControlMaster=auto -o ControlPath=~/.ssh/master-%r@%h:%p user@server
+
+# Execute multiple commands on remote server
+ssh user@server << 'EOF'
+  sudo systemctl status nginx
+  df -h
+  uptime
+  free -m
+EOF
+
+# Copy files with progress and resume capability
+rsync -avz --progress --partial user@server:/remote/path/ /local/path/
+
+# SSH tunnel for database access
+ssh -L 5432:localhost:5432 user@database-server
+
+# Port forwarding for web development
+ssh -R 8080:localhost:3000 user@server
+
+# Execute command on multiple servers
+servers=("server1" "server2" "server3")
+for server in "${servers[@]}"; do
+  echo "=== $server ==="
+  ssh "$server" 'uptime'
+done
+```
+**Function:** Efficiently manage remote servers, transfer files, and establish secure connections for development.
+
+<br/>

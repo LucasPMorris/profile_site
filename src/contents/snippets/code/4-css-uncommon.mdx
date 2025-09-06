@@ -2,40 +2,193 @@
 id: 4
 chapter_id: 1
 chapter_title: 'CSS'
-title: 'Uncommon Snippits'
+title: 'Uncommon Snippets'
 category: 'Code'
 language: 'CSS'
-difficulty: 'Easy'
+difficulty: 'Medium'
 source: null
 cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
 source_url: null
 created_at: '2023-09-14'
-updated_at: '2023-09-14'
+updated_at: '2025-09-06'
 is_playground: false
 ---
 
-
 These snippets aren't as common but are still very useful in everyday CSS programming. These snippets are necessary to know but due to their less common nature a reference is nice!
 
----
-
-> Multi-line Comment
-```
-/*
-This is a multi-line comment, it will be ignored by the interpreter
-*/
-```
-**Function:** Used to comment out multiple lines or write longer explanations. Note that within a componenents return statement you will need to use `{/* comment */}` instead.
+<br/>
 
 ---
 
-> Ternary Operator
-```
-{ (x + 5 === 10)
-    ? <span>X equals 5</span>
-    : <span>X does not equal 5</span> 
+<br/>
+
+> Clamp for Responsive Typography
+```css
+.responsive-text {
+  font-size: clamp(1rem, 2.5vw, 2rem);
 }
 ```
-**Function:** A shorthand for an if-else statement. It evaluates a condition and returns one of two values based on whether the condition is true or false.
+**Function:** Creates fluid typography that scales between minimum and maximum values based on viewport width.
+
+<br/>
 
 ---
+
+<br/>
+
+> CSS Custom Properties with Fallbacks
+```css
+.theme-aware {
+  color: var(--text-color, #333);
+  background: var(--bg-color, white);
+}
+```
+**Function:** Use CSS variables with fallback values for better browser compatibility and default styling.
+
+<br/>
+
+---
+
+<br/>
+
+> Container Queries
+```css
+.card-container {
+  container-type: inline-size;
+}
+
+@container (min-width: 300px) {
+  .card {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+  }
+}
+```
+**Function:** Apply styles based on container size rather than viewport size, enabling truly modular responsive components.
+
+<br/>
+
+---
+
+<br/>
+
+> Scroll Snap
+```css
+.scroll-container {
+  scroll-snap-type: x mandatory;
+  overflow-x: scroll;
+}
+
+.scroll-item {
+  scroll-snap-align: start;
+}
+```
+**Function:** Creates smooth, snapping scroll behavior for carousels, galleries, or paginated content.
+
+<br/>
+
+---
+
+<br/>
+
+> CSS Subgrid
+```css
+.parent-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.child-grid {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+}
+```
+**Function:** Allows nested grids to inherit the parent grid's track sizing for perfect alignment.
+
+<br/>
+
+---
+
+<br/>
+
+> Logical Properties
+```css
+.logical-spacing {
+  margin-inline: 1rem;
+  padding-block: 2rem;
+  border-inline-start: 2px solid blue;
+}
+```
+**Function:** Writing-mode independent spacing that adapts to different text directions (LTR/RTL) automatically.
+
+<br/>
+
+---
+
+<br/>
+
+> CSS Shapes
+```css
+.circle-text {
+  shape-outside: circle(50%);
+  float: left;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+}
+```
+**Function:** Allows text to flow around custom shapes, creating more interesting layouts than rectangular wrapping.
+
+<br/>
+
+---
+
+<br/>
+
+> Backdrop Filter
+```css
+.glass-effect {
+  backdrop-filter: blur(10px) saturate(150%);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+```
+**Function:** Creates glass morphism effects by blurring and filtering content behind an element.
+
+<br/>
+
+---
+
+<br/>
+
+> CSS Mask
+```css
+.masked-image {
+  mask: linear-gradient(to bottom, black 0%, transparent 100%);
+  -webkit-mask: linear-gradient(to bottom, black 0%, transparent 100%);
+}
+```
+**Function:** Applies complex transparency effects using gradients or images as masks.
+
+<br/>
+
+---
+
+<br/>
+
+> View Transitions API
+```css
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.5s;
+}
+
+.fade-transition {
+  view-transition-name: fade;
+}
+```
+**Function:** Creates smooth page transitions without JavaScript using the new View Transitions API.
+
+<br/>
+```

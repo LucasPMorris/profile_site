@@ -39,21 +39,23 @@ app.prepare().then(() => {
     } catch (error) { console.error('❌ Error in scheduled task:', error); }
   }
 
+  if (!dev) {
+    schedule('*/30 * * * *', async () => {
+      if (isRunning) { console.warn(`⚠️ Skipping run — previous job still running`); return; }
 
-  schedule('*/30 * * * *', async () => {
-    if (isRunning) { console.warn(`⚠️ Skipping run — previous job still running`); return; }
+      isRunning = true;
+      
+      console.log(`⏱️ Attempting data ingestion at ${new Date().toISOString()}`);
+      try { await runSpotifyIngestion(); } finally { isRunning = false; }
+    });
 
-    isRunning = true;
-    
-    console.log(`⏱️ Attempting data ingestion at ${new Date().toISOString()}`);
-    try { await runSpotifyIngestion(); } finally { isRunning = false; }
-  });
+    schedule('10 */6 * * *', async () => {
+      schedule('*/5 * * * *', async () => {
+      console.log(`⏱️ Attempting daily stats aggregation at ${new Date().toISOString()}`);
+      await aggregateDailyStats();
+    });
+  } 
 
-  schedule('10 */6 * * *', async () => {
-    console.log(`⏱️ Attempting daily stats aggregation at ${new Date().toISOString()}`);
-    await aggregateDailyStats();
-  });
-    
   server.all('*', (req, res) => { return handle(req, res); });
   server.listen(port, (err) => {
     if (err) throw err;

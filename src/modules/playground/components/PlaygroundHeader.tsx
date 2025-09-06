@@ -7,9 +7,7 @@ const PlaygroundHeader = () => {
         <SiJavascript size={24} className='text-yellow-400' />
         <h1 className=' text-2xl font-medium'>JavaScript Playground</h1>
       </div>
-      <p className='text-neutral-600 dark:text-neutral-400'>
-        A no-fuss pure JavaScript playground with feedback
-      </p>
+      <p className='text-neutral-600 dark:text-neutral-400'>A no-fuss pure JavaScript playground with feedback</p>
     </div>
   );
 };

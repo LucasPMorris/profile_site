@@ -31,7 +31,7 @@ const BlogCardNew = ({ id, title, featured_image_url, date, slug, content, excer
         <div className='relative w-full h-[200px]'>
           <Image src={featured_image_url || defaultImage} alt={title?.rendered} fill sizes='100vw' className='object-cover object-center transition-transform duration-300 group-hover:scale-105' />
           {/* Tags */}
-          <div className='absolute top-2 left-2 flex flex-wrap gap-2 p-2 z-10'>
+          <div className='absolute top-2 left-2 flex flex-wrap gap-2 p-2 z-4'>
             {tagList?.map((tag) => (
               <div key={tag?.term_id} className='rounded-full bg-neutral-900/70 px-2.5 py-1 font-mono text-xs text-neutral-300'>
                 <span className='mr-1 font-semibold'>#</span>

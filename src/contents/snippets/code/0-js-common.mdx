@@ -10,7 +10,7 @@ source: null
 cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
 source_url: null
 created_at: '2023-09-12'
-updated_at: '2023-09-12'
+updated_at: '2025-09-06'
 is_playground: true
 ---
 
@@ -18,23 +18,121 @@ These snippets are incredibly common and are useful in everyday JavaScript progr
 
 ---
 
-> Multi-line Comment
+> Console Log with Variable Name
+```javascript
+const myVariable = 'Hello World';
+console.log({ myVariable });
 ```
-/*
-This is a multi-line comment, it will be ignored by the interpreter
-*/
-```
-**Function:** Used to comment out multiple lines or write longer explanations. Note that within a componenents return statement you will need to use `{/* comment */}` instead.
+**Function:** Logs both the variable name and value, making debugging easier than `console.log(myVariable)`.
+
+<br/>
 
 ---
+
+<br/>
+
+> Array Destructuring
+```javascript
+const [first, second, ...rest] = ['a', 'b', 'c', 'd'];
+```
+**Function:** Extract values from arrays into distinct variables. The rest operator captures remaining elements.
+
+<br/>
+
+---
+
+<br/>
+
+> Object Destructuring with Renaming
+```javascript
+const { name: userName, age: userAge } = user;
+```
+**Function:** Extract object properties and assign them to variables with different names.
+
+<br/>
+
+---
+
+<br/>
+
+> Template Literals
+```javascript
+const message = `Hello ${name}, you are ${age} years old`;
+```
+**Function:** String interpolation using backticks and `${}` syntax for embedding expressions.
+
+<br/>
+
+---
+
+<br/>
+
+> Arrow Function
+```javascript
+const add = (a, b) => a + b;
+const greet = name => `Hello ${name}`;
+```
+**Function:** Concise function syntax. Parentheses optional for single parameters, curly braces optional for single expressions.
+
+<br/>
+
+---
+
+<br/>
+
+> Array Map
+```javascript
+const doubled = numbers.map(n => n * 2);
+```
+**Function:** Transform each element in an array and return a new array with the results.
+
+<br/>
+
+---
+
+<br/>
+
+> Array Filter
+```javascript
+const adults = users.filter(user => user.age >= 18);
+```
+**Function:** Create a new array with elements that pass a test condition.
+
+<br/>
+
+---
+
+<br/>
+
+> Find Element in Array
+```javascript
+const user = users.find(user => user.id === targetId);
+```
+**Function:** Returns the first element that matches the condition, or undefined if none found.
+
+<br/>
+
+---
+
+<br/>
 
 > Ternary Operator
+```javascript
+const message = age >= 18 ? 'Adult' : 'Minor';
 ```
-{ (x + 5 === 10)
-    ? <span>X equals 5</span>
-    : <span>X does not equal 5</span> 
-}
-```
-**Function:** A shorthand for an if-else statement. It evaluates a condition and returns one of two values based on whether the condition is true or false.
+**Function:** A shorthand for simple if-else statements. Condition ? valueIfTrue : valueIfFalse.
+
+<br/>
 
 ---
+
+<br/>
+
+> Default Parameters
+```javascript
+function greet(name = 'Guest', age = 0) {
+  return `Hello ${name}, age ${age}`;
+}
+```
+**Function:** Provide default values for function parameters when no argument is passed.
+<br/>
