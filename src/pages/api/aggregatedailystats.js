@@ -18,9 +18,9 @@ export default async function handler(req, res) {
 
     for (const offset of daysToAggregate) {
       const target = new Date(Date.UTC(
-        now.getUTCFullYear(),
-        now.getUTCMonth(),
-        now.getUTCDate() + offset
+        startTime.getUTCFullYear(),
+        startTime.getUTCMonth(),
+        startTime.getUTCDate() + offset
       ));    
       await aggregateDailyStats(target);
     }
