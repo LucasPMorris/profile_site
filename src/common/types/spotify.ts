@@ -58,25 +58,13 @@ export interface TrackHistoryProps {
   release_date: Date; 
 }
 
+
+export interface HeatMapProps { date: string; weekday: string; hourly_plays: number[]; }
+
 export interface PlayHistoryResponseProps { status: number; data: TrackHistoryProps[]; }
 
-export interface tempTrackDetail { 
-  album: { 
-    artists: { 
-      id: string;
-      name: string;
-      external_urls: { spotify: string; }
-      images: { url: string, width: number, height: number }[], 
-    }[]
-  },
-  artists: {
-    id: string,
-    name: string,
-    external_urls: { spotify: string }
-  }[] 
-  explicit: boolean,
-  external_ids: { isrc: string },
-  external_urls: { spotify: string },
-  id: string,
-  name: string,
-};
+export interface SpotifyDataProps { topArtists: ArtistProps[]; topTracks: TrackProps[]; playFrequency: HeatMapProps[]; meta: { totalTrackCount: number; totalArtistCount: number; }; }
+
+export interface SpotifyStatsProps {  topArtists: ArtistProps[]; topTracks: TrackProps[]; }
+
+export interface SpotifyDataResponseProps { status: number; data: SpotifyDataProps; } 

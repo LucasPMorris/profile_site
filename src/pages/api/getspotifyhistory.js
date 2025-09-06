@@ -1,4 +1,4 @@
-import { ingestSpotifyPlays } from '../../services/spotifyIngestionService';
+import { ingestSpotifyPlays } from '../../services/spotifyIngestion';
 
 
 export default async function handler(req, res) {

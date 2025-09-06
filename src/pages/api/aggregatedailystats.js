@@ -1,4 +1,4 @@
-import { aggregateDailyStats } from '../../services/spotifyIngestionService';
+import { aggregateDailyStats } from '../../services/spotifyIngestion';
 
 
 export default async function handler(req, res) {

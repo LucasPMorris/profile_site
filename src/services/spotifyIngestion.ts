@@ -4,6 +4,15 @@ import path from 'path';
 import prisma from '../common/libs/prisma.ts';
 import { getArtistsByIds, getRecentlyPlayedFromSpotify } from './spotify.ts'; // your wrapper for the API call
 import { RawRecentlyPlayedResponse } from '@/common/types/spotify.ts';
+import { getISOWeek } from 'date-fns';
+
+export const chunk = <T>(arr: T[], size: number): T[][] => {
+  const chunks: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size));
+  }
+  return chunks;
+};
 
 function dedupeById<T extends { [key: string]: any }>(records: T[], key: keyof T): T[] {
   const seen = new Map<any, T>();
@@ -105,6 +114,23 @@ export const aggregateDailyStats = async (): Promise<void> => {
   await prisma.spdailyplaystats.create({ data: { date: start, weekday: start.toLocaleDateString('en-US', { weekday: 'short' }), hourly_plays: hourlyPlays, top_tracks: { create: topTracks }, top_artists: { create: topArtists } } });
 
   console.log(`✅ Stats created for ${dateStr}`);
+
+  const year = start.getUTCFullYear();
+  const month = start.getUTCMonth() + 1;
+  const week = getISOWeek(start);
+
+  const yearBucket = await prisma.yearbucket.findFirst({ where: { year } });
+  const monthBucket = await prisma.monthbucket.findFirst({ where: { yearbucketid: yearBucket?.id, month } });
+  const weekBucket = await prisma.weekbucket.findFirst({ where: { monthbucketid: monthBucket?.id, week } });
+
+  const trackStats = Object.entries(trackCounts).map(([track_id, count]) => ({ track_id, count, bucket_scope: 'day', yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id }));
+
+  const artistStats = Object.entries(artistCounts).map(([artist_id, count]) => ({ artist_id, count, bucket_scope: 'day', yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id }));
+
+  await prisma.trackstat.createMany({ data: trackStats, skipDuplicates: true });
+  await prisma.artiststat.createMany({ data: artistStats, skipDuplicates: true });
+
+  console.log(`📦 Bucketed stats updated for ${dateStr} → Y:${year} M:${month} W:${week}`);  
 };
 
 export const ingestSpotifyPlays = async ( manualIngestion: boolean = false, _manualData: RawRecentlyPlayedResponse = { status: 200, data: [] }): Promise<void> => {
@@ -170,7 +196,109 @@ export const ingestSpotifyPlays = async ( manualIngestion: boolean = false, _man
   } 
 };
 
+// export const updateBucketedStats = async (): Promise<void> => {
 // No longer needed, used once and moved connecting pages to .archivedStuff
+//   const startDate = new Date('2017-07-23'); // First Sunday before first play
+//   const endDate = new Date(); // Today
+
+//   let current = new Date(startDate);
+
+//   while (current <= endDate) {
+//     const year = current.getUTCFullYear();
+//     const month = current.getUTCMonth() + 1;
+
+//     const monthStart = new Date(Date.UTC(year, month - 1, 1));
+//     const monthEnd = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+
+//     console.log(`📆 Processing ${year}-${month.toString().padStart(2, '0')}`);
+
+//     const plays = await prisma.spplayhistory.findMany({
+//       where: { played_at: { gte: monthStart, lte: monthEnd } },
+//       include: { track: { include: { track_artists: true } } }
+//     });
+
+//     if (plays.length === 0) {
+//       console.log(`🟡 No plays found for ${year}-${month}, skipping.`);
+//       await sleep(10000);
+//       current.setUTCMonth(current.getUTCMonth() + 1);
+//       continue;
+//     }
+
+//     const buckets = {
+//       year: new Map(),
+//       month: new Map(),
+//       week: new Map()
+//     };
+
+//     for (const play of plays) {
+//       const date = new Date(play.played_at);
+//       const y = date.getUTCFullYear();
+//       const m = date.getUTCMonth() + 1;
+//       const w = getISOWeek(date);
+
+//       const yearKey = `${y}`;
+//       const monthKey = `${y}-${m}`;
+//       const weekKey = `${y}-W${w}`;
+
+//       const trackId = play.track_id;
+//       const artistIds = play.track.track_artists.map(a => a.artist_id);
+
+//       for (const scope of ['year', 'month', 'week'] as const) {
+//         const key = scope === 'year' ? yearKey : scope === 'month' ? monthKey : weekKey;
+//         const bucket = buckets[scope];
+//         if (!bucket.has(key)) {
+//           bucket.set(key, { tracks: new Map(), artists: new Map() });
+//         }
+
+//         const stats = bucket.get(key)!;
+//         stats.tracks.set(trackId, (stats.tracks.get(trackId) ?? 0) + 1);
+//         for (const artistId of artistIds) {
+//           stats.artists.set(artistId, (stats.artists.get(artistId) ?? 0) + 1);
+//         }
+//       }
+//     }
+
+//     for (const scope of ['year', 'month', 'week'] as const) {
+//       const bucketMap = buckets[scope];
+//       for (const [key, { tracks, artists }] of bucketMap.entries()) {
+//         const [y, mOrW] = key.includes('W') ? key.split('-W') : key.split('-');
+//         const yInt = parseInt(y);
+//         const mInt = scope === 'month' || scope === 'week' ? parseInt(mOrW) : undefined;
+//         const wInt = scope === 'week' ? parseInt(mOrW) : undefined;
+
+//         const yearBucket = await prisma.yearbucket.findFirst({ where: { year: yInt } });
+//         const monthBucket = scope !== 'year'
+//           ? await prisma.monthbucket.findFirst({ where: { yearbucketid: yearBucket?.id, month: mInt } })
+//           : undefined;
+//         const weekBucket = scope === 'week'
+//           ? await prisma.weekbucket.findFirst({ where: { monthbucketid: monthBucket?.id, week: wInt } })
+//           : undefined;
+
+//         const trackChunks: Prisma.trackstatCreateManyInput[][] =  chunk(Array.from(tracks.entries() as Iterable<[string, number]>).map(([track_id, count]: [string, number]) => (
+//           { track_id, count, bucket_scope: scope, yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id } )), 200 );
+
+//         const artistChunks: Prisma.artiststatCreateManyInput[][] =  chunk(Array.from(artists.entries() as Iterable<[string, number]>).map(([artist_id, count]: [string, number]) => (
+//             { artist_id, count, bucket_scope: scope, yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id } )), 200 );
+
+//         for (let i = 0; i < trackChunks.length; i++) {
+//           await prisma.trackstat.createMany({ data: trackChunks[i], skipDuplicates: true });
+//           console.log(`✅ ${key} track chunk ${i + 1} of ${trackChunks.length} inserted`);
+//         }
+
+//         for (let i = 0; i < artistChunks.length; i++) {
+//           await prisma.artiststat.createMany({ data: artistChunks[i], skipDuplicates: true });
+//           console.log(`✅ ${key} artist chunk ${i + 1} of ${artistChunks.length} inserted`);
+//         }
+//       }
+//     }
+
+//     await sleep(10000);
+//     console.log(`🎧 Found ${plays.length} plays for ${year}-${month}`);
+//     current.setUTCMonth(current.getUTCMonth() + 1);
+//   }
+
+//   console.log('🎉 Bucketed stats update complete');
+// };
 
 // export const backFillNoPlayDays = async (): Promise<void> => {
 //   const firstPlay = await prisma.spplayhistory.findFirst({ orderBy: { played_at: 'asc' }, select: { played_at: true } });
