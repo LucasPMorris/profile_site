@@ -30,8 +30,8 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({ startDate, endDat
 
   return ( // flex-1 px-4 py-2 text-center font-medium border-x border-t border-neutral-800 dark:border-neutral-400'} bg-[rgba(106,106,128)] text-neutral-100 dark:bg-[rgba(106,106,128)] dark:text-neutral-900 md:rounded-tl
     <div className='absolute top-4 right-4 flex gap-2 items-center'>
-      <input type='date' value={startInput} onChange={e => setStartInput(e.target.value)} className='rounded border px-2 py-1 text-sm border-neutral-400 bg-neutral-100 dark:border-neutral-900' />
-      <input type='date' value={endInput} onChange={e => setEndInput(e.target.value)} className='rounded border px-2 py-1 text-sm border-neutral-400 bg-neutral-100 dark:border-neutral-900' />
+      <input type='date' value={startInput} onChange={e => setStartInput(e.target.value)} className='rounded border px-2 py-1 text-sm border-neutral-400 bg-neutral-100 dark:border-neutral-900 dark: dark:text-neutral-800' />
+      <input type='date' value={endInput} onChange={e => setEndInput(e.target.value)} className='rounded border px-2 py-1 text-sm border-neutral-400 bg-neutral-100 dark:border-neutral-900 dark:text-neutral-800' />
       <button type='button' onClick={handleApply} className='rounded bg-green-500 text-white px-3 py-1 text-sm hover:bg-green-600'>Apply</button>
     </div>
   );
