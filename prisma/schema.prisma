@@ -203,7 +203,7 @@ model spdailytrackstat {
   count      Int
 
   track      sptrack  @relation(fields: [track_id], references: [track_id])
-  stats      spdailyplaystats @relation(fields: [stats_id], references: [id])
+  stats      spdailyplaystats @relation(fields: [stats_id], references: [id], onDelete: Cascade)
 
   @@unique([stats_id, track_id])
 }
@@ -215,7 +215,7 @@ model spdailyartiststat {
   count      Int
 
   artist     spartist @relation(fields: [artist_id], references: [artist_id])
-  stats      spdailyplaystats @relation(fields: [stats_id], references: [id])
+  stats      spdailyplaystats @relation(fields: [stats_id], references: [id], onDelete: Cascade)
 
   @@unique([stats_id, artist_id])
 }
