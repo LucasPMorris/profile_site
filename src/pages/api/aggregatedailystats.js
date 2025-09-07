@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   try {
     const startTime = Date.now();
     console.log('Starting daily stats ingestion: ', startTime);
-    const daysToAggregate = [0, -1]; // today and yesterday
+    const daysToAggregate = [0, -1, -2]; // today and yesterday
 
     for (const offset of daysToAggregate) {
       const target = new Date(Date.UTC(
