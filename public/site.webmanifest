@@ -1,6 +1,6 @@
 {
-  "name": "",
-  "short_name": "",
+  "name": "Lucas Morris Portfolio",
+  "short_name": "LM Portfolio",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -13,7 +13,7 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#ffffff",
+  "theme_color": "#667eea",
   "background_color": "#ffffff",
   "display": "standalone"
 }

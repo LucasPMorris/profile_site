@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   console.log('Token valid, proceeding with ingestion...');
 
   try {
-    const startTime = Date.now();
+    const startTime = Date();
     console.log('Starting daily stats ingestion: ', startTime);
     const daysToAggregate = [0, -1, -2]; // today and yesterday
 
