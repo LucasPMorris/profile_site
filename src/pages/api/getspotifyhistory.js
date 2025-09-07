@@ -12,12 +12,12 @@ export default async function handler(req, res) {
   console.log('Token valid, proceeding with ingestion...');
 
   try {
-    const startTime = Date.now();
+    const startTime = new Date();
     console.log('Starting Spotify play history ingestion: ', startTime);
     
     await ingestSpotifyPlays();
 
-    const endTime = Date.now();
+    const endTime = new Date();
     const duration = endTime - startTime;
     console.log('Ingestion completed: ', endTime, 'Execution Time: ', duration, 'ms');
     

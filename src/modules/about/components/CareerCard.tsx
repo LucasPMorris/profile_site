@@ -14,8 +14,8 @@ const CareerCard = ({ position, company, company_legal_name, logo, location, loc
   const [isShowResponsibility, setIsShowResponsibility] = useState<boolean>(false);
   const startDateFormatted = format(new Date(start_date), 'MMM yyyy');
   const endDateFormatted = end_date ? format(new Date(end_date), 'MMM yyyy') : 'Present';
-  const durationYears = differenceInYears(new Date(end_date || Date.now()), new Date(start_date));
-  const durationMonths = (differenceInMonths(new Date(end_date || Date.now()), new Date(start_date)) % 12) + 1;
+  const durationYears = differenceInYears(new Date(end_date || new Date()), new Date(start_date));
+  const durationMonths = (differenceInMonths(new Date(end_date || new Date()), new Date(start_date)) % 12) + 1;
   const durationText = `${durationYears > 0 ? `${durationYears} Year${durationYears > 1 ? 's' : ''}, ` : ''}${durationMonths} Month${durationMonths > 1 ? 's' : ''}`;
 
   return (

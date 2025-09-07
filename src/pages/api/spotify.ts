@@ -5,7 +5,8 @@ import { SpotifyDataProps } from '@/common/types/spotify';
 
 export default async function handler( req: NextApiRequest, res: NextApiResponse ): Promise<void> {
   try {
-    const startDate = typeof req.query.start === 'string' ? new Date(req.query.start) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const dateNow = new Date();
+    const startDate = typeof req.query.start === 'string' ? new Date(req.query.start) : new Date(dateNow.getTime() - 30 * 24 * 60 * 60 * 1000);
     const endDate = typeof req.query.end === 'string' ? new Date(req.query.end) : new Date();
     
     if (!startDate || !endDate || Array.isArray(startDate) || Array.isArray(endDate)) { res.status(400).json({ message: 'Invalid or missing startDate or endDate parameters' }); return; }
