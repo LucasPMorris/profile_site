@@ -7,7 +7,7 @@ interface CardProps { children: ReactNode; className?: string; [propName: string
 
 const Card = ({ children, className = '', ...others }: CardProps) => {
   return (
-    <div className={clsx('rounded-xl shadow-sm transition-all duration-30 bg-white/60 dark:bg-white/5 ', `${className} `)}
+    <div className={clsx('rounded-xl shadow-sm transition-all duration-30 bg-white/40 dark:bg-white/5 ', `${className} `)}
       {...others}>
       {children}
     </div>

@@ -3,8 +3,6 @@ import { BsEnvelopeAtFill as EmailIcon, BsGithub as GithubIcon, BsInstagram as I
          BsLinkedin as LinkedinIcon, BsYoutube as YoutubeIcon, BsTwitter as TwitterIcon } from 'react-icons/bs';
 import { FiBookOpen as SnippetsIcon, FiCoffee as ProjectIcon, FiCpu as DashboardIcon, FiPieChart as AnalyticsIcon,
          FiPocket as HomeIcon, FiRss as BlogIcon, FiUser as ProfileIcon } from 'react-icons/fi';
-import { PiChatCircleDotsBold as ChatIcon } from 'react-icons/pi';
-import { SiJavascript } from 'react-icons/si';
 
 import { MenuItemProps } from '../types/menu';
 

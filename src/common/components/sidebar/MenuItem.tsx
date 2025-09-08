@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useTheme } from 'next-themes';
 import { useContext, useState } from 'react';
 import { BsArrowRightShort as ExternalLinkIcon } from 'react-icons/bs';
 
@@ -32,8 +31,7 @@ const MenuItem = ({ title, href, icon, onClick, className = '', children, hideIc
       <div {...elementProps}> { !hideIcon && (<div className={clsx('transition-all duration-300 group-hover:-rotate-12', isActiveRoute && 'animate-pulse')}>{icon}</div>) }
         <div className='ml-0.5 flex-grow'>{title}</div>
         {children && <>{children}</>}
-        {isActiveRoute && 
-            (<ExternalLinkIcon size={22} className={ clsx('animate-pulse dark:text-neutral-400')} />)}
+        {isActiveRoute && (<ExternalLinkIcon size={22} className={ clsx('animate-pulse dark:text-neutral-400')} />)}
         {isExternalUrl && isHovered && (<ExternalLinkIcon size={22} className='-rotate-45 text-gray-500 lg:transition-all lg:duration-300' />)}
       </div>
     );

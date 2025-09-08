@@ -30,7 +30,7 @@ const username = user.name ?? 'Anonymous';
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Nullish"
   data-description="Compare nullish coalescing (??) with logical OR (||) - see how they handle different falsy values!"
   data-snippet-id="js-uncommon-1-0-1"
   data-code="const user1 = { name: 'Alice' };
@@ -66,7 +66,7 @@ const city = user?.address?.city;
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Optional Chaining"
   data-description="Try accessing deeply nested properties safely! See what happens with and without optional chaining."
   data-snippet-id="js-uncommon-1-0-2"
   data-code="const users = [
@@ -110,7 +110,7 @@ const range = Array.from({length: 5}, (_, i) => i + 1); // [1,2,3,4,5]
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Array.from()"
   data-description="Generate different number sequences and patterns! Try creating ranges, squares, or even random values."
   data-snippet-id="js-uncommon-1-0-3"
   data-code="&#47;&#47; Basic range
@@ -149,7 +149,7 @@ Object.entries(obj).forEach(([key, value]) => {
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Iterating an Object"
   data-description="Practice iterating over objects in different ways! Try filtering, mapping, or transforming the entries."
   data-snippet-id="js-uncommon-1-0-4"
   data-code="const student = {
@@ -196,7 +196,7 @@ const {name, age, ...otherProps} = user;
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Object Destructuring"
   data-description="Practice separating object properties! Try extracting different combinations of properties."
   data-snippet-id="js-uncommon-1-0-5"
   data-code="const user = {
@@ -248,7 +248,7 @@ const obj = { [propName]: 'value' };
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Computed Property Names"
   data-description="Create objects with dynamic property names! Try building objects based on user input or conditions."
   data-snippet-id="js-uncommon-1-0-6"
   data-code="&#47;&#47; Basic computed property
@@ -305,7 +305,7 @@ const lookup = items.reduce((acc, item) => {
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Reduce to Object"
   data-description="Transform arrays into useful objects! Try creating lookup tables, counting occurrences, or grouping data."
   data-snippet-id="js-uncommon-1-0-7"
   data-code="const items = [
@@ -357,7 +357,7 @@ user.count ??= 0;
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Short-circuit Assignment"
   data-description="Practice efficient conditional assignment! See how ||= and ??= behave differently with various values."
   data-snippet-id="js-uncommon-1-0-8"
   data-code="let user = { name: 'John' };\n
@@ -401,7 +401,7 @@ const process = pipe(trim, toLowerCase, capitalize);
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Function Composition"
   data-description="Build function pipelines! Create chains of transformations that process data step by step."
   data-snippet-id="js-uncommon-1-0-9"
   data-code="&#47;&#47; Helper functions
@@ -457,7 +457,7 @@ const debounce = (func, delay) => {
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Debounce Function"
   data-description="See debouncing in action! Watch how rapid function calls get controlled and delayed."
   data-snippet-id="js-uncommon-1-0-10"
   data-code="&#47;&#47; Debounce utility

@@ -18,6 +18,8 @@ These snippets are incredibly common and are useful in everyday JavaScript progr
 
 ---
 
+## <span id="variable-logging" name="Variable Logging"></span>
+
 > Console Log with Variable Name
 ```javascript
 const myVariable = 'Hello World';
@@ -27,7 +29,7 @@ console.log({ myVariable });
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Variable Logging"
   data-description="Change myVariable or add other variables and see what happens!"
   data-snippet-id="js-common-0-0-1"
   data-code="const myVariable = 'Hello World';
@@ -36,9 +38,7 @@ console.log({ myVariable });
 
 <br/>
 
----
-
-<br/>
+## <span id="array-destructuring" name="Array Destructuring"></span>
 
 > Array Destructuring
 ```javascript
@@ -48,7 +48,7 @@ const [first, second, ...rest] = ['a', 'b', 'c', 'd'];
 
 <div 
   data-component="TestItOut" 
-  data-title="JS Snippets Playground"
+  data-title="Array Destructuring"
   data-description="Create an array then destructure it! Try changing the array values or destructuring pattern."
   data-snippet-id="js-common-0-0-2"
   data-code="const [first, second, ...rest] = ['a', 'b', 'c', 'd'];
@@ -62,9 +62,7 @@ const [first, second, ...rest] = ['a', 'b', 'c', 'd'];
 
 <br/>
 
----
-
-<br/>
+## <span id="object-desctructuring" name="Object Destructuring"></span>
 
 > Object Destructuring with Renaming
 ```javascript
@@ -74,7 +72,7 @@ const { name: userName, age: userAge } = user;
 
 <div 
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Object Destructuring"
   data-description="Create an object then destructure it!"
   data-snippet-id="js-common-0-0-3"
   data-code="const user = { name: 'John', age: 30, city: 'New York' };
@@ -88,9 +86,7 @@ const { name: userName, age: userAge } = user;
 
 <br/>
 
----
-
-<br/>
+## <span id="template-literals" name="Template Literals"></span>
 
 > Template Literals
 ```javascript
@@ -100,7 +96,7 @@ const message = `Hello ${name}, you are ${age} years old`;
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Template Literals"
   data-description="Practice inserting variables into the message string! Try adding calculations or function calls inside the ${} syntax."
   data-snippet-id="js-common-0-0-4"
   data-code="const name = 'World';
@@ -116,9 +112,7 @@ const message = `Hello ${name}, you are ${age} years old`;
 
 <br/>
 
----
-
-<br/>
+## <span id="arrow-function" name="Arrow Function"></span>
 
 > Arrow Function
 ```javascript
@@ -129,7 +123,7 @@ const greet = name => `Hello ${name}`;
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Arrow Function"
   data-description="Experiment with different arrow function syntaxes! Try functions with no parameters, one parameter, or multiple parameters."
   data-snippet-id="js-common-0-0-5"
   data-code="const add = (a, b) => a + b;
@@ -147,9 +141,7 @@ const greet = name => `Hello ${name}`;
 
 <br/>
 
----
-
-<br/>
+## <span id="array-map" name="Arary Map"></span>
 
 > Array Map
 ```javascript
@@ -159,7 +151,7 @@ const doubled = numbers.map(n => n * 2);
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Array Map"
   data-description="Try different transformations like squaring numbers, converting strings, or creating objects from arrays!"
   data-snippet-id="js-common-0-0-6" 
   data-code="const numbers = [1, 2, 3, 4, 5];
@@ -176,9 +168,7 @@ const doubled = numbers.map(n => n * 2);
 
 <br/>
 
----
-
-<br/>
+## <span id="array-filter" name="Array Filter"></span>
 
 > Array Filter
 ```javascript
@@ -188,7 +178,7 @@ const adults = users.filter(user => user.age >= 18);
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Array Filter"
   data-description="Try different filter conditions! Filter by age, name length, or any other property you can think of."
   data-snippet-id="js-common-0-0-7"
   data-code="const users = [
@@ -210,9 +200,8 @@ const adults = users.filter(user => user.age >= 18);
 
 <br/>
 
----
+## <span id="find-array-elements" name="Find Array Elements"></span>
 
-<br/>
 
 > Find Element in Array
 ```javascript
@@ -222,7 +211,7 @@ const user = users.find(user => user.id === targetId);
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Find Array Element"
   data-description="Try searching for different IDs, names, or create your own search criteria!"
   data-snippet-id="js-common-0-0-8"
   data-code="const users = [
@@ -245,9 +234,7 @@ const user = users.find(user => user.id === targetId);
 
 <br/>
 
----
-
-<br/>
+## <span id="ternary-operator" name="Ternary Operator"></span>
 
 > Ternary Operator
 ```javascript
@@ -257,7 +244,7 @@ const message = age >= 18 ? 'Adult' : 'Minor';
 
 <div
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Ternary Operator"
   data-description="Try different ages and conditions! Experiment with nested ternary operators but keep them readable."
   data-snippet-id="js-common-0-0-9"
   data-code="const age = 20;
@@ -279,9 +266,7 @@ const message = age >= 18 ? 'Adult' : 'Minor';
 
 <br/>
 
----
-
-<br/>
+## <span id="default-parameters" name="Default Parameters"></span>
 
 > Default Parameters
 ```javascript
@@ -293,7 +278,7 @@ function greet(name = 'Guest', age = 0) {
 
 <div 
   data-component="TestItOut"
-  data-title="JS Snippets Playground"
+  data-title="Default Parameters"
   data-description="Try calling with different parameters!"
   data-snippet-id="js-common-0-0-10"
   data-code="function greet(name = 'Guest', age = 0) {
@@ -303,5 +288,3 @@ function greet(name = 'Guest', age = 0) {
   console.log(greet('Alice'));
   console.log(greet('Bob', 25));">
 </div>
-
-<br/>
