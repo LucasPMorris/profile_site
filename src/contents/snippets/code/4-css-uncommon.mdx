@@ -5,190 +5,784 @@ chapter_title: 'CSS'
 title: 'Uncommon Snippets'
 category: 'Code'
 language: 'CSS'
-difficulty: 'Medium'
+difficulty: 'Easy'
 source: null
-cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
+cover_url: 'https://cloud.aulianza.com/public/images/learn/css.webp'
 source_url: null
 created_at: '2025-08-30'
-updated_at: '2025-09-06'
-is_playground: false
+updated_at: '2025-09-08'
+is_playground: true
 ---
 
-These snippets aren't as common but are still very useful in everyday CSS programming. These snippets are necessary to know but due to their less common nature a reference is nice!
-
-<br/>
-
----
-
-<br/>
-
-> Clamp for Responsive Typography
-```css
-.responsive-text {
-  font-size: clamp(1rem, 2.5vw, 2rem);
-}
-```
-**Function:** Creates fluid typography that scales between minimum and maximum values based on viewport width.
-
-<br/>
+These CSS snippets are less common but incredibly powerful. They solve specific problems and can elevate a designs when you need them!
 
 ---
 
-<br/>
+## <span id="scroll-snap" name="Scroll Snap Carousel"></span>
 
-> CSS Custom Properties with Fallbacks
-```css
-.theme-aware {
-  color: var(--text-color, #333);
-  background: var(--bg-color, white);
-}
-```
-**Function:** Use CSS variables with fallback values for better browser compatibility and default styling.
-
-<br/>
-
----
-
-<br/>
-
-> Container Queries
-```css
-.card-container {
-  container-type: inline-size;
-}
-
-@container (min-width: 300px) {
-  .card {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-  }
-}
-```
-**Function:** Apply styles based on container size rather than viewport size, enabling truly modular responsive components.
-
-<br/>
-
----
-
-<br/>
-
-> Scroll Snap
+> Scroll Snap Carousel
 ```css
 .scroll-container {
   scroll-snap-type: x mandatory;
   overflow-x: scroll;
+  display: flex;
+  scroll-behavior: smooth;
 }
 
 .scroll-item {
-  scroll-snap-align: start;
-}
-```
-**Function:** Creates smooth, snapping scroll behavior for carousels, galleries, or paginated content.
-
-<br/>
-
----
-
-<br/>
-
-> CSS Subgrid
-```css
-.parent-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.child-grid {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: subgrid;
-}
-```
-**Function:** Allows nested grids to inherit the parent grid's track sizing for perfect alignment.
-
-<br/>
-
----
-
-<br/>
-
-> Logical Properties
-```css
-.logical-spacing {
-  margin-inline: 1rem;
-  padding-block: 2rem;
-  border-inline-start: 2px solid blue;
-}
-```
-**Function:** Writing-mode independent spacing that adapts to different text directions (LTR/RTL) automatically.
-
-<br/>
-
----
-
-<br/>
-
-> CSS Shapes
-```css
-.circle-text {
-  shape-outside: circle(50%);
-  float: left;
-  width: 200px;
+  scroll-snap-align: center;
+  flex: none;
+  width: 280px;
   height: 200px;
-  border-radius: 50%;
 }
 ```
-**Function:** Allows text to flow around custom shapes, creating more interesting layouts than rectangular wrapping.
+**Function:** Creates smooth scrolling carousels that "snap" to specific points. Perfect for image galleries, testimonials, or product showcases without any JavaScript.
 
-<br/>
+<div
+  data-component="TestItOut"
+  data-title="Scroll Snap Carousel"
+  data-description="Scroll horizontally through the items - they snap perfectly into place!"
+  data-snippet-id="css-uncommon-4-0-1"
+  data-mode="css"
+  data-code=".scroll-container {
+  scroll-snap-type: x mandatory;
+  overflow-x: scroll;
+  display: flex;
+  scroll-behavior: smooth;
+  gap: 20px;
+  padding: 20px;
+  border: 2px solid #4fc3f7;
+  border-radius: 12px;
+  background: #f8f9fa;
+}\n
+.scroll-item {
+  scroll-snap-align: center;
+  flex: none;
+  width: 280px;
+  height: 200px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}"
+  data-html="<div class='scroll-container'>
+  <div class='scroll-item'>
+    <h3>🌅 Slide 1</h3>
+    <p>Beautiful sunrise scene</p>
+    <p>Scroll to see more →</p>
+  </div>
+  <div class='scroll-item' style='background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);'>
+    <h3>🌺 Slide 2</h3>
+    <p>Vibrant flower garden</p>
+    <p>Keep scrolling →</p>
+  </div>
+  <div class='scroll-item' style='background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);'>
+    <h3>🌊 Slide 3</h3>
+    <p>Ocean waves crashing</p>
+    <p>Almost there →</p>
+  </div>
+  <div class='scroll-item' style='background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);'>
+    <h3>🏔️ Slide 4</h3>
+    <p>Mountain peaks view</p>
+    <p>Perfect snapping!</p>
+  </div>
+</div>">
+</div>
 
 ---
 
-<br/>
+## <span id="css-tooltip" name="Advanced CSS Tooltip"></span>
 
-> Backdrop Filter
+> Advanced CSS Tooltip
 ```css
-.glass-effect {
-  backdrop-filter: blur(10px) saturate(150%);
-  background: rgba(255, 255, 255, 0.1);
+.tooltip {
+  position: relative;
+  cursor: help;
+}
+
+.tooltip::before,
+.tooltip::after {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: #2c3e50;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.tooltip::before {
+  content: '';
+  bottom: 115%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #2c3e50;
+}
+
+.tooltip:hover::before,
+.tooltip:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+```
+**Function:** Creates professional tooltips with arrows and smooth animations. Uses data attributes for easy customization and includes proper positioning.
+
+<div
+  data-component="TestItOut"
+  data-title="Advanced CSS Tooltip"
+  data-description="Hover over the elements to see beautiful tooltips with arrows!"
+  data-snippet-id="css-uncommon-4-1-1"
+  data-mode="css"
+  data-code=".tooltip {
+  position: relative;
+  cursor: help;
+  background: #4fc3f7;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  display: inline-block;
+  margin: 15px;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}\n
+.tooltip:hover {
+  background: #29b6f6;
+}\n
+.tooltip::before,
+.tooltip::after {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}\n
+.tooltip::after {
+  content: attr(data-tooltip);
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: #2c3e50;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 1000;
+}\n
+.tooltip::before {
+  content: '';
+  bottom: 115%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #2c3e50;
+  z-index: 1001;
+}\n
+.tooltip:hover::before,
+.tooltip:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}"
+  data-html="<div class='tooltip' data-tooltip='This tooltip has a beautiful arrow pointing down!'>
+  💡 Hover for Info
+</div>
+<div class='tooltip' data-tooltip='Tooltips are perfect for explaining complex features!' style='background: #28a745;'>
+  ❓ Help Button
+</div>
+<div class='tooltip' data-tooltip='No JavaScript required - pure CSS magic!' style='background: #ffc107; color: #212529;'>
+  ⚡ CSS Only
+</div>
+<div class='tooltip' data-tooltip='Smooth animations make the experience delightful!' style='background: #dc3545;'>
+  ✨ Animated
+</div>">
+</div>
+
+---
+
+## <span id="animated-gradient" name="Animated Gradient"></span>
+
+> Animated Gradient Background
+```css
+.gradient-bg {
+  background: linear-gradient(
+    -45deg,
+    #ee7752,
+    #e73c7e,
+    #23a6d5,
+    #23d5ab
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+```
+**Function:** Creates mesmerizing animated gradient backgrounds that smoothly shift colors. Perfect for hero sections, cards, or any element that needs dynamic visual appeal.
+
+<div
+  data-component="TestItOut"
+  data-title="Animated Gradient Background"
+  data-description="Watch the beautiful colors flow and shift across the background!"
+  data-snippet-id="css-uncommon-4-2-1"
+  data-mode="css"
+  data-code=".gradient-bg {
+  background: linear-gradient(
+    -45deg,
+    #ee7752,
+    #e73c7e,
+    #23a6d5,
+    #23d5ab
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 8s ease infinite;
+  padding: 40px;
+  border-radius: 16px;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  margin: 20px 0;
+}\n
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}\n
+.gradient-card {
+  background: linear-gradient(
+    45deg,
+    #667eea,
+    #764ba2,
+    #f093fb,
+    #f5576c
+  );
+  background-size: 300% 300%;
+  animation: gradient-shift 6s ease infinite;
+  padding: 20px;
+  border-radius: 12px;
+  color: white;
+  margin: 10px 0;
+  text-align: center;
+}"
+  data-html="<div class='gradient-bg'>
+  <h2>🌈 Amazing Animated Gradient</h2>
+  <p>This background smoothly shifts through multiple colors</p>
+  <p>Perfect for hero sections and call-to-action areas!</p>
+</div>
+<div class='gradient-card'>
+  <h3>🎨 Gradient Card</h3>
+  <p>Smaller gradient animation for cards and components</p>
+</div>">
+</div>
+
+---
+
+## <span id="glass-morphism" name="Glassmorphism Effect"></span>
+
+> Glassmorphism Effect
+```css
+.glass-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 ```
-**Function:** Creates glass morphism effects by blurring and filtering content behind an element.
+**Function:** Creates the trendy glassmorphism effect with background blur and transparency. Works beautifully over colorful backgrounds and gives a modern, premium feel.
 
-<br/>
+<div
+  data-component="TestItOut"
+  data-title="Glassmorphism Effect"
+  data-description="See the glass effect with beautiful background blur and transparency!"
+  data-snippet-id="css-uncommon-4-3-1"
+  data-mode="css"
+  data-code=".colorful-bg {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f7b731, #ee5a52);
+  background-size: 400% 400%;
+  animation: bg-shift 10s ease infinite;
+  padding: 40px;
+  border-radius: 20px;
+  position: relative;
+}\n
+@keyframes bg-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}\n
+.glass-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  padding: 24px;
+  margin: 20px auto;
+  max-width: 350px;
+  color: #333;
+  text-align: center;
+}\n
+.glass-small {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 10px;
+  display: inline-block;
+  color: #444;
+}"
+  data-html="<div class='colorful-bg'>
+  <div class='glass-card'>
+    <h3>✨ Glassmorphism Card</h3>
+    <p>This card has a beautiful frosted glass effect that blurs the colorful background behind it.</p>
+    <p>Perfect for modern UI designs!</p>
+  </div>\n  
+  <div class='glass-small'>
+    🔮 Glass Element 1
+  </div>
+  <div class='glass-small'>
+    💎 Glass Element 2
+  </div>
+  <div class='glass-small'>
+    🌟 Glass Element 3
+  </div>
+</div>">
+</div>
 
 ---
 
-<br/>
+## <span id="text-effects" name="Advanced Text Effects"></span>
 
-> CSS Mask
+> Advanced Text Effects
 ```css
-.masked-image {
-  mask: linear-gradient(to bottom, black 0%, transparent 100%);
-  -webkit-mask: linear-gradient(to bottom, black 0%, transparent 100%);
+.neon-text {
+  color: #fff;
+  text-shadow:
+    0 0 5px #00ff88,
+    0 0 10px #00ff88,
+    0 0 20px #00ff88,
+    0 0 40px #00ff88;
+  animation: neon-flicker 2s infinite alternate;
+}
+
+@keyframes neon-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradient-flow 3s ease infinite;
+}
+
+@keyframes gradient-flow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 ```
-**Function:** Applies complex transparency effects using gradients or images as masks.
+**Function:** Creates stunning text effects including neon glow and animated gradient text. Perfect for headings, logos, and attention-grabbing elements.
 
-<br/>
+<div
+  data-component="TestItOut"
+  data-title="Advanced Text Effects"
+  data-description="See amazing neon and gradient text effects in action!"
+  data-snippet-id="css-uncommon-4-4-1"
+  data-mode="css"
+  data-code=".dark-bg {
+  background: #1a1a1a;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+}\n
+.neon-text {
+  color: #fff;
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-shadow:
+    0 0 5px #00ff88,
+    0 0 10px #00ff88,
+    0 0 20px #00ff88,
+    0 0 40px #00ff88;
+  animation: neon-flicker 2s infinite alternate;
+  margin: 20px 0;
+}\n
+@keyframes neon-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}\n
+.gradient-text {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f7b731);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradient-flow 3s ease infinite;
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 20px 0;
+}\n
+@keyframes gradient-flow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}\n
+.cyber-text {
+  color: #00ffff;
+  font-family: monospace;
+  font-size: 1.5rem;
+  text-shadow: 
+    0 0 10px #00ffff,
+    0 0 20px #00ffff,
+    0 0 30px #00ffff;
+  animation: cyber-glow 1.5s ease-in-out infinite alternate;
+}\n
+@keyframes cyber-glow {
+  from { text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff; }
+  to { text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff; }
+}"
+  data-html="<div class='dark-bg'>
+  <div class='neon-text'>
+    ⚡ NEON GLOW ⚡
+  </div>\n  
+  <div class='gradient-text'>
+    🌈 Animated Gradient Text 🌈
+  </div>\n  
+  <div class='cyber-text'>
+    🤖 CYBER_STYLE.EXE 🤖
+  </div>\n  
+  <p style='color: #ccc; margin-top: 20px;'>
+    ✨ Perfect for futuristic and modern designs!
+  </p>
+</div>">
+</div>
 
 ---
 
-<br/>
+## <span id="morphing-loader" name="Morphing CSS Loader"></span>
 
-> View Transitions API
+> Morphing CSS Loader
 ```css
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 0.5s;
+.morphing-loader {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  animation: morph 2s ease-in-out infinite;
+  position: relative;
 }
 
-.fade-transition {
-  view-transition-name: fade;
+.morphing-loader::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: inner-pulse 2s ease-in-out infinite;
+}
+
+@keyframes morph {
+  0%, 100% {
+    border-radius: 50%;
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    border-radius: 25%;
+    transform: rotate(180deg) scale(1.2);
+  }
+}
+
+@keyframes inner-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(0.8); }
 }
 ```
-**Function:** Creates smooth page transitions without JavaScript using the new View Transitions API.
+**Function:** Creates an eye-catching morphing loader that transforms from circle to square while rotating and scaling. Perfect for loading states and decorative animations.
 
-<br/>
+<div
+  data-component="TestItOut"
+  data-title="Morphing CSS Loader"
+  data-description="Watch the loader morph, rotate, and pulse with pure CSS animation!"
+  data-snippet-id="css-uncommon-4-5-1"
+  data-mode="css"
+  data-code=".loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  gap: 40px;
+  flex-wrap: wrap;
+}\n
+.morphing-loader {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  animation: morph 2s ease-in-out infinite;
+  position: relative;
+}\n
+.morphing-loader::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: inner-pulse 2s ease-in-out infinite;
+}\n
+@keyframes morph {
+  0%, 100% {
+    border-radius: 50%;
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    border-radius: 25%;
+    transform: rotate(180deg) scale(1.2);
+  }
+}\n
+@keyframes inner-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(0.8); }
+}\n
+.spin-loader {
+  width: 50px;
+  height: 50px;
+  background: conic-gradient(from 0deg, transparent, #4ecdc4, transparent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  position: relative;
+}\n
+.spin-loader::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  background: #f8f9fa;
+  border-radius: 50%;
+}\n
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}\n
+.wave-loader {
+  display: flex;
+  gap: 4px;
+  align-items: end;
+}\n
+.wave-bar {
+  width: 8px;
+  height: 40px;
+  background: #45b7d1;
+  border-radius: 4px;
+  animation: wave 1.2s ease-in-out infinite;
+}\n
+.wave-bar:nth-child(2) { animation-delay: 0.1s; }
+.wave-bar:nth-child(3) { animation-delay: 0.2s; }
+.wave-bar:nth-child(4) { animation-delay: 0.3s; }
+.wave-bar:nth-child(5) { animation-delay: 0.4s; }\n
+@keyframes wave {
+  0%, 100% { height: 40px; }
+  50% { height: 10px; }
+}"
+  data-html="<div class='loader-container'>
+  <div>
+    <div class='morphing-loader'></div>
+    <p style='text-align: center; margin-top: 10px; font-size: 14px; color: #666;'>Morphing Loader</p>
+  </div>\n  
+  <div>
+    <div class='spin-loader'></div>
+    <p style='text-align: center; margin-top: 10px; font-size: 14px; color: #666;'>Gradient Spinner</p>
+  </div>\n
+  <div>
+    <div class='wave-loader'>
+      <div class='wave-bar'></div>
+      <div class='wave-bar'></div>
+      <div class='wave-bar'></div>
+      <div class='wave-bar'></div>
+      <div class='wave-bar'></div>
+    </div>
+    <p style='text-align: center; margin-top: 10px; font-size: 14px; color: #666;'>Wave Loader</p>
+  </div>
+</div>">
+</div>
+
+---
+
+## <span id="floating-elements" name="Floating Elements"></span>
+
+> Floating Elements Animation
+```css
+.floating-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.floating-element {
+  position: absolute;
+  background: rgba(79, 195, 247, 0.7);
+  border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.floating-element:nth-child(1) {
+  width: 80px;
+  height: 80px;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.floating-element:nth-child(2) {
+  width: 60px;
+  height: 60px;
+  left: 70%;
+  animation-delay: 2s;
+}
+
+.floating-element:nth-child(3) {
+  width: 40px;
+  height: 40px;
+  left: 40%;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10%, 90% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-100px) rotate(180deg);
+  }
+}
 ```
+**Function:** Creates mesmerizing floating bubble animations that continuously drift upward. Perfect for background effects, hero sections, or adding life to static layouts.
+
+<div
+  data-component="TestItOut"
+  data-title="Floating Elements Animation"
+  data-description="Watch the beautiful floating bubbles drift upward continuously!"
+  data-snippet-id="css-uncommon-4-6-1"
+  data-mode="css"
+  data-code=".floating-demo {
+  position: relative;
+  height: 300px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+}\n
+.floating-element {
+  position: absolute;
+  border-radius: 50%;
+  animation: float 8s linear infinite;
+  pointer-events: none;
+}\n
+.bubble-1 {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.2);
+  left: 15%;
+  animation-delay: 0s;
+}\n
+.bubble-2 {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.15);
+  left: 70%;
+  animation-delay: 3s;
+}\n
+.bubble-3 {
+  width: 30px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.25);
+  left: 45%;
+  animation-delay: 6s;
+}\n
+.bubble-4 {
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.1);
+  left: 85%;
+  animation-delay: 1.5s;
+}\n
+.bubble-5 {
+  width: 35px;
+  height: 35px;
+  background: rgba(255, 255, 255, 0.2);
+  left: 25%;
+  animation-delay: 4.5s;
+}\n
+@keyframes float {
+  0% {
+    transform: translateY(320px) rotate(0deg);
+    opacity: 0;
+  }
+  10%, 90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-80px) rotate(360deg);
+    opacity: 0;
+  }
+}\n
+.content {
+  z-index: 10;
+  position: relative;
+}"
+  data-html="<div class='floating-demo'>
+  <div class='floating-element bubble-1'></div>
+  <div class='floating-element bubble-2'></div>
+  <div class='floating-element bubble-3'></div>
+  <div class='floating-element bubble-4'></div>
+  <div class='floating-element bubble-5'></div>\m  
+  <div class='content'>
+    <h2>✨ Floating Bubbles</h2>
+    <p>Beautiful continuous animation</p>
+    <p>Perfect for hero sections!</p>
+  </div>
+</div>">
+</div>

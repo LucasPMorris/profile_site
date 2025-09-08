@@ -1,94 +1,154 @@
-"use client";
+import { useState } from 'react';
+import { LuPlay as PlayIcon } from 'react-icons/lu';
+import { SiJavascript, SiCss3, SiHtml5, SiMarkdown } from 'react-icons/si';
 
-import React, { useState } from 'react';
-import { motion as Motion, AnimatePresence, motion } from 'framer-motion';
-import { SiJavascript } from 'react-icons/si';
-import { HiOutlinePlay as PlayIcon } from 'react-icons/hi';
-import { HiChevronDown as ChevronDownIcon } from 'react-icons/hi';
+import ModalWrapper from '@/common/components/elements/ModalWrapper';
+import CodePlayground, { PlaygroundMode } from '@/modules/playground/components/CodePlayground';
 
-import Playground from '@/modules/playground';
+interface TestItOutProps { title: string; description: string; snippetId: string; code: string; html: string, mode?: PlaygroundMode; }
 
-interface TestItOutProps { title: string; code: string; description: string; snippetId: string; }
+const TestItOut = ({ title, description, snippetId, code, html, mode = 'javascript' }: TestItOutProps) => {
+  const [isOpen, setIsOpen] = useState(false);
 
-const TestItOut: React.FC<TestItOutProps> = ({  title, code, description, snippetId  }) => {
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  // State for JavaScript mode
+  const [jsCode, setJsCode] = useState(mode === 'javascript' ? code : '');
+  const [jsOutput, setJsOutput] = useState('');
+  const [isError, setIsError] = useState(false);
 
-  const toggleExpanded = (): void => {
-    setIsExpanded(!isExpanded);
+  // State for CSS mode
+  const [cssCode, setCssCode] = useState(mode === 'css' ? code : '');
+  const [htmlCode, setHtmlCode] = useState(
+    mode === 'css' 
+      ? '<div class="demo-element">Test Element</div>' 
+      : '<div class="demo-element">Test Element</div>'
+  );
+
+  const [regexCode, setRegexCode] = useState(mode === 'regex' ? code : '');
+  const [testString, setTestString] = useState('');
+
+  const [htmlContent, setHtmlContent] = useState(mode === 'html' ? code : '');
+  const [markdownCode, setMarkdownCode] = useState(mode === 'markdown' ? code : '');
+
+  const handleOpen = () => {
+    setIsOpen(true);
+    // Initialize the correct state based on mode when opening
+    if (mode === 'javascript') { setJsCode(code); }
+    else if (mode === 'css') { 
+      setCssCode(code);
+      const defaultHTML = html || '<div class="demo-element">Test Element</div>';
+      setHtmlCode(defaultHTML);
+    }
+    else if (mode === 'html') { setHtmlContent(code); }
+    else if (mode === 'markdown') { setMarkdownCode(code); }
+    else if (mode === 'regex') {
+      setRegexCode(code);
+      setTestString(html || 'Sample text to test your regex pattern against.\nMultiple lines supported!\nTry matching: emails, phone numbers, dates, etc.');
+    }
+  };
+
+  const handleClose = () => setIsOpen(false);
+
+  const handleRunCode = () => {
+    if (mode !== 'javascript') return;
     
-    // Smooth scroll to the expanded section
-    if (!isExpanded) {
-      setTimeout(() => {
-        const element = document.getElementById(`${snippetId}`);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          const offset = window.pageYOffset + rect.top - 100;
-          window.scrollTo({ top: offset, behavior: 'smooth' });
-        }
-      }, 200);
+    try {
+      setIsError(false);
+
+      let capturedConsoleOutput = '';
+      const originalConsoleLog = console.log;
+      const originalConsoleError = console.error;
+      const originalConsoleWarn = console.warn;
+
+      // Helper function to properly stringify values
+      const formatValue = (value: any): string => {
+        if (value === null) return 'null';
+        if (value === undefined) return 'undefined';
+        if (typeof value === 'string') return value;
+        if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+        if (typeof value === 'function') return value.toString();
+        
+        // For objects and arrays, use JSON.stringify with proper formatting
+        try { return JSON.stringify(value, null, 2); }
+        catch (error) { return String(value); }
+      };
+
+      // Capture console outputs
+      console.log = (...messages) => {
+        const formattedMessages = messages.map(formatValue);
+        capturedConsoleOutput += formattedMessages.join(' ') + '\n';
+      };
+      
+      console.error = (...messages) => {
+        const formattedMessages = messages.map(formatValue);
+        capturedConsoleOutput += 'ERROR: ' + formattedMessages.join(' ') + '\n';
+      };
+      
+      console.warn = (...messages) => {
+        const formattedMessages = messages.map(formatValue);
+        capturedConsoleOutput += 'WARN: ' + formattedMessages.join(' ') + '\n';
+      };
+
+      // Execute the code
+      const result = new Function(jsCode)();
+      
+      // Restore original console methods
+      console.log = originalConsoleLog;
+      console.error = originalConsoleError;
+      console.warn = originalConsoleWarn;
+
+      // Set output
+      let finalOutput = capturedConsoleOutput;
+      
+      // If there's a return value, add it to the output
+      if (result !== undefined) { finalOutput += 'Return value: ' + formatValue(result); }
+      
+      setJsOutput(finalOutput || 'Code executed successfully (no output)');
+    } catch (error) {
+      setIsError(true);
+      if (error instanceof Error) { setJsOutput(error.toString()); }
+      else { setJsOutput('An unknown error occurred.'); }
+    }
+  };
+
+  const getIcon = () => {
+    switch (mode) {
+      case 'javascript': return <SiJavascript size={18} className='text-yellow-400' />;
+      case 'css': return <SiCss3 size={18} className='text-blue-400' />;
+      case 'html': return <SiHtml5 size={18} className='text-orange-500' />;
+      case 'markdown': return <SiMarkdown size={18} className='text-gray-600' />;
+      case 'regex': return <span className="text-xl">🔍</span>;
+      default: return <PlayIcon size={18} className='text-blue-500' />;
+    }
+  };
+
+  const getPlaygroundProps = () => { const baseProps = { id: `test-${snippetId}`, mode, isFullScreen: true, onCloseFullScreen: handleClose };
+
+    switch (mode) {
+      case 'javascript': return {...baseProps, code: jsCode, output: jsOutput, isError, onRunCode: handleRunCode, onSetCode: setJsCode, onSetOutput: setJsOutput };
+      case 'css': return {...baseProps, cssCode, htmlCode, onSetCssCode: setCssCode, onSetHtmlCode: setHtmlCode };
+      case 'html': return {...baseProps, htmlContent, onSetHtmlContent: setHtmlContent };
+      case 'markdown': return {...baseProps, markdownCode, onSetMarkdownCode: setMarkdownCode };
+      case 'regex': return {...baseProps, regexCode, testString, onSetRegexCode: setRegexCode, onSetTestString: setTestString };
+      default: return baseProps;
     }
   };
 
   return (
-    <Motion.div id={`${snippetId}`} className="mb-6" layout initial={false} >
-      {/* Snippet Content */}
-      <div className="mb-4">
-        {/* Test it Out Button */}
-        <motion.button type="button" onClick={toggleExpanded} className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} >
-          <PlayIcon size={16} />
-          <span>{isExpanded ? 'Hide Playground' : 'Test it Out'}</span>
-          <Motion.div animate={{ rotate: isExpanded ? 90 : 0 }} transition={{ duration: 0.2 }}><ChevronDownIcon size={16} /></Motion.div>
-        </motion.button>
+    <>
+      <div className="my-6 rounded-lg border border-neutral-300 bg-neutral-50 p-4 dark:border-neutral-700 dark:bg-neutral-800">
+        <div className="mb-3 flex items-center justify-between">
+          <h4 className="font-medium text-neutral-800 dark:text-neutral-200">{title}</h4>
+          <button onClick={handleOpen} className="flex items-center gap-2 rounded-md bg-blue-500 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-600">{getIcon()}Test It Out</button>
+        </div>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">{description}</p>
       </div>
 
-      {/* Expandable Playground Section */}
-      <AnimatePresence>
-        {isExpanded && (
-          <Motion.div
-            initial={{ height: 0, opacity: 0, y: -20 }}
-            animate={{ height: 'auto', opacity: 1, y: 0 }}
-            exit={{ height: 0, opacity: 0, y: -20 }}
-            transition={{ 
-              height: { duration: 0.5, ease: [0.04, 0.62, 0.23, 0.98] },
-              opacity: { duration: 0.4, delay: isExpanded ? 0.1 : 0 },
-              y: { duration: 0.4, delay: isExpanded ? 0.1 : 0 }
-            }}
-            className="overflow-hidden"
-          >
-            <div className="p-6 bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-800 dark:to-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-inner">
-              {/* Playground Header */}
-              <div className="flex items-center gap-3 mb-6">
-                <div className="flex gap-1">
-                  <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                  <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                </div>
-                <SiJavascript size={20} className="text-yellow-400" />
-                <h4 className="text-lg font-semibold text-neutral-700 dark:text-neutral-300">Interactive JavaScript Playground</h4>
-              </div>
-                           
-              {/* Help Text */}
-              <div className="mt-6 mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-l-4 border-blue-400">
-                <div className="flex items-start gap-2">
-                  <span className="text-lg">💡</span>
-                  <div>
-                    <p className="text-sm text-blue-700 dark:text-blue-300 font-medium mb-1">Try it yourself!</p>
-                    <p className="text-sm text-blue-600 dark:text-blue-400">Modify the code above, add console.log statements, or change variables to see how it affects the output in real-time.</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Your Existing Playground Component */}
-              <Playground initialCode={code} />
-
-            </div>
-          </Motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Separator */}
-      <div className="mt-8 border-b border-neutral-200 dark:border-neutral-700"></div>
-    </Motion.div>
+      <ModalWrapper isOpen={isOpen} onClose={handleClose}>
+        <div className="h-[80vh] w-full">
+          <CodePlayground {...getPlaygroundProps()} />
+        </div>
+      </ModalWrapper>
+    </>
   );
 };
 

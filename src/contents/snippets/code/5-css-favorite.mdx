@@ -5,242 +5,1462 @@ chapter_title: 'CSS'
 title: 'Personal Favorites'
 category: 'Code'
 language: 'CSS'
-difficulty: 'Medium'
+difficulty: 'Easy'
 source: null
-cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
+cover_url: 'https://cloud.aulianza.com/public/images/learn/css.webp'
 source_url: null
 created_at: '2025-08-30'
-updated_at: '2025-09-06'
-is_playground: false
+updated_at: '2025-09-08'
+is_playground: true
 ---
 
-These are my favorite CSS snippets. Some are common, others are obscure, or I just happen to use them a lot in my projects.
-
-<br/>
+These are my favorite CSS snippets. They're a perfect balance of elegant, practical, and powerful!
 
 ---
 
-<br/>
+## <span id="ultimate-button" name="Button System"></span>
 
-> Perfect Scrollbar Styling
+> Ultimate Button System
 ```css
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #888 #f1f1f1;
+.btn {
+  /* Reset all browser defaults */
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  
+  /* Core button styling */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Default primary style */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
+.btn:active {
+  transform: translateY(0);
+  transition-duration: 0.1s;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #555;
+.btn:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
 }
 ```
-**Function:** Creates beautiful custom scrollbars that work across browsers. Much better than default ugly scrollbars.
+**Function:** Button system that handles all the edge cases. Resets browser defaults, provides gradients, smooth animations, and proper accessibility.
 
-<br/>
+<div
+  data-component="TestItOut"
+  data-title="Ultimate Button System"
+  data-description="The perfect button foundation with multiple variants and states!"
+  data-snippet-id="css-favorite-5-0-1"
+  data-mode="css"
+  data-code=".btn {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 5px;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}\n
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}\n
+.btn:active {
+  transform: translateY(0);
+  transition-duration: 0.1s;
+}\n
+.btn:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}\n
+.btn-secondary {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}\n
+.btn-success {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}\n
+.btn-outline {
+  background: transparent;
+  color: #667eea;
+  border: 2px solid #667eea;
+}\n
+.btn-outline:hover {
+  background: #667eea;
+  color: white;
+}\n
+.btn-large {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+}"
+  data-html="<div style='text-align: center; padding: 20px;'>
+  <button class='btn'>
+    ✨ Primary Button
+  </button>
+  <button class='btn btn-secondary'>
+    🎨 Secondary
+  </button>
+  <button class='btn btn-success'>
+    ✅ Success
+  </button>\n  
+  <br><br>\n  
+  <button class='btn btn-outline'>
+    📝 Outline Button
+  </button>
+  <button class='btn btn-large'>
+    🚀 Large Button
+  </button>\n  
+  <br><br>  
+  <a href='#' class='btn'>
+    🔗 Link as Button
+  </a>
+  <button class='btn' disabled style='opacity: 0.6; cursor: not-allowed;'>
+    ⏸️ Disabled
+  </button>
+</div>">
+</div>
 
 ---
 
-<br/>
+## <span id="perfect-shadows" name="Shadow System"></span>
 
-> Dark Mode Toggle
+> Perfect Shadow System
+```css
+/* Elevation system inspired by Material Design */
+.shadow-sm {
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.shadow-md {
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.07),
+    0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-lg {
+  box-shadow: 
+    0 10px 15px rgba(0, 0, 0, 0.1),
+    0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-xl {
+  box-shadow: 
+    0 20px 25px rgba(0, 0, 0, 0.1),
+    0 10px 10px rgba(0, 0, 0, 0.04);
+}
+
+.shadow-2xl {
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.25);
+}
+
+.shadow-inner {
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* Colored shadows for special effects */
+.shadow-colored {
+  box-shadow: 
+    0 10px 25px rgba(102, 126, 234, 0.3),
+    0 5px 10px rgba(102, 126, 234, 0.2);
+}
+```
+**Function:** Shadow system with multiple elevation levels. Creates depth hierarchy and includes colored shadows for special effects.
+
+<div
+  data-component="TestItOut"
+  data-title="Perfect Shadow System"
+  data-description="A complete elevation system with natural-looking shadows!"
+  data-snippet-id="css-favorite-5-1-1"
+  data-mode="css"
+  data-code=".shadow-demo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  background: #f8f9fa;
+}\n
+.shadow-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}\n
+.shadow-sm {
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
+}\n
+.shadow-md {
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.07),
+    0 2px 4px rgba(0, 0, 0, 0.06);
+}\n
+.shadow-lg {
+  box-shadow: 
+    0 10px 15px rgba(0, 0, 0, 0.1),
+    0 4px 6px rgba(0, 0, 0, 0.05);
+}\n
+.shadow-xl {
+  box-shadow: 
+    0 20px 25px rgba(0, 0, 0, 0.1),
+    0 10px 10px rgba(0, 0, 0, 0.04);
+}\n
+.shadow-2xl {
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.25);
+}\n
+.shadow-inner {
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+}\n
+.shadow-colored {
+  box-shadow: 
+    0 10px 25px rgba(102, 126, 234, 0.3),
+    0 5px 10px rgba(102, 126, 234, 0.2);
+}\n
+.shadow-card:hover {
+  transform: translateY(-2px);
+}\n
+.special-shadow {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}"
+  data-html="<div class='shadow-demo'>
+  <div class='shadow-card shadow-sm'>
+    <h4>Small</h4>
+    <p>Subtle depth</p>
+  </div>\n  
+  <div class='shadow-card shadow-md'>
+    <h4>Medium</h4>
+    <p>Card level</p>
+  </div>\n  
+  <div class='shadow-card shadow-lg'>
+    <h4>Large</h4>
+    <p>Modal level</p>
+  </div>\n  
+  <div class='shadow-card shadow-xl'>
+    <h4>Extra Large</h4>
+    <p>Floating panels</p>
+  </div>\n  
+  <div class='shadow-card shadow-2xl'>
+    <h4>2X Large</h4>
+    <p>Maximum depth</p>
+  </div>\n  
+  <div class='shadow-card shadow-inner'>
+    <h4>Inner</h4>
+    <p>Inset effect</p>
+  </div>\n
+  <div class='shadow-card shadow-colored special-shadow'>
+    <h4>✨ Colored</h4>
+    <p>Brand shadows</p>
+  </div>
+</div>">
+</div>
+
+---
+
+## <span id="responsive-grid" name="Responsive Grid"></span>
+
+> Responsive Grid
+```css
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: clamp(1rem, 3vw, 2rem);
+  padding: clamp(1rem, 5vw, 3rem);
+}
+
+/* Named grid areas for complex layouts */
+.layout-grid {
+  display: grid;
+  grid-template-areas:
+    "header header header"
+    "sidebar main aside"
+    "footer footer footer";
+  grid-template-columns: 250px 1fr 200px;
+  grid-template-rows: auto 1fr auto;
+  gap: 1rem;
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .layout-grid {
+    grid-template-areas:
+      "header"
+      "main"
+      "sidebar"
+      "aside"
+      "footer";
+    grid-template-columns: 1fr;
+  }
+}
+
+.header { grid-area: header; }
+.sidebar { grid-area: sidebar; }
+.main { grid-area: main; }
+.aside { grid-area: aside; }
+.footer { grid-area: footer; }
+```
+**Function:** Grid system that handles any layout scenario. Auto-responsive columns, fluid spacing with clamp(), and named grid areas for complex layouts.
+
+<div
+  data-component="TestItOut"
+  data-title="Ultimate Responsive Grid"
+  data-description="A complete grid system that adapts to any screen size!"
+  data-snippet-id="css-favorite-5-2-1"
+  data-mode="css"
+  data-code=".responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: clamp(0.5rem, 2vw, 1.5rem);
+  padding: clamp(1rem, 3vw, 2rem);
+  background: #f8f9fa;
+  border-radius: 12px;
+}\n
+.grid-item {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}\n
+.grid-item:hover {
+  transform: translateY(-2px);
+}\n
+.layout-demo {
+  display: grid;
+  grid-template-areas:
+    'header header'
+    'sidebar main'
+    'footer footer';
+  grid-template-columns: 150px 1fr;
+  grid-template-rows: auto 1fr auto;
+  gap: 1rem;
+  height: 300px;
+  margin-top: 20px;
+  background: #e9ecef;
+  padding: 1rem;
+  border-radius: 12px;
+}\n
+.layout-header {
+  grid-area: header;
+  background: #28a745;
+  color: white;
+  padding: 1rem;
+  border-radius: 6px;
+  text-align: center;
+}\n
+.layout-sidebar {
+  grid-area: sidebar;
+  background: #6f42c1;
+  color: white;
+  padding: 1rem;
+  border-radius: 6px;
+  text-align: center;
+}\n
+.layout-main {
+  grid-area: main;
+  background: #007bff;
+  color: white;
+  padding: 1rem;
+  border-radius: 6px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}\n
+.layout-footer {
+  grid-area: footer;
+  background: #dc3545;
+  color: white;
+  padding: 1rem;
+  border-radius: 6px;
+  text-align: center;
+}"
+  data-html="<div class='responsive-grid'>
+  <div class='grid-item'>
+    <h4>📱 Item 1</h4>
+    <p>Fully responsive</p>
+  </div>
+  <div class='grid-item'>
+    <h4>💻 Item 2</h4>
+    <p>Auto-sizing</p>
+  </div>
+  <div class='grid-item'>
+    <h4>🖥️ Item 3</h4>
+    <p>Fluid spacing</p>
+  </div>
+  <div class='grid-item'>
+    <h4>⚡ Item 4</h4>
+    <p>No media queries</p>
+  </div>
+  <div class='grid-item'>
+    <h4>🎯 Item 5</h4>
+    <p>Perfect fit</p>
+  </div>
+  <div class='grid-item'>
+    <h4>✨ Item 6</h4>
+    <p>Modern CSS</p>
+  </div>
+</div>\n
+<div class='layout-demo'>
+  <div class='layout-header'>📋 Header</div>
+  <div class='layout-sidebar'>📂 Sidebar</div>
+  <div class='layout-main'>📄 Main Content Area</div>
+  <div class='layout-footer'>📍 Footer</div>
+</div>">
+</div>
+
+---
+
+## <span id="dark-mode-system" name="Dark Mode System"></span>
+
+> Complete Dark Mode System
 ```css
 :root {
-  --bg-color: #ffffff;
-  --text-color: #333333;
-  --accent-color: #007bff;
+  /* Light mode colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --text-primary: #2d3748;
+  --text-secondary: #718096;
+  --border-color: #e2e8f0;
+  --accent-primary: #667eea;
+  --accent-secondary: #764ba2;
+  --shadow: rgba(0, 0, 0, 0.1);
+  
+  /* Transition for smooth theme switching */
+  color-scheme: light;
 }
 
 [data-theme="dark"] {
-  --bg-color: #1a1a1a;
-  --text-color: #e0e0e0;
-  --accent-color: #4dabf7;
+  /* Dark mode colors */
+  --bg-primary: #1a202c;
+  --bg-secondary: #2d3748;
+  --text-primary: #f7fafc;
+  --text-secondary: #a0aec0;
+  --border-color: #4a5568;
+  --accent-primary: #9f7aea;
+  --accent-secondary: #667eea;
+  --shadow: rgba(0, 0, 0, 0.3);
+  
+  color-scheme: dark;
 }
 
+/* Apply the theme */
 body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  box-shadow: 0 4px 6px var(--shadow);
+}
+
+.btn-theme {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: var(--bg-primary);
+}
 ```
-**Function:** Elegant dark mode implementation using CSS custom properties and data attributes.
+**Function:** Dark mode system using CSS custom properties. Smooth transitions, seperate color palette, and easy to maintain. Jsu toggle the data-theme attribute.
 
-<br/>
-
----
-
-<br/>
-
-> Glassmorphism Card
-```css
-.glass-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+<div
+  data-component="TestItOut"
+  data-title="Complete Dark Mode System"
+  data-description="Toggle between light and dark themes with smooth transitions!"
+  data-snippet-id="css-favorite-5-3-1"
+  data-mode="css"
+  data-code=":root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --text-primary: #2d3748;
+  --text-secondary: #718096;
+  --border-color: #e2e8f0;
+  --accent-primary: #667eea;
+  --accent-secondary: #764ba2;
+  --shadow: rgba(0, 0, 0, 0.1);
+  color-scheme: light;
+}\n
+[data-theme='dark'] {
+  --bg-primary: #1a202c;
+  --bg-secondary: #2d3748;
+  --text-primary: #f7fafc;
+  --text-secondary: #a0aec0;
+  --border-color: #4a5568;
+  --accent-primary: #9f7aea;
+  --accent-secondary: #667eea;
+  --shadow: rgba(0, 0, 0, 0.3);
+  color-scheme: dark;
+}\n
+.theme-demo {
+  background: var(--bg-primary);
+  color: var(--text-primary);
   padding: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-```
-**Function:** Modern glassmorphism effect that looks amazing on any background. Perfect for cards and modals.
-
-<br/>
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  transition: all 0.3s ease;
+}\n
+.theme-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  box-shadow: 0 4px 6px var(--shadow);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  transition: all 0.3s ease;
+}\n
+.theme-text-secondary {
+  color: var(--text-secondary);
+  margin: 0.5rem 0;
+}\n
+.btn-theme {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: var(--bg-primary);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0.5rem;
+}\n
+.btn-theme:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px var(--shadow);
+}\n
+.toggle-btn {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}"
+  data-html="<div class='theme-demo'>
+  <h3>🎨 Dark Mode Demo</h3>
+  <p class='theme-text-secondary'>
+    This demo shows how the theme system works with CSS custom properties.
+  </p>\n  
+  <div class='theme-card'>
+    <h4>📋 Sample Card</h4>
+    <p class='theme-text-secondary'>
+      This card adapts to both light and dark themes automatically.
+    </p>
+    <button class='btn-theme'>✨ Themed Button</button>
+  </div>\n  
+  <div class='theme-card'>
+    <h4>🌙 Theme Features</h4>
+    <ul style='margin: 1rem 0; padding-left: 1.5rem;'>
+      <li>Smooth transitions between themes</li>
+      <li>Consistent color palette</li>
+      <li>Easy to maintain and extend</li>
+      <li>Works with any design system</li>
+    </ul>
+  </div>\n  
+  <button class='toggle-btn' onclick=`document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark')`>
+    🔄 Toggle Theme
+  </button>
+</div>">
+</div>
 
 ---
 
-<br/>
+## <span id="micro-animations" name="Micro-Animations"></span>
 
-> Animated Loading Skeleton
+> Delightful Micro-Animations
 ```css
-.skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: loading 2s infinite;
+/* Smooth entrance animations */
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
 }
 
-@keyframes loading {
+.slide-up {
+  animation: slideUp 0.5s ease-out;
+}
+
+.scale-in {
+  animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Interactive hover effects */
+.hover-lift:hover {
+  transform: translateY(-4px);
+  transition: transform 0.2s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+  transition: box-shadow 0.3s ease;
+}
+
+.hover-bounce:hover {
+  animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+  0%, 20%, 60%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  80% { transform: translateY(-5px); }
+}
+
+/* Loading pulse effect */
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+```
+**Function:** Micro-animations that add life to interfaces. Smooth entrances, hovers, and oading states.
+
+<div
+  data-component="TestItOut"
+  data-title="Delightful Micro-Animations"
+  data-description="Hover and interact with elements to see smooth animations!"
+  data-snippet-id="css-favorite-5-4-1"
+  data-mode="css"
+  data-code=".animation-demo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+}\n
+.anim-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+}\n
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}\n
+.slide-up {
+  animation: slideUp 0.5s ease-out;
+}\n
+.scale-in {
+  animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}\n
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}\n
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}\n
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}\n
+.hover-lift:hover {
+  transform: translateY(-4px);
+  transition: transform 0.2s ease;
+}\n
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+  transition: box-shadow 0.3s ease;
+}\n
+.hover-bounce:hover {
+  animation: bounce 0.6s ease;
+}\n
+@keyframes bounce {
+  0%, 20%, 60%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  80% { transform: translateY(-5px); }
+}\n
+.pulse {
+  animation: pulse 2s infinite;
+}\n
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}\n
+.shake:hover {
+  animation: shake 0.5s ease-in-out;
+}\n
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}"
+  data-html="<div class='animation-demo'>
+  <div class='anim-card fade-in'>
+    <h4>✨ Fade In</h4>
+    <p>Smooth entrance</p>
+  </div>\n  
+  <div class='anim-card slide-up'>
+    <h4>⬆️ Slide Up</h4>
+    <p>Elegant reveal</p>
+  </div>\n  
+  <div class='anim-card scale-in'>
+    <h4>🎯 Scale In</h4>
+    <p>Bouncy entrance</p>
+  </div>\n  
+  <div class='anim-card hover-lift'>
+    <h4>🚁 Hover Lift</h4>
+    <p>Hover over me!</p>
+  </div>\n  
+  <div class='anim-card hover-glow'>
+    <h4>💫 Hover Glow</h4>
+    <p>Glowing effect</p>
+  </div>\n
+  <div class='anim-card hover-bounce'>
+    <h4>🏀 Bounce</h4>
+    <p>Playful hover</p>
+  </div>\n  
+  <div class='anim-card pulse'>
+    <h4>💗 Pulse</h4>
+    <p>Loading state</p>
+  </div>\n  
+  <div class='anim-card shake'>
+    <h4>🔔 Shake</h4>
+    <p>Attention grabber</p>
+  </div>
+</div>">
+</div>
+
+## <span id="form-styling" name="Form Styling"></span>
+
+> Beautiful Form Styling
+```css
+.form-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-input:invalid {
+  border-color: #ef4444;
+}
+
+.form-input:valid {
+  border-color: #10b981;
+}
+
+/* Floating label effect */
+.form-input:focus + .form-label,
+.form-input:not(:placeholder-shown) + .form-label {
+  transform: translateY(-1.5rem) scale(0.85);
+  color: #667eea;
+}
+
+.form-label {
+  position: absolute;
+  left: 1rem;
+  top: 0.75rem;
+  color: #718096;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  transform-origin: left center;
+  background: white;
+  padding: 0 0.25rem;
+}
+
+/* Custom checkbox styling */
+.custom-checkbox {
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #d1d5db;
+  border-radius: 0.25rem;
+  background: white;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.custom-checkbox:checked {
+  background: #667eea;
+  border-color: #667eea;
+}
+
+.custom-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: bold;
+  font-size: 0.875rem;
+}
+```
+**Function:** Form styling system with floating labels, focus states, and custom form controls. Includes validation states and smooth transitions.
+
+<div
+  data-component="TestItOut"
+  data-title="Beautiful Form Styling"
+  data-description="Interact with the form elements to see beautiful animations and states!"
+  data-snippet-id="css-favorite-5-5-1"
+  data-mode="css"
+  data-code=".form-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+}\n
+.form-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}\n
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}\n
+.form-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}\n
+.form-input:invalid:not(:placeholder-shown) {
+  border-color: #ef4444;
+}\n
+.form-input:valid:not(:placeholder-shown) {
+  border-color: #10b981;
+}\n
+.form-input:focus + .form-label,
+.form-input:not(:placeholder-shown) + .form-label {
+  transform: translateY(-1.5rem) scale(0.85);
+  color: #667eea;
+}\n
+.form-label {
+  position: absolute;
+  left: 1rem;
+  top: 0.75rem;
+  color: #718096;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  transform-origin: left center;
+  background: white;
+  padding: 0 0.25rem;
+}\n
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}\n
+.custom-checkbox {
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #d1d5db;
+  border-radius: 0.25rem;
+  background: white;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}\n
+.custom-checkbox:checked {
+  background: #667eea;
+  border-color: #667eea;
+}\n
+.custom-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: bold;
+  font-size: 0.875rem;
+}\n
+.submit-btn {
+  width: 100%;
+  padding: 0.875rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}\n
+.submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}"
+  data-html="<div class='form-container'>
+  <h3 style='text-align: center; margin-bottom: 2rem; color: #2d3748;'>✨ Beautiful Form</h3>\n  
+  <div class='form-group'>
+    <input type='text' class='form-input' placeholder=' ' required>
+    <label class='form-label'>📧 Email Address</label>
+  </div>\n  
+  <div class='form-group'>
+    <input type='password' class='form-input' placeholder=' ' required>
+    <label class='form-label'>🔒 Password</label>
+  </div>\n  
+  <div class='form-group'>
+    <textarea class='form-input' placeholder=' ' rows='4' style='resize: vertical;'></textarea>
+    <label class='form-label'>💬 Message</label>
+  </div>\n  
+  <div class='checkbox-group'>
+    <input type='checkbox' id='terms' class='custom-checkbox'>
+    <label for='terms' style='cursor: pointer; color: #4a5568;'>I agree to the terms and conditions</label>
+  </div>\n  
+  <div class='checkbox-group'>
+    <input type='checkbox' id='newsletter' class='custom-checkbox' checked>
+    <label for='newsletter' style='cursor: pointer; color: #4a5568;'>Subscribe to newsletter</label>
+  </div>\n  
+  <button type='submit' class='submit-btn'>
+    🚀 Submit Form
+  </button>
+</div>">
+</div>
+
+---
+
+## <span id="loading-states" name="Loading States"></span>
+
+> Elegant Loading States
+```css
+/* Skeleton loading for content */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 2s infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
 
-.skeleton-text {
-  height: 1em;
-  border-radius: 4px;
-  margin-bottom: 0.5em;
-}
-```
-**Function:** Creates smooth loading skeletons that give users immediate feedback while content loads.
-
-<br/>
-
----
-
-<br/>
-
-> Perfect Button Hover Effects
-```css
-.fancy-button {
-  position: relative;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  cursor: pointer;
-  overflow: hidden;
-  transition: transform 0.2s ease;
+/* Spinner variations */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-.fancy-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.dots-loader {
+  display: flex;
+  gap: 4px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background: #667eea;
+  border-radius: 50%;
+  animation: dot-bounce 1.4s ease-in-out infinite both;
+}
+
+.dot:nth-child(1) { animation-delay: -0.32s; }
+.dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes dot-bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+/* Progress bar */
+.progress-bar {
   width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.5s;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 4px;
+  animation: progress 2s ease-in-out infinite;
 }
 
-.fancy-button:hover::before {
-  left: 100%;
-}
-
-.fancy-button:hover {
-  transform: translateY(-2px);
+@keyframes progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 ```
-**Function:** Beautiful button with shine effect and lift animation. Feels premium and responsive.
+**Function:** A loading state system. Includes skeleton screens for content, various spinners, and progress indicators. Essential for modern apps to show users that something is happening.
 
-<br/>
-
----
-
-<br/>
-
-> Responsive Grid Layout
-```css
-.auto-grid {
+<div
+  data-component="TestItOut"
+  data-title="Elegant Loading States"
+  data-description="See various loading animations perfect for different use cases!"
+  data-snippet-id="css-favorite-5-6-1"
+  data-mode="css"
+  data-code=".loading-demo {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
-}
-
-.auto-grid > * {
-  min-height: 200px;
-}
-```
-**Function:** Self-adjusting grid that automatically fits columns based on available space. No media queries needed!
-
-<br/>
-
----
-
-<br/>
-
-> Text Gradient Effect
-```css
-.gradient-text {
-  background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-size: 200% 200%;
-  animation: gradient-shift 3s ease-in-out infinite;
-}
-
-@keyframes gradient-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-```
-**Function:** Animated gradient text effect that creates eye-catching headings and call-to-action text.
-
-<br/>
-
----
-
-<br/>
-
-> CSS Container with Perfect Ratios
-```css
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+}\n
+.loading-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #e2e8f0;
+}\n
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 2s infinite;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+}\n
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}\n
+.skeleton-title {
+  height: 20px;
+  width: 70%;
+  margin: 0 auto 1rem;
+}\n
+.skeleton-line {
+  height: 16px;
+  width: 100%;
+}\n
+.skeleton-line.short {
+  width: 60%;
+  margin: 0 auto;
+}\n
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 1rem auto;
+}\n
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}\n
+.dots-loader {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin: 1rem 0;
+}\n
+.dot {
+  width: 8px;
+  height: 8px;
+  background: #667eea;
+  border-radius: 50%;
+  animation: dot-bounce 1.4s ease-in-out infinite both;
+}\n
+.dot:nth-child(1) { animation-delay: -0.32s; }
+.dot:nth-child(2) { animation-delay: -0.16s; }\n
+@keyframes dot-bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}\n
+.progress-container {
+  margin: 1rem 0;
+}\n
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}\n
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 4px;
+  animation: progress 2s ease-in-out infinite;
+}\n
+@keyframes progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}\n
+.pulse-loader {
+  width: 40px;
+  height: 40px;
+  background: #667eea;
+  border-radius: 50%;
+  animation: pulse-scale 1.5s ease-in-out infinite;
+  margin: 1rem auto;
+}\n
+@keyframes pulse-scale {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+}"
+  data-html="<div class='loading-demo'>
+  <div class='loading-card'>
+    <h4>📄 Skeleton Loading</h4>
+    <div class='skeleton skeleton-title'></div>
+    <div class='skeleton skeleton-line'></div>
+    <div class='skeleton skeleton-line short'></div>
+    <div class='skeleton skeleton-line'></div>
+    <p style='margin-top: 1rem; font-size: 0.875rem; color: #666;'>Perfect for content placeholders</p>
+  </div>\n  
+  <div class='loading-card'>
+    <h4>⚡ Classic Spinner</h4>
+    <div class='spinner'></div>
+    <p style='margin-top: 1rem; font-size: 0.875rem; color: #666;'>Universal loading indicator</p>
+  </div>\n  
+  <div class='loading-card'>
+    <h4>🔴 Bouncing Dots</h4>
+    <div class='dots-loader'>
+      <div class='dot'></div>
+      <div class='dot'></div>
+      <div class='dot'></div>
+    </div>
+    <p style='margin-top: 1rem; font-size: 0.875rem; color: #666;'>Playful loading animation</p>
+  </div>\n  
+  <div class='loading-card'>
+    <h4>📊 Progress Bar</h4>
+    <div class='progress-container'>
+      <div class='progress-bar'>
+        <div class='progress-fill'></div>
+      </div>
+    </div>
+    <p style='margin-top: 1rem; font-size: 0.875rem; color: #666;'>For file uploads and processes</p>
+  </div>\n  
+  <div class='loading-card'>
+    <h4>💫 Pulse Loader</h4>
+    <div class='pulse-loader'></div>
+    <p style='margin-top: 1rem; font-size: 0.875rem; color: #666;'>Smooth pulsing effect</p>
+  </div>
+</div>">
+</div>
+
+---
+
+## <span id="sticky-elements" name="Sticky Navigation"></span>
+
+> Smart Sticky Navigation
+```css
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  transition: all 0.3s ease;
 }
 
-.card {
-  aspect-ratio: 16/9;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.sticky-nav.scrolled {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(15px);
+}
+
+/* Sticky sidebar */
+.sticky-sidebar {
+  position: sticky;
+  top: 2rem;
+  height: fit-content;
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+}
+
+/* Floating action button */
+.fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Scroll-triggered animations */
+.scroll-fade {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease;
+}
+
+.scroll-fade.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+```
+**Function:** My essential sticky positioning toolkit. Includes blurred navigation headers, sticky sidebars, floating action buttons, and scroll-triggered animations. Perfect for modern app layouts.
+
+<div
+  data-component="TestItOut"
+  data-title="Smart Sticky Navigation"
+  data-description="Scroll within the container to see sticky elements and animations!"
+  data-snippet-id="css-favorite-5-7-1"
+  data-mode="css"
+  data-code=".demo-container {
+  height: 400px;
+  overflow-y: scroll;
+  border: 2px solid #e2e8f0;
   border-radius: 12px;
-  padding: 1.5rem;
+  position: relative;
+  background: #f8f9fa;
+}\n
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  transition: all 0.3s ease;
+  padding: 1rem 2rem;
+  text-align: center;
+  font-weight: 600;
+  color: #2d3748;
+}\n
+.content-section {
+  padding: 2rem;
+  margin: 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}\n
+.sticky-sidebar {
+  position: sticky;
+  top: 6rem;
+  background: #667eea;
+  color: white;
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 1rem;
+  text-align: center;
+  height: fit-content;
+}\n
+.fab {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-}
-```
-**Function:** Creates a responsive card grid with perfect aspect ratios and smooth hover animations.
-
-<br/>
+}\n
+.fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}\n
+.long-content {
+  height: 300px;
+  background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  margin: 1rem 0;
+  color: #6c757d;
+}"
+  data-html="<div class='demo-container'>
+  <div class='sticky-nav'>
+    📍 Sticky Navigation Header
+  </div>\n  
+  <div style='display: flex; gap: 1rem;'>
+    <div style='flex: 1;'>
+      <div class='content-section'>
+        <h3>📄 Section 1</h3>
+        <p>This is the main content area. The navigation header stays at the top while you scroll.</p>
+        <div class='long-content'>
+          Scroll down to see more content...
+        </div>
+      </div>\n      
+      <div class='content-section'>
+        <h3>📊 Section 2</h3>
+        <p>More content here. Notice how the sidebar also sticks to the viewport.</p>
+        <div class='long-content'>
+          Keep scrolling...
+        </div>
+      </div>\n      
+      <div class='content-section'>
+        <h3>🎯 Section 3</h3>
+        <p>Final section with more content to demonstrate the sticky behavior.</p>
+        <div class='long-content'>
+          End of content
+        </div>
+      </div>
+    </div>\n    
+    <div style='width: 200px;'>
+      <div class='sticky-sidebar'>
+        📌 Sticky Sidebar
+        <br><br>
+        This sidebar sticks as you scroll!
+      </div>
+    </div>
+  </div>\n  
+  <button class='fab' title='Floating Action Button'>
+    ➕
+  </button>
+</div>">
+</div>

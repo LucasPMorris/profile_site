@@ -5,13 +5,8 @@ import CodeBlock from './CodeBlock';
 import Breakline from './Breakline';
 import TestItOut from '../../../modules/snippets/components/TestItOut';
 
-interface MarkdownRendererProps { 
-  children: string; 
-}
-
-interface TableProps { 
-  children?: ReactNode; 
-}
+interface MarkdownRendererProps { children: string; }
+interface TableProps { children?: ReactNode; }
 
 const Table = ({ children }: TableProps) => (
   <div className='table-container'>
@@ -22,6 +17,45 @@ const Table = ({ children }: TableProps) => (
 interface ExtendedComponents extends Components { TestItOut?: React.ComponentType<any>; }
 
 const MDXComponent = ({ children }: MarkdownRendererProps) => {
+  const decodeCode = (code: string, mode: string = 'javascript') => {
+    if (!code) return code;
+
+    let decodedCode = code
+      .replace(/%2F/g, "/")
+      .replace(/%47/g, "/")
+      .replace(/&#47;/g, "/")
+      .replace(/&quot;/g, '"')
+      .replace(/&#x27;/g, "'")
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&')
+      .replace(/\\n/g, '\n')
+      .replace(/\\t/g, '\t')
+      .replace(/\\\\/g, '\\');
+
+    if (mode === 'javascript') {
+      decodedCode = decodedCode
+        .replace(/; /g, ";\n")        
+        .replace(/\/\/ /g, "\n// ");
+    } else if (mode === 'css') {
+      decodedCode = decodedCode
+        .replace(/}\s*/g, "}\n\n")
+        .replace(/;\s*([a-zA-Z-])/g, ";\n  $1")
+        .replace(/\{\s*/g, " {\n  ")
+        .replace(/\/\*\s*/g, "\n/* ")
+        .replace(/\s*\*\//g, " */\n")
+        .replace(/\n\s*\n\s*\n/g, "\n\n")
+        .trim();
+    } else if (mode === 'html') {
+      decodedCode = decodedCode
+        .replace(/>\s*</g, ">\n<")
+        .replace(/\/\*\s*/g, "\n/* ")
+        .replace(/\s*\*\//g, " */\n");
+    } else if (mode === 'markdown') { decodedCode = decodedCode.trim(); }
+
+    return decodedCode;
+  };
+
   return (
     <ReactMarkdown
       rehypePlugins={[rehypeRaw]}
@@ -56,23 +90,13 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
             const description = props['data-description'];
             const snippetId = props['data-snippet-id'];
             const code = props['data-code'];
+            const html = props['data-html']; 
+            const mode = props['data-mode'] || 'javascript'; 
 
-            const decodedCode = code
-              ?.replace(/%2F/g, "/")
-              ?.replace(/%47/g, "/")
-              ?.replace(/&#47;/g, "/")
-              ?.replace(/; /g, ";\n")        
-              ?.replace(/\/\/ /g, "\n// ")                
-              ?.replace(/&quot;/g, '"')
-              ?.replace(/&#x27;/g, "'")
-              ?.replace(/&lt;/g, '<')
-              ?.replace(/&gt;/g, '>')
-              ?.replace(/&amp;/g, '&')
-              ?.replace(/\\n/g, '\n')
-              ?.replace(/\\t/g, '\t')
-              ?.replace(/\\\\/g, '\\')
+            const decodedCode = decodeCode(code, mode);
+            const decodedHtml = html ? decodeCode(html, 'html') : undefined;
 
-            return <TestItOut title={title} snippetId={snippetId} code={decodedCode} description={description} />;
+            return <TestItOut title={title} snippetId={snippetId} code={decodedCode} html={decodedHtml || ''} description={description} mode={mode}/>;
           }
 
           return <div {...props} />;

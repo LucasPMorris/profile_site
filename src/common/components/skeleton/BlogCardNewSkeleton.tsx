@@ -7,7 +7,7 @@ const BlogCardNewSkeleton = () => {
   return (
     <SkeletonLoader>
       <Card className='min-w-[326px]'>
-        <Skeleton height={398} containerClassName='flex' className='!rounded-xl' />
+        <Skeleton height="398px" containerClassName='flex' className='!rounded-xl' />
       </Card>
     </SkeletonLoader>
   );

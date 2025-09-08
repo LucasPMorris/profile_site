@@ -1,0 +1,917 @@
+
+## Additional Suggested Snippets
+
+### CSS - Personal Favorites (5-css-favorite.mdx)
+
+```markdown
+<br/>
+
+---
+
+<br/>
+id: 5
+chapter_id: 1
+chapter_title: 'CSS'
+title: 'Personal Favorites'
+category: 'Code'
+language: 'CSS'
+difficulty: 'Medium'
+source: null
+cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
+source_url: null
+created_at: '2023-09-14'
+updated_at: '2025-09-06'
+is_playground: false
+<br/>
+
+---
+
+<br/>
+
+These are my favorite CSS snippets. Some are common, others are obscure, or I just happen to use them a lot in my projects.
+
+<br/>
+
+---
+
+<br/>
+
+> Perfect Scrollbar Styling
+```css
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+```
+**Function:** Creates beautiful custom scrollbars that work across browsers. Much better than default ugly scrollbars.
+
+<br/>
+
+---
+
+<br/>
+
+> Dark Mode Toggle
+```css
+:root {
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --accent-color: #007bff;
+}
+
+[data-theme="dark"] {
+  --bg-color: #1a1a1a;
+  --text-color: #e0e0e0;
+  --accent-color: #4dabf7;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+```
+**Function:** Elegant dark mode implementation using CSS custom properties and data attributes.
+
+<br/>
+
+---
+
+<br/>
+
+> Glassmorphism Card
+```css
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+```
+**Function:** Modern glassmorphism effect that looks amazing on any background. Perfect for cards and modals.
+
+<br/>
+
+---
+
+<br/>
+
+> Animated Loading Skeleton
+```css
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 2s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-text {
+  height: 1em;
+  border-radius: 4px;
+  margin-bottom: 0.5em;
+}
+```
+**Function:** Creates smooth loading skeletons that give users immediate feedback while content loads.
+
+<br/>
+
+---
+
+<br/>
+
+> Perfect Button Hover Effects
+```css
+.fancy-button {
+  position: relative;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.fancy-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.fancy-button:hover::before {
+  left: 100%;
+}
+
+.fancy-button:hover {
+  transform: translateY(-2px);
+}
+```
+**Function:** Beautiful button with shine effect and lift animation. Feels premium and responsive.
+
+<br/>
+
+---
+
+<br/>
+
+> Responsive Grid Layout
+```css
+.auto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.auto-grid > * {
+  min-height: 200px;
+}
+```
+**Function:** Self-adjusting grid that automatically fits columns based on available space. No media queries needed!
+
+<br/>
+
+---
+
+<br/>
+
+> Text Gradient Effect
+```css
+.gradient-text {
+  background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+```
+**Function:** Animated gradient text effect that creates eye-catching headings and call-to-action text.
+
+<br/>
+
+---
+
+<br/>
+```
+
+### PostgreSQL - Uncommon Snippets (7-psql-uncommon.mdx)
+
+```markdown
+<br/>
+
+---
+
+<br/>
+id: 7
+chapter_id: 2
+chapter_title: 'PostgreSQL'
+title: 'Uncommon Snippets'
+category: 'Code'
+language: 'PostgreSQL'
+difficulty: 'Medium'
+source: null
+cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
+source_url: null
+created_at: '2023-09-15'
+updated_at: '2025-09-06'
+is_playground: true
+<br/>
+
+---
+
+<br/>
+
+These snippets aren't as common but are still very useful in everyday PostgreSQL usage. These snippets are necessary to know but due to their less common nature a reference is nice!
+
+<br/>
+
+---
+
+<br/>
+
+> Window Functions for Rankings
+```sql
+SELECT 
+  name,
+  salary,
+  department,
+  RANK() OVER (PARTITION BY department ORDER BY salary DESC) as dept_rank,
+  ROW_NUMBER() OVER (ORDER BY salary DESC) as overall_rank
+FROM employees;
+```
+**Function:** Rank records within groups or overall. Window functions don't require GROUP BY and keep all rows.
+
+<br/>
+
+---
+
+<br/>
+
+> Recursive CTE for Hierarchical Data
+```sql
+WITH RECURSIVE org_chart AS (
+  -- Base case: top-level managers
+  SELECT id, name, manager_id, 1 as level
+  FROM employees 
+  WHERE manager_id IS NULL
+  
+  UNION ALL
+  
+  -- Recursive case: find direct reports
+  SELECT e.id, e.name, e.manager_id, oc.level + 1
+  FROM employees e
+  INNER JOIN org_chart oc ON e.manager_id = oc.id
+)
+SELECT * FROM org_chart ORDER BY level, name;
+```
+**Function:** Traverse hierarchical data like organization charts, category trees, or threaded comments.
+
+<br/>
+
+---
+
+<br/>
+
+> JSON Operations
+```sql
+-- Query JSON data
+SELECT data->>'name' as name, 
+       (data->>'age')::int as age
+FROM users 
+WHERE data->>'status' = 'active';
+
+-- Update JSON fields
+UPDATE users 
+SET data = jsonb_set(data, '{preferences,theme}', '"dark"')
+WHERE id = 1;
+```
+**Function:** Work with JSON columns efficiently. PostgreSQL has excellent JSON support for semi-structured data.
+
+<br/>
+
+---
+
+<br/>
+
+> Advanced Aggregations
+```sql
+SELECT 
+  department,
+  COUNT(*) as total_employees,
+  string_agg(name, ', ' ORDER BY name) as employee_list,
+  array_agg(salary ORDER BY salary DESC) as salary_array,
+  percentile_cont(0.5) WITHIN GROUP (ORDER BY salary) as median_salary
+FROM employees
+GROUP BY department;
+```
+**Function:** Use advanced aggregate functions for arrays, string concatenation, and statistical calculations.
+
+<br/>
+
+---
+
+<br/>
+
+> Full-Text Search
+```sql
+-- Create search index
+ALTER TABLE articles ADD COLUMN search_vector tsvector;
+UPDATE articles SET search_vector = to_tsvector('english', title || ' ' || content);
+CREATE INDEX idx_search ON articles USING GIN(search_vector);
+
+-- Search query
+SELECT title, ts_rank(search_vector, query) as rank
+FROM articles, to_tsquery('english', 'postgres & database') as query
+WHERE search_vector @@ query
+ORDER BY rank DESC;
+```
+**Function:** Implement sophisticated full-text search with ranking, stemming, and language support.
+
+<br/>
+
+---
+
+<br/>
+
+> Lateral Joins for Correlated Subqueries
+```sql
+SELECT u.name, recent_posts.*
+FROM users u
+CROSS JOIN LATERAL (
+  SELECT title, created_at
+  FROM posts p
+  WHERE p.user_id = u.id
+  ORDER BY created_at DESC
+  LIMIT 3
+) recent_posts;
+```
+**Function:** Get related records for each row efficiently. LATERAL allows subqueries to reference outer query columns.
+
+<br/>
+
+---
+
+<br/>
+
+> Generate Series for Missing Data
+```sql
+-- Fill in missing dates
+SELECT date_series::date, COALESCE(daily_sales, 0) as sales
+FROM generate_series('2023-01-01'::date, '2023-01-31'::date, '1 day') as date_series
+LEFT JOIN (
+  SELECT sale_date, SUM(amount) as daily_sales
+  FROM sales
+  GROUP BY sale_date
+) s ON date_series::date = s.sale_date;
+```
+**Function:** Generate sequences of dates, numbers, or timestamps to fill gaps in data analysis.
+
+<br/>
+
+---
+
+<br/>
+
+> Partitioning for Large Tables
+```sql
+-- Create partitioned table
+CREATE TABLE sales_partitioned (
+  id SERIAL,
+  sale_date DATE NOT NULL,
+  amount DECIMAL(10,2)
+) PARTITION BY RANGE (sale_date);
+
+-- Create partitions
+CREATE TABLE sales_2023_q1 PARTITION OF sales_partitioned
+FOR VALUES FROM ('2023-01-01') TO ('2023-04-01');
+
+CREATE TABLE sales_2023_q2 PARTITION OF sales_partitioned
+FOR VALUES FROM ('2023-04-01') TO ('2023-07-01');
+```
+**Function:** Improve performance on large tables by splitting them into smaller, manageable partitions.
+
+<br/>
+
+---
+
+<br/>
+
+> Advisory Locks for Application Logic
+```sql
+-- Try to acquire lock
+SELECT pg_try_advisory_lock(12345) as lock_acquired;
+
+-- Do work if lock acquired
+-- ...
+
+-- Release lock
+SELECT pg_advisory_unlock(12345);
+```
+**Function:** Implement application-level locking to prevent concurrent execution of critical sections.
+
+<br/>
+
+---
+
+<br/>
+```
+
+### PostgreSQL - Personal Favorites (8-psql-favorite.mdx)
+
+```markdown
+<br/>
+
+---
+
+<br/>
+id: 8
+chapter_id: 2
+chapter_title: 'PostgreSQL'
+title: 'Personal Favorites'
+category: 'Code'
+language: 'PostgreSQL'
+difficulty: 'Medium'
+source: null
+cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
+source_url: null
+created_at: '2023-09-16'
+updated_at: '2025-09-06'
+is_playground: true
+<br/>
+
+---
+
+<br/>
+
+These are my favorite PostgreSQL snippets. Some are common, others are obscure, or I just happen to use them a lot in my projects.
+
+<br/>
+
+---
+
+<br/>
+
+> Smart Pagination with OFFSET Optimization
+```sql
+-- Instead of OFFSET (slow for large offsets)
+SELECT * FROM posts 
+WHERE id > 12345 
+ORDER BY id 
+LIMIT 20;
+
+-- For cursor-based pagination
+SELECT * FROM posts 
+WHERE created_at < '2023-01-01 12:00:00'
+ORDER BY created_at DESC 
+LIMIT 20;
+```
+**Function:** Efficient pagination that performs well even with millions of records. Cursor-based is much faster than OFFSET.
+
+<br/>
+
+---
+
+<br/>
+
+> Database Health Check Queries
+```sql
+-- Check table sizes
+SELECT 
+  schemaname,
+  tablename,
+  pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as size
+FROM pg_tables
+ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
+
+-- Check slow queries
+SELECT query, mean_time, calls
+FROM pg_stat_statements
+ORDER BY mean_time DESC
+LIMIT 10;
+
+-- Check index usage
+SELECT 
+  indexrelname,
+  idx_tup_read,
+  idx_tup_fetch,
+  idx_tup_read/idx_tup_fetch as ratio
+FROM pg_stat_user_indexes
+WHERE idx_tup_fetch > 0;
+```
+**Function:** Essential queries for monitoring database performance, finding slow queries, and checking storage usage.
+
+<br/>
+
+---
+
+<br/>
+
+> Safe Schema Migrations
+```sql
+-- Add column with default (safe for large tables)
+BEGIN;
+ALTER TABLE users ADD COLUMN status VARCHAR(20);
+UPDATE users SET status = 'active' WHERE status IS NULL;
+ALTER TABLE users ALTER COLUMN status SET NOT NULL;
+ALTER TABLE users ALTER COLUMN status SET DEFAULT 'active';
+COMMIT;
+
+-- Create index concurrently (doesn't block writes)
+CREATE INDEX CONCURRENTLY idx_users_email_active 
+ON users(email) WHERE active = true;
+```
+**Function:** Perform schema changes safely without blocking application traffic, essential for production deployments.
+
+<br/>
+
+---
+
+<br/>
+
+> Bulk Data Operations
+```sql
+-- Bulk insert from CSV
+COPY users(name, email, created_at)
+FROM '/path/to/users.csv'
+DELIMITER ','
+CSV HEADER;
+
+-- Bulk update with VALUES
+UPDATE users SET status = v.status
+FROM (VALUES 
+  (1, 'active'),
+  (2, 'inactive'),
+  (3, 'pending')
+) AS v(id, status)
+WHERE users.id = v.id;
+```
+**Function:** Efficiently handle large data imports and batch updates. Much faster than individual INSERT/UPDATE statements.
+
+<br/>
+
+---
+
+<br/>
+
+> Data Validation and Constraints
+```sql
+-- Check constraint with custom error
+ALTER TABLE users ADD CONSTRAINT valid_email 
+CHECK (email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4});
+
+-- Partial unique index (only for active users)
+CREATE UNIQUE INDEX users_email_unique_active
+ON users(email) WHERE active = true;
+
+-- Foreign key with custom action
+ALTER TABLE posts ADD CONSTRAINT fk_posts_user
+FOREIGN KEY (user_id) REFERENCES users(id)
+ON DELETE CASCADE ON UPDATE CASCADE;
+```
+**Function:** Implement robust data integrity rules that prevent bad data from entering your database.
+
+<br/>
+
+---
+
+<br/>
+
+> Advanced Date/Time Queries
+```sql
+-- Business hours calculation
+SELECT 
+  created_at,
+  CASE 
+    WHEN EXTRACT(dow FROM created_at) IN (0,6) THEN 'Weekend'
+    WHEN EXTRACT(hour FROM created_at) BETWEEN 9 AND 17 THEN 'Business Hours'
+    ELSE 'After Hours'
+  END as time_period,
+  DATE_TRUNC('week', created_at) as week_start
+FROM orders;
+
+-- Time zone conversions
+SELECT 
+  created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/New_York' as ny_time,
+  AGE(NOW(), created_at) as time_ago
+FROM events;
+```
+**Function:** Handle complex date/time calculations including business hours, time zones, and relative time periods.
+
+<br/>
+
+---
+
+<br/>
+
+> Performance Optimization Tricks
+```sql
+-- Use EXISTS instead of IN for better performance
+SELECT * FROM users u
+WHERE EXISTS (
+  SELECT 1 FROM orders o WHERE o.user_id = u.id
+);
+
+-- Materialize expensive calculations
+CREATE MATERIALIZED VIEW user_stats AS
+SELECT 
+  user_id,
+  COUNT(*) as order_count,
+  SUM(total) as total_spent,
+  AVG(total) as avg_order_value
+FROM orders
+GROUP BY user_id;
+
+-- Refresh materialized view
+REFRESH MATERIALIZED VIEW CONCURRENTLY user_stats;
+```
+**Function:** Optimize query performance using EXISTS, materialized views, and other PostgreSQL-specific features.
+
+<br/>
+
+---
+
+<br/>
+```
+
+### Terminal - Uncommon Snippets (10-terminal-uncommon.mdx)
+
+```markdown
+<br/>
+
+---
+
+<br/>
+id: 10
+chapter_id: 3
+chapter_title: 'Terminal'
+title: 'Uncommon Snippets'
+category: 'Code'
+language: 'Bash'
+difficulty: 'Medium'
+source: null
+cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
+source_url: null
+created_at: '2023-09-18'
+updated_at: '2025-09-06'
+is_playground: true
+<br/>
+
+---
+
+<br/>
+
+These snippets aren't as common but are still very useful when writing bash scripts or utilizing the terminal. These snippets are necessary to know but due to their less common nature a reference is nice!
+
+<br/>
+
+---
+
+<br/>
+
+> Advanced Find Operations
+```bash
+# Find files modified in last 7 days
+find . -type f -mtime -7
+
+# Find and execute command on results
+find . -name "*.log" -exec rm {} \;
+
+# Find large files (>100MB)
+find . -type f -size +100M
+
+# Find files by permission
+find . -type f -perm 644
+```
+**Function:** Powerful file searching with conditions for size, modification time, permissions, and batch operations.
+
+<br/>
+
+---
+
+<br/>
+
+> Text Processing with awk
+```bash
+# Sum values in a column
+awk '{sum += $3} END {print sum}' data.txt
+
+# Print specific columns
+awk '{print $1, $3}' data.txt
+
+# Filter rows by condition
+awk '$2 > 100 {print $1, $2}' data.txt
+
+# Use custom field separator
+awk -F',' '{print $1}' data.csv
+```
+**Function:** Process text files column-wise, perform calculations, and filter data based on conditions.
+
+<br/>
+
+---
+
+<br/>
+
+> Advanced sed Operations
+```bash
+# Replace text in-place
+sed -i 's/old_text/new_text/g' file.txt
+
+# Delete lines matching pattern
+sed '/pattern/d' file.txt
+
+# Insert line after match
+sed '/pattern/a\New line to insert' file.txt
+
+# Print only lines between patterns
+sed -n '/start_pattern/,/end_pattern/p' file.txt
+```
+**Function:** Edit files programmatically, replace text, delete lines, and extract specific sections.
+
+<br/>
+
+---
+
+<br/>
+
+> Network and System Monitoring
+```bash
+# Monitor network connections
+netstat -tulpn
+ss -tulpn
+
+# Check open files by process
+lsof -p PID
+
+# Monitor system resources in real-time
+htop
+iostat 1
+
+# Check disk I/O
+iotop
+```
+**Function:** Monitor system resources, network connections, and diagnose performance issues.
+
+<br/>
+
+---
+
+<br/>
+
+> Process Control and Jobs
+```bash
+# Run command with timeout
+timeout 30s command
+
+# Run command and retry on failure
+until command; do sleep 1; done
+
+# Background job management
+jobs
+fg %1
+bg %1
+
+# Disown process (survive terminal close)
+command &
+disown
+```
+**Function:** Control process execution, handle timeouts, manage background jobs, and ensure process persistence.
+
+<br/>
+
+---
+
+<br/>
+
+> File Manipulation and Comparison
+```bash
+# Compare directories
+diff -r dir1/ dir2/
+
+# Show file differences side by side
+diff -y file1.txt file2.txt
+
+# Merge sorted files
+sort file1.txt file2.txt | uniq
+
+# Count unique lines
+sort file.txt | uniq -c | sort -nr
+```
+**Function:** Compare files and directories, merge data, and analyze file contents for duplicates.
+
+<br/>
+
+---
+
+<br/>
+
+> Advanced Bash Scripting
+```bash
+# Function with error handling
+function safe_command() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    echo "Error: $1 is not installed"
+    return 1
+  fi
+  "$@"
+}
+
+# Read file line by line
+while IFS= read -r line; do
+  echo "Processing: $line"
+done < file.txt
+
+# Getopts for argument parsing
+while getopts "hf:v" opt; do
+  case $opt in
+    h) echo "Help message" ;;
+    f) file="$OPTARG" ;;
+    v) verbose=true ;;
+  esac
+done
+```
+**Function:** Write robust bash scripts with error handling, file processing, and command-line argument parsing.
+
+<br/>
+
+---
+
+<br/>
+
+> System Administration
+```bash
+# Check service status
+systemctl status service-name
+systemctl is-active service-name
+
+# View system logs
+journalctl -u service-name -f
+journalctl --since "1 hour ago"
+
+# Cron job management
+crontab -l
+crontab -e
+
+# Check listening ports
+sudo lsof -i :80
+sudo netstat -tlnp | grep :80
+```
+**Function:** Manage system services, monitor logs, schedule tasks, and troubleshoot network services.
+
+<br/>
+
+---
+
+<br/>
+
+> Remote Operations
+```bash
+# SSH with key forwarding
+ssh -A user@server
+
+# SSH tunnel for port forwarding
+ssh -L 8080:localhost:80 user@server
+
+# Copy files with rsync
+rsync -avz --progress local/ user@server:remote/
+
+# Execute command on remote server
+ssh user@server 'command to execute'
+```
+**Function:** Work with remote servers securely, transfer files efficiently, and execute commands remotely.

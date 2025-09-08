@@ -51,43 +51,32 @@ const ContentDetail = ({ content, frontMatter }: ContentDetailProps) => {
         const id = spanMatch[1].trim(); // Use the actual ID from the span
         const title = spanMatch[2].trim(); // Use the name for display
         
-        console.log(`Found span - ID: "${id}", Name: "${title}", Line: ${index + 1}`);
         tocItems.push({ id, title, line: index + 1, originalTitle: title });
       }
     });
 
-    console.log('Final TOC items:', tocItems);
     return tocItems;
   }, [content]);
 
   // Smooth scroll to section using the span ID
   const scrollToSection = (item: TocItem) => {
-    console.log(`Trying to scroll to ID: ${item.id}`);
-    
     // First try to find by the exact ID
     const element = document.getElementById(item.id);
     
     if (element) {
-      console.log(`Found element with ID: ${item.id}`, element);
       const headerOffset = 80; // Adjust this value based on your header height
       const elementPosition = element.getBoundingClientRect().top + window.scrollY;
       const offsetPosition = elementPosition - headerOffset;
       window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-    } else {
-      console.warn(`Could not find element with ID: ${item.id}`);
-      console.log('Available elements with IDs:', Array.from(document.querySelectorAll('[id]')).map(el => el.id));
-      
+    } else { 
       // Fallback: try to find the span by searching for the name attribute
       const spanByName = document.querySelector(`span[name="${item.title}"]`);
       if (spanByName) {
-        console.log(`Found span by name attribute: ${item.title}`, spanByName);
         const headerOffset = 80;
         const elementPosition = spanByName.getBoundingClientRect().top + window.scrollY;
         const offsetPosition = elementPosition - headerOffset;
         window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-      } else {
-        console.warn(`Could not find span with name: ${item.title}`);
-      }
+      } else { console.warn(`Could not find span with name: ${item.title}`); }
     }
   };
 
@@ -185,9 +174,6 @@ const ContentDetail = ({ content, frontMatter }: ContentDetailProps) => {
         
         <NavigationSection currentIndex={currentId} totalItems={contentList.length} handleNext={() => handleNavigation(1)} handlePrevious={() => handleNavigation(-1)} previousTitle={previousTitle} nextTitle={nextTitle} />
         
-        {isShowPlayground && language !== 'JavaScript' && (
-          <ContentPlayground initialCode={initialCode} />
-        )}
       </main>
     </div>
   );

@@ -7,140 +7,231 @@ category: 'Code'
 language: 'CSS'
 difficulty: 'Easy'
 source: null
-cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
+cover_url: 'https://cloud.aulianza.com/public/images/learn/css.webp'
 source_url: null
 created_at: '2025-08-30'
-updated_at: '2025-09-06'
-is_playground: false
+updated_at: '2025-09-08'
+is_playground: true
 ---
 
-<br/>
-
-These snippets are incredibly common and are useful in everyday CSS programming. Some of these will become so familiar that you will not even think about them anymore, others it is just easy some time to cut and paste!
-
-<br/>
+These CSS snippets are incredibly common and useful in everyday web development. Master these fundamentals and you'll build better interfaces faster!
 
 ---
 
-<br/>
+## <span id="center-flexbox" name="Center with Flexbox"></span>
 
-> Flexbox Center
+> Center Elements with Flexbox
 ```css
-.center {
+.center-flex {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100vh;
 }
 ```
-**Function:** Centers content both horizontally and vertically using flexbox. Works for any content size.
+**Function:** The most reliable way to center content both horizontally and vertically. Works with any content size and is responsive.
 
-<br/>
+<div
+  data-component="TestItOut"
+  data-title="Center Elements with Flexbox"
+  data-description="Try changing the justify-content and align-items values!"
+  data-snippet-id="css-common-3-0-1"
+  data-mode="css"
+  data-code=".center-flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  background: #f0f8ff;
+  border: 2px solid #4fc3f7;
+}"
+data-html="<div class='center-flex'>
+  <div>
+    <h2>🎯 Perfectly Centered!</h2>
+    <p>This content is centered both horizontally and vertically using flexbox.</p>
+    <button style='padding: 8px 16px; background: #4fc3f7; color: white; border: none; border-radius: 4px;'>Centered Button</button>
+  </div>
+</div>">
+</div>
 
 ---
 
-<br/>
+## <span id="box-model-reset" name="Reset Box Model"></span>
 
-> CSS Grid Center
+> Reset Box Model
 ```css
-.grid-center {
-  display: grid;
-  place-items: center;
-}
-```
-**Function:** Alternative centering method using CSS Grid. `place-items` is shorthand for both axes.
-
-<br/>
-
----
-
-<br/>
-
-> Responsive Container
-```css
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-```
-**Function:** Creates a responsive container that centers itself and has max width with padding on smaller screens.
-
-<br/>
-
----
-
-<br/>
-
-> Hide Element Visually but Keep for Screen Readers
-```css
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  border: 0;
-}
-```
-**Function:** Hides content visually while keeping it accessible to screen readers for better accessibility.
-
-<br/>
-
----
-
-<br/>
-
-> Smooth Scrolling
-```css
-html {
-  scroll-behavior: smooth;
-}
-```
-**Function:** Enables smooth scrolling for anchor links and programmatic scrolling.
-
-<br/>
-
----
-
-<br/>
-
-> Button Reset
-```css
-button {
-  background: none;
-  border: none;
-  padding: 0;
+* {
   margin: 0;
-  cursor: pointer;
-  font: inherit;
-  color: inherit;
+  padding: 0;
+  box-sizing: border-box;
 }
 ```
-**Function:** Removes default button styling to create a clean base for custom button designs.
+**Function:** Removes default browser spacing and makes elements include padding/border in their width/height calculations. Essential starting point for most projects.
 
-<br/>
+<div
+  data-component="TestItOut"
+  data-title="Reset Box Model"
+  data-description="Compare elements with and without box-sizing: border-box!"
+  data-snippet-id="css-common-3-1-1"
+  data-mode="css"
+  data-code="* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}\n
+.demo-box {
+  width: 200px;
+  padding: 20px;
+  border: 5px solid #ff6b6b;
+  background: #ffe6e6;
+  margin: 10px;
+}"
+  data-html="<div style='border: 2px solid #999; margin: 10px; background: #f0f0f0;'>
+  <div class='demo-box'>Box 1 - With box-sizing</div>
+  <div class='demo-box'>Box 2 - Notice how padding and borders are included in the width</div>
+  <div class='demo-box'>Box 3 - All boxes are exactly 200px wide including padding and borders</div>
+</div>">
+</div>
 
 ---
 
-<br/>
+## <span id="responsive-fonts" name="Responsive Fonts"></span>
 
-> Aspect Ratio Box
+> Responsive Font Sizes
 ```css
-.aspect-ratio {
-  aspect-ratio: 16 / 9;
-  width: 100%;
+.responsive-text {
+  font-size: clamp(1rem, 2.5vw, 2rem);
 }
 ```
-**Function:** Maintains a specific aspect ratio regardless of content. Modern alternative to padding-top hack.
+**Function:** Creates fluid typography that scales smoothly between minimum and maximum sizes based on viewport width. No media queries needed!
 
-<br/>
+<div
+  data-component="TestItOut"
+  data-title="Responsive Font Sizes"
+  data-description="Resize your browser window to see the text scale smoothly!"
+  data-snippet-id="css-common-3-2-1"
+  data-mode="css"
+  data-code=".responsive-text {
+  font-size: clamp(1rem, 4vw, 3rem);
+  font-weight: bold;
+  color: #4ecdc4;
+  text-align: center;
+  padding: 20px;
+}"
+  data-html="<div class='responsive-text'>
+  Responsive Typography
+</div>
+<div class='responsive-text' style='font-size: clamp(0.8rem, 3vw, 1.5rem);'>
+  This text scales smoothly with viewport size!
+</div>
+<div class='responsive-text' style='font-size: clamp(1.2rem, 5vw, 4rem);'>
+  Big Title
+</div>">
+</div>
 
 ---
 
-<br/>
+## <span id="smooth-hover" name="Smooth Hover"></span>
+
+> Smooth Hover Transitions
+```css
+.smooth-hover {
+  transition: all 0.3s ease;
+}
+
+.smooth-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+```
+**Function:** Adds polished hover effects that feel smooth and professional. The transform and box-shadow create a subtle "lift" effect.
+
+<div
+  data-component="TestItOut"
+  data-title="Smooth Hover Transitions"
+  data-description="Hover over the element to see the smooth animation!"
+  data-snippet-id="css-common-3-3-1"
+  data-mode="css"
+  data-code=".smooth-hover {
+  padding: 20px;
+  background: #ff6b6b;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+}\n
+.smooth-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: #ff5252;
+}"
+  data-html="<div class='smooth-hover'>
+  <h3>🎨 Hover Card 1</h3>
+  <p>Hover over me to see the smooth lift effect!</p>
+</div>
+<div class='smooth-hover' style='background: #4ecdc4; margin: 10px 0;'>
+  <h3>✨ Hover Card 2</h3>
+  <p>I have a different color but same smooth animation!</p>
+</div>
+<div class='smooth-hover' style='background: #45b7d1; margin: 10px 0;'>
+  <h3>🚀 Hover Card 3</h3>
+  <p>Try hovering quickly between all three cards!</p>
+</div>">
+</div>
+
+---
+
+## <span id="hide-scrollbars" name="Hide Scrollbars"></span>
+
+> Hide Scrollbars (Keep Functionality)
+```css
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+```
+**Function:** Hides scrollbars while maintaining scroll functionality. Useful for custom scroll designs or cleaner mobile interfaces.
+
+<div
+  data-component="TestItOut"
+  data-title="Hide Scrollbars"
+  data-description="Scroll within the container - no visible scrollbar!"
+  data-snippet-id="css-common-3-4-1"
+  data-mode="css"
+  data-code=".hide-scrollbar {
+  width: 200px;
+  height: 100px;
+  overflow-y: scroll;
+  background: #f5f5f5;
+  border: 2px solid #ddd;
+  padding: 10px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}\n
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}"
+  data-html="<div class='hide-scrollbar'>
+  <h4>📜 Scrollable Content (No Visible Scrollbar)</h4>
+  <p>This container has a lot of content that overflows...</p>
+  <p>🔄 You can scroll with your mouse wheel or trackpad</p>
+  <p>📱 The scrollbar is hidden but scrolling still works!</p>
+  <p>✨ Perfect for custom scroll designs</p>
+  <p>🎯 Great for mobile-like experiences</p>
+  <p>📋 Useful in dashboards and cards</p>
+  <p>🌟 Clean, minimal appearance</p>
+  <p>🔚 End of scrollable content</p>
+</div>">
+</div>
+
+---
+
+## <span id="truncate-text" name="Truncate Text"></span>
 
 > Truncate Text with Ellipsis
 ```css
@@ -148,43 +239,141 @@ button {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 200px;
 }
 ```
-**Function:** Cuts off text that doesn't fit and adds "..." to indicate there's more content.
+**Function:** Cuts off long text and adds "..." when it doesn't fit. Perfect for titles, names, or any text that might be too long for its container.
 
-<br/>
+<div
+  data-component="TestItOut"
+  data-title="Truncate Text with Ellipsis"
+  data-description="Try changing the max-width to see the ellipsis in action!"
+  data-snippet-id="css-common-3-5-1"
+  data-mode="css"
+  data-code=".truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+  background: #e8f5e8;
+  padding: 10px;
+  border: 1px solid #4caf50;
+}"
+  data-html="<div class='truncate'>
+  This is a very long text that will be truncated with an ellipsis when it exceeds the maximum width
+</div>
+<div class='truncate' style='max-width: 100px; margin: 10px 0;'>
+  Short limit test
+</div>
+<div class='truncate' style='max-width: 300px; margin: 10px 0;'>
+  This has a wider limit so more text fits before being truncated with ellipsis
+</div>">
+</div>
 
 ---
 
-<br/>
+## <span id="grid-auto" name="Simple Grid Layout"></span>
 
-> Focus Visible Only
+> Simple Grid Layout
 ```css
-button:focus {
-  outline: none;
-}
-
-button:focus-visible {
-  outline: 2px solid blue;
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
 }
 ```
-**Function:** Removes outline for mouse users but keeps it for keyboard navigation, improving both UX and accessibility.
+**Function:** Creates a responsive grid that automatically adjusts the number of columns based on available space. Items won't go below 250px width.
 
-<br/>
+<div
+  data-component="TestItOut"
+  data-title="Simple Grid Layout"
+  data-description="Try changing the minmax values to see different layouts!"
+  data-snippet-id="css-common-3-6-1"
+  data-mode="css"
+  data-code=".grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  padding: 20px;
+  background: #f0f8ff;
+}\n
+.grid-item {
+  background: #4fc3f7;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  border-radius: 8px;
+}"
+data-html="<div class='grid-auto'>
+  <div class='grid-item'>
+    <h4>📱 Item 1</h4>
+    <p>Responsive</p>
+  </div>
+  <div class='grid-item'>
+    <h4>🔄 Item 2</h4>
+    <p>Auto-sizing</p>
+  </div>
+  <div class='grid-item'>
+    <h4>📏 Item 3</h4>
+    <p>Min 120px</p>
+  </div>
+  <div class='grid-item'>
+    <h4>🎯 Item 4</h4>
+    <p>Perfect fit</p>
+  </div>
+  <div class='grid-item'>
+    <h4>✨ Item 5</h4>
+    <p>Modern CSS</p>
+  </div>
+  <div class='grid-item'>
+    <h4>🚀 Item 6</h4>
+    <p>No media queries!</p>
+  </div>
+</div>">
+</div>
 
 ---
 
-<br/>
+## <span id="aspect-ratio" name="Aspect Ratio Container"></span>
 
-> Disable Text Selection
+> Aspect Ratio Container
 ```css
-.no-select {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+.aspect-ratio {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  object-fit: cover;
 }
 ```
-**Function:** Prevents users from selecting text, useful for UI elements like buttons or interactive components.
+**Function:** Maintains a consistent width-to-height ratio regardless of content. Perfect for images, videos, or maintaining layout consistency.
 
-<br/>
+<div
+  data-component="TestItOut"
+  data-title="Aspect Ratio Container"
+  data-description="Try different aspect ratios like 1/1, 4/3, or 21/9!"
+  data-snippet-id="css-common-3-7-1"
+  data-mode="css"
+  data-code=".aspect-ratio {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+}"
+  data-html="<div class='aspect-ratio'>
+  <div style='text-align: center;'>
+    <h2>📺 16:9 Aspect Ratio</h2>
+    <p>This container maintains a 16:9 ratio</p>
+    <p>Perfect for videos, images, or cards!</p>
+  </div>
+</div>
+<div class='aspect-ratio' style='aspect-ratio: 1/1; margin-top: 20px; background: linear-gradient(45deg, #4ecdc4, #45b7d1);'>
+  <div style='text-align: center;'>
+    <h3>⏹️ Square (1:1)</h3>
+    <p>This one is perfectly square</p>
+  </div>
+</div>">
+</div>
