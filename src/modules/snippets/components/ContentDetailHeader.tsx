@@ -29,7 +29,7 @@ const ContentDetailHeader = ({ title, category, source, difficulty, language, so
       {!isScrolled ? (
         <motion.h1 className='text-2xl ml-1 font-semibold' initial='initial' animate='animate' variants={titleVariants} transition={transition}>{title}</motion.h1>
       ) : (
-        <motion.div className='shadow-bottom top-0 z-10 border-b border-neutral-300 bg-light py-6 backdrop-blur dark:border-neutral-600 dark:bg-neutral-800/40 lg:sticky' initial='initial' animate='animate' variants={titleVariants} transition={transition} >
+        <motion.div className='shadow-bottom top-0 z-10 rounded-lg border-b border-neutral-300 bg-white/40 py-6 backdrop-blur dark:border-neutral-600 dark:bg-neutral-800/40 lg:sticky' initial='initial' animate='animate' variants={titleVariants} transition={transition} >
           <h1 className='ml-2 text-lg font-semibold lg:text-xl'>{title}</h1>
         </motion.div>
       )}

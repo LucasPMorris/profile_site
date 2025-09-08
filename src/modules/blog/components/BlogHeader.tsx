@@ -67,10 +67,10 @@ const BlogHeader = ({ title, page_views_count, published_at, reading_time_minute
                 {title}
               </motion.h1>)
             : (
-              <motion.div className="shadow-bottom top-0 z-10 w-full border-b border-neutral-300 bg-light py-6 backdrop-blur dark:border-neutral-600 dark:bg-dark lg:sticky"
-                          initial="initial" animate="animate" variants={titleVariants} transition={transition}>
-                <h1 className="text-lg font-semibold lg:text-xl">{title}</h1>
-              </motion.div> )
+                <motion.div className="fixed top-0 left-0 z-10 w-screen border-b border-neutral-300 bg-light py-6 backdrop-blur dark:border-neutral-600 dark:bg-dark"
+                    initial="initial" animate="animate" variants={titleVariants} transition={transition}>
+                <h1 className="text-lg font-semibold lg:text-xl text-center">{title}</h1>
+                </motion.div> )
           }
         </div>
       </div>

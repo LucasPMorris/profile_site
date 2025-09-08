@@ -37,47 +37,58 @@ const ContentDetail = ({ content, frontMatter }: ContentDetailProps) => {
   const { data: resContentData } = useSWR(`/api/content?category=${parentSlug}`, fetcher);
   const { data: viewsData } = useSWR(`/api/views?slug=${contentSlug}&type=snippet`, fetcher);
 
-  // Extract table of contents from MDX content using data-title attributes
+  // Extract table of contents from span elements with IDs only
   const tableOfContents = useMemo(() => {
     if (!content) return [];
     
     const lines = content.split('\n');
     const tocItems: TocItem[] = [];
-    let currentSection: { title: string; line: number } | null = null;
 
     lines.forEach((line, index) => {
-      // Look for section headers (lines starting with >)
-      const sectionMatch = line.match(/^>\s*(.+)$/);
-      if (sectionMatch) {
-        currentSection = { title: sectionMatch[1].trim(), line: index + 1 };
-        return;
-      }
-
-      // Look for div with data-title attribute
-      const divMatch = line.match(/data-title="([^"]+)"/);
-      if (divMatch && currentSection) {
-        const title = divMatch[1].trim();
-        const originalTitle = currentSection.title;
-        const id = title.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-');
-        tocItems.push({ id, title, line: currentSection.line, originalTitle });
+      // Look for span elements with id and name attributes
+      const spanMatch = line.match(/##\s*<span\s+id="([^"]+)"\s+name="([^"]+)"><\/span>/);
+      if (spanMatch) {
+        const id = spanMatch[1].trim(); // Use the actual ID from the span
+        const title = spanMatch[2].trim(); // Use the name for display
         
-        // Reset current section after finding the div
-        currentSection = null;
+        console.log(`Found span - ID: "${id}", Name: "${title}", Line: ${index + 1}`);
+        tocItems.push({ id, title, line: index + 1, originalTitle: title });
       }
     });
 
+    console.log('Final TOC items:', tocItems);
     return tocItems;
   }, [content]);
 
   // Smooth scroll to section using the span ID
   const scrollToSection = (item: TocItem) => {
+    console.log(`Trying to scroll to ID: ${item.id}`);
+    
+    // First try to find by the exact ID
     const element = document.getElementById(item.id);
-    if (!element) return;
-
-    const headerOffset = 80; // Adjust this value based on your header height
-    const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-    const offsetPosition = elementPosition - headerOffset;
-    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+    
+    if (element) {
+      console.log(`Found element with ID: ${item.id}`, element);
+      const headerOffset = 80; // Adjust this value based on your header height
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      const offsetPosition = elementPosition - headerOffset;
+      window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+    } else {
+      console.warn(`Could not find element with ID: ${item.id}`);
+      console.log('Available elements with IDs:', Array.from(document.querySelectorAll('[id]')).map(el => el.id));
+      
+      // Fallback: try to find the span by searching for the name attribute
+      const spanByName = document.querySelector(`span[name="${item.title}"]`);
+      if (spanByName) {
+        console.log(`Found span by name attribute: ${item.title}`, spanByName);
+        const headerOffset = 80;
+        const elementPosition = spanByName.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - headerOffset;
+        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+      } else {
+        console.warn(`Could not find span with name: ${item.title}`);
+      }
+    }
   };
 
   const getNextOrPreviousContent = useCallback(
@@ -153,13 +164,17 @@ const ContentDetail = ({ content, frontMatter }: ContentDetailProps) => {
                 <ContentIcon size={16} className="mr-2" />Snippets
               </summary>
               <div className="px-2 pb-2 border-t border-neutral-200 dark:border-neutral-700 mt-2 pt-2 max-h-60 overflow-y-auto space-y-1">
-                {tableOfContents.map((item) => (
-                  <button key={item.id} onClick={() => scrollToSection(item)} onMouseEnter={() => setHoveredItem(item.id)} onMouseLeave={() => setHoveredItem('')} className="flex items-center gap-2 py-2 pl-4 pr-2.5 text-neutral-700 dark:text-neutral-400 hover:text-neutral-900 hover:dark:text-neutral-300 rounded-lg group w-full hover:dark:bg-neutral-800 hover:dark:text-neutral-300 hover:bg-neutral-200 hover:rounded-lg transition-all duration-300">
-                    <ContentIcon size={14} />
-                    <div className="ml-0.5 flex-grow text-left text-sm">{item.title}</div>
-                    {hoveredItem === item.id && <ArrowIcon size={20} className="text-gray-500 transition-all duration-300" />}
-                  </button>
-                ))}
+                {tableOfContents.map((item) => {
+                  const isHovered = hoveredItem === item.id;
+                  
+                  return (
+                    <button key={item.id} onClick={() => scrollToSection(item)} onMouseEnter={() => setHoveredItem(item.id)} onMouseLeave={() => setHoveredItem('')} className={`flex items-center gap-2 py-2 pl-4 pr-2.5 text-neutral-700 dark:text-neutral-400 hover:text-neutral-900 hover:dark:text-neutral-300 rounded-lg group w-full transition-all duration-300 ${isHovered ? 'bg-neutral-200 dark:bg-neutral-800' : 'hover:bg-neutral-200 dark:hover:bg-neutral-800'}`}>
+                      <ContentIcon size={14} />
+                      <div className="ml-0.5 flex-grow text-left text-sm">{item.title}</div>
+                      {isHovered && <ArrowIcon size={20} className="text-gray-500 transition-all duration-300" />}
+                    </button>
+                  );
+                })}
               </div>
             </details>
           </div>

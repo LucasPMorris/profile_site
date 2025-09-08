@@ -16,11 +16,9 @@ is_playground: true
 
 These snippets aren't as common but are still very useful in everyday JavaScript programming. These snippets are necessary to know but due to their less common nature a reference is nice!
 
-<br/>
-
 ---
 
-<br/>
+## <span id="nullish" name="Nullish"></span>
 
 > Nullish Coalescing Operator
 ```javascript
@@ -52,11 +50,9 @@ console.log('zero:', user4.name || 'Anonymous');
 console.log('undefined:', user5.name || 'Anonymous');">
 </div>
 
-<br/>
-
 ---
 
-<br/>
+## <span id="optional-chaining" name="Optional Chaining"></span>
 
 > Optional Chaining
 ```javascript
@@ -96,11 +92,9 @@ console.log('Second item value:', data?.items?.[1]?.value);
 console.log('Third item value:', data?.items?.[2]?.value);">
 </div>
 
-<br/>
-
 ---
 
-<br/>
+## <span id="array-from" name="Array.from()"></span>
 
 > Array.from() with Mapping
 ```javascript
@@ -110,7 +104,7 @@ const range = Array.from({length: 5}, (_, i) => i + 1); // [1,2,3,4,5]
 
 <div
   data-component="TestItOut"
-  data-title="Array.from()"
+  data-title="Array From"
   data-description="Generate different number sequences and patterns! Try creating ranges, squares, or even random values."
   data-snippet-id="js-uncommon-1-0-3"
   data-code="&#47;&#47; Basic range
@@ -133,11 +127,9 @@ const letters = Array.from('Hello');
 console.log('Letters from Hello:', letters);">
 </div>
 
-<br/>
-
 ---
 
-<br/>
+## <span id="iterating-an-object" name="Iterating an Object"></span>
 
 > Object.entries() for Iteration
 ```javascript
@@ -182,11 +174,9 @@ console.log('Keys:', Object.keys(student));
 console.log('Values:', Object.values(student));">
 </div>
 
-<br/>
-
 ---
 
-<br/>
+## <span id="object-destructuring" name="Object Destructuring"></span>
 
 > Rest in Object Destructuring
 ```javascript
@@ -233,11 +223,9 @@ const updatedUser = updateUser({
 console.log('Updated user:', updatedUser);">
 </div>
 
-<br/>
-
 ---
 
-<br/>
+## <span id="property-names" name="Property Names"></span>
 
 > Computed Property Names
 ```javascript
@@ -288,11 +276,9 @@ const logEntry = {
 console.log('Log entry:', logEntry);">
 </div>
 
-<br/>
-
 ---
 
-<br/>
+## <span id="reduce-to-object" name="Reduce to Object"></span>
 
 > Array.reduce() for Object Creation
 ```javascript
@@ -342,11 +328,9 @@ const totals = items.reduce((acc, item) => {
 console.log('Price totals by category:', totals);">
 </div>
 
-<br/>
-
 ---
 
-<br/>
+## <span id="shortassignment" name="Short Assignment"></span>
 
 > Short-circuit Assignment
 ```javascript
@@ -357,7 +341,7 @@ user.count ??= 0;
 
 <div
   data-component="TestItOut"
-  data-title="Short-circuit Assignment"
+  data-title="Short Assignment"
   data-description="Practice efficient conditional assignment! See how ||= and ??= behave differently with various values."
   data-snippet-id="js-uncommon-1-0-8"
   data-code="let user = { name: 'John' };\n
@@ -386,11 +370,9 @@ test.e ??= 'default';
 console.log('After assignments:', test);">
 </div>
 
-<br/>
-
 ---
 
-<br/>
+## <span id="function-composition" name="Function Composition"></span>
 
 > Function Composition
 ```javascript
@@ -437,11 +419,9 @@ const processArray = pipe(
 console.log('Array result:', processArray(numbers));">
 </div>
 
-<br/>
-
 ---
 
-<br/>
+## <span id="debounce-function" name="Debounce Function"></span>
 
 > Debounce Function
 ```javascript
@@ -494,5 +474,3 @@ debouncedLog('Third message');
 console.log('Immediate (not debounced):');
 logMessage('Immediate message');">
 </div>
-
-<br/>
