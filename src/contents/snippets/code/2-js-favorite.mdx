@@ -30,6 +30,43 @@ const deepClone = obj => structuredClone(obj);
 ```
 **Function:** Create a complete copy of an object including nested objects. structuredClone() is newer and handles more data types.
 
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Compare different cloning methods! See how shallow vs deep cloning affects nested objects and arrays."
+  data-snippet-id="js-favorites-2-0-1"
+  data-code="const original = {
+  name: 'John',
+  age: 30,
+  address: {
+    city: 'New York',
+    coordinates: { lat: 40.7128, lng: -74.0060 }
+  },
+  hobbies: ['reading', 'coding', 'hiking'],
+  created: new Date('2023-01-01')
+};\n
+console.log('Original object:', original);
+&#47;&#47; Shallow copy (only top level)
+const shallow = {...original};
+console.log('Shallow copy:', shallow);
+&#47;&#47; Deep clone with JSON (loses some data types)
+const deepJSON = JSON.parse(JSON.stringify(original));
+console.log('Deep clone (JSON):', deepJSON);
+console.log('Date became string:', typeof deepJSON.created);
+&#47;&#47; Modify nested property in original
+original.address.city = 'Boston';
+original.hobbies.push('swimming');\n
+console.log('After modifying original:');
+console.log('Original city:', original.address.city);
+console.log('Shallow copy city:', shallow.address.city);
+console.log('Deep clone city:', deepJSON.address.city);\n
+console.log('Original hobbies:', original.hobbies);
+console.log('Shallow copy hobbies:', shallow.hobbies);
+console.log('Deep clone hobbies:', deepJSON.hobbies);
+&#47;&#47; Note: structuredClone() is newer and handles more types
+&#47;&#47; const deepStructured = structuredClone(original);">
+</div>
+
 <br/>
 
 ---
@@ -47,6 +84,53 @@ const groupBy = (array, key) =>
   }, {});
 ```
 **Function:** Group array elements by a specific property value. Super useful for organizing data.
+
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Group data in different ways! Try grouping by different properties or creating more complex grouping functions."
+  data-snippet-id="js-favorites-2-0-2"
+  data-code="const employees = [
+  { name: 'Alice', department: 'Engineering', level: 'Senior', salary: 120000 },
+  { name: 'Bob', department: 'Marketing', level: 'Junior', salary: 60000 },
+  { name: 'Carol', department: 'Engineering', level: 'Junior', salary: 80000 },
+  { name: 'David', department: 'Sales', level: 'Senior', salary: 90000 },
+  { name: 'Eve', department: 'Marketing', level: 'Senior', salary: 100000 },
+  { name: 'Frank', department: 'Engineering', level: 'Mid', salary: 95000 }
+];
+&#47;&#47; Group by utility function
+const groupBy = (array, key) => 
+  array.reduce((groups, item) => {
+    const group = item[key];
+    groups[group] = groups[group] || [];
+    groups[group].push(item);
+    return groups;
+  }, {});
+&#47;&#47; Group by department
+const byDepartment = groupBy(employees, 'department');
+console.log('By department:', byDepartment);
+&#47;&#47; Group by level
+const byLevel = groupBy(employees, 'level');
+console.log('By level:', byLevel);
+&#47;&#47; More complex grouping function
+const groupByFunction = (array, fn) =>
+  array.reduce((groups, item) => {
+    const key = fn(item);
+    groups[key] = groups[key] || [];
+    groups[key].push(item);
+    return groups;
+  }, {});
+&#47;&#47; Group by salary range
+const bySalaryRange = groupByFunction(employees, emp => {
+  if (emp.salary < 70000) return 'Low';
+  if (emp.salary < 100000) return 'Medium';
+  return 'High';
+});
+console.log('By salary range:', bySalaryRange);
+&#47;&#47; Group by first letter of name
+const byFirstLetter = groupByFunction(employees, emp => emp.name[0]);
+console.log('By first letter:', byFirstLetter);">
+</div>
 
 <br/>
 
@@ -70,6 +154,71 @@ const retry = async (fn, retries = 3, delay = 1000) => {
 ```
 **Function:** Automatically retry failed async operations with increasing delays between attempts.
 
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Simulate network requests with failures! See how the retry mechanism would work (simulated synchronously)."
+  data-snippet-id="js-favorites-2-0-3"
+  data-code="&#47;&#47; Retry utility (simplified for demo)
+const retry = (fn, retries = 3, delay = 1000) => {
+  console.log(`Attempting operation with ${retries} retries allowed`);\n
+  for (let attempt = 1; attempt <= retries + 1; attempt++) {
+    try {
+      console.log(`Attempt ${attempt}:`);
+      const result = fn(attempt);
+      console.log(`✅ Success on attempt ${attempt}:`, result);
+      return result;
+    } catch (error) {
+      if (attempt <= retries) {
+        console.log(`❌ Failed: ${error.message}`);
+        console.log(`Waiting ${delay}ms before retry...`);
+        delay *= 2; &#47;&#47; Exponential backoff
+      } else {
+        console.log(`❌ All retries exhausted: ${error.message}`);
+        throw error;
+      }
+    }
+  }
+};
+&#47;&#47; Simulate unreliable operation (fails first 2 times)
+let attemptCount = 0;
+const unreliableOperation = (currentAttempt) => {
+  if (currentAttempt <= 2) {
+    throw new Error(`Network timeout on attempt ${currentAttempt}`);
+  }
+  return { status: 'success', data: 'Important data retrieved!' };
+};
+&#47;&#47; Simulate reliable operation
+const reliableOperation = (currentAttempt) => {
+  return { status: 'success', data: 'Data retrieved immediately' };
+};
+&#47;&#47; Simulate broken operation
+const brokenOperation = (currentAttempt) => {
+  throw new Error('Service permanently unavailable');
+};\n
+console.log('=== Testing unreliable operation (should succeed on 3rd try) ===');
+try {
+  const result1 = retry(unreliableOperation, 3, 500);
+  console.log('Final result:', result1);
+} catch (error) {
+  console.log('Operation failed completely:', error.message);
+}\n
+console.log('\\n=== Testing reliable operation (should succeed immediately) ===');
+try {
+  const result2 = retry(reliableOperation, 3, 500);
+  console.log('Final result:', result2);
+} catch (error) {
+  console.log('Operation failed:', error.message);
+}\n
+console.log('\\n=== Testing broken operation (should fail after all retries) ===');
+try {
+  const result3 = retry(brokenOperation, 2, 250);
+  console.log('Final result:', result3);
+} catch (error) {
+  console.log('Operation failed completely:', error.message);
+}">
+</div>
+
 <br/>
 
 ---
@@ -91,6 +240,56 @@ const memoize = fn => {
 ```
 **Function:** Cache function results to avoid expensive recalculations with the same inputs.
 
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="See memoization speed up repeated calculations! Compare performance with and without caching."
+  data-snippet-id="js-favorites-2-0-4"
+  data-code="&#47;&#47; Memoization utility
+const memoize = fn => {
+  const cache = new Map();
+  return (...args) => {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      console.log(`Cache hit for ${key}`);
+      return cache.get(key);
+    }
+    console.log(`Computing ${key}`);
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  };
+};
+&#47;&#47; Expensive fibonacci function
+const fibonacci = (n) => {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+};
+&#47;&#47; Create memoized version
+const memoizedFib = memoize(fibonacci);\n
+console.log('Testing memoized fibonacci:');
+console.log('fib(10):', memoizedFib(10));
+console.log('fib(10) again:', memoizedFib(10)); // Cache hit!
+console.log('fib(12):', memoizedFib(12));
+console.log('fib(10) again:', memoizedFib(10)); // Cache hit!
+&#47;&#47; Expensive calculation function
+const expensiveCalculation = (x, y) => {
+  console.log(`Performing calculation for ${x}, ${y}`);
+  &#47;&#47; Simulate expensive operation
+  let result = 0;
+  for (let i = 0; i < 1000; i++) {
+    result += Math.sqrt(x * y + i);
+  }
+  return result;
+};\n
+const memoizedCalc = memoize(expensiveCalculation);\n
+console.log('Testing expensive calculation:');
+console.log('calc(5, 10):', memoizedCalc(5, 10));
+console.log('calc(5, 10) again:', memoizedCalc(5, 10)); // Cache hit!
+console.log('calc(3, 7):', memoizedCalc(3, 7));
+console.log('calc(5, 10) again:', memoizedCalc(5, 10)); // Cache hit!">
+</div>
+
 <br/>
 
 ---
@@ -110,6 +309,99 @@ const successful = results
   .map(result => result.value);
 ```
 **Function:** Run multiple promises and get all results, even if some fail. Better than Promise.all() for fault tolerance.
+
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Handle multiple operations gracefully! See how Promise.allSettled pattern works (simulated synchronously)."
+  data-snippet-id="js-favorites-2-0-5"
+  data-code="&#47;&#47; Simulate API operations (synchronous for demo)
+const operations = {
+  fetchUsers: () => ({ status: 'success', data: ['Alice', 'Bob', 'Carol'] }),
+  fetchPosts: () => { throw new Error('Posts service unavailable'); },
+  fetchComments: () => ({ status: 'success', data: ['Great post!', 'Thanks for sharing'] }),
+  fetchProfile: () => ({ status: 'success', data: { name: 'John', avatar: 'avatar.jpg' } })
+};
+&#47;&#47; Simulate Promise.allSettled behavior
+const simulateAllSettled = (operationList) => {
+  console.log('Starting multiple operations...');
+  const results = [];\n  
+  operationList.forEach((operation, index) => {
+    const operationNames = ['users', 'posts', 'comments', 'profile'];
+    const name = operationNames[index] || `operation${index}`;\n    
+    try {
+      console.log(`Executing ${name} operation...`);
+      const result = operation();
+      results.push({ 
+        status: 'fulfilled', 
+        value: result 
+      });
+      console.log(`✅ ${name}: Success`);
+    } catch (error) {
+      results.push({ 
+        status: 'rejected', 
+        reason: error 
+      });
+      console.log(`❌ ${name}: ${error.message}`);
+    }
+  });\n  
+  return results;
+};
+&#47;&#47; Simulate Promise.all behavior (fails on first error)
+const simulateAll = (operationList) => {
+  console.log('Starting Promise.all simulation...');
+  const results = [];\n
+  for (let i = 0; i < operationList.length; i++) {
+    const operationNames = ['users', 'posts', 'comments'];
+    const name = operationNames[i] || `operation${i}`;\n    
+    try {
+      console.log(`Executing ${name} operation...`);
+      const result = operationList[i]();
+      results.push(result);
+      console.log(`✅ ${name}: Success`);
+    } catch (error) {
+      console.log(`❌ ${name}: ${error.message}`);
+      console.log('Promise.all failed - stopping all operations');
+      throw error;
+    }
+  }\n  
+  return results;
+};
+console.log('=== Testing allSettled pattern (handles failures gracefully) ===');
+const allSettledResults = simulateAllSettled([
+  operations.fetchUsers,
+  operations.fetchPosts,
+  operations.fetchComments,
+  operations.fetchProfile
+]);
+console.log('\\nAll operations completed. Results:');
+allSettledResults.forEach((result, index) => {
+  const endpoints = ['users', 'posts', 'comments', 'profile'];\n
+  if (result.status === 'fulfilled') {
+    console.log(`✅ ${endpoints[index]}:`, result.value);
+  } else {
+    console.log(`❌ ${endpoints[index]} failed:`, result.reason.message);
+  }
+});
+&#47;&#47; Filter successful results
+const successful = allSettledResults
+  .filter(result => result.status === 'fulfilled')
+  .map(result => result.value);\n
+console.log('\\nSuccessful responses:', successful);\n
+const failed = allSettledResults.filter(result => result.status === 'rejected');
+console.log(`${successful.length} succeeded, ${failed.length} failed`);\n
+console.log('\\n=== Testing Promise.all pattern (fails completely on any error) ===');
+try {
+  const allResults = simulateAll([
+    operations.fetchUsers,
+    operations.fetchPosts,
+    operations.fetchComments
+  ]);
+  console.log('All operations succeeded:', allResults);
+} catch (error) {
+  console.log('Promise.all failed completely:', error.message);
+}">
+</div>
 
 <br/>
 
@@ -134,6 +426,67 @@ const useLocalStorage = (key, defaultValue) => {
 ```
 **Function:** Reusable state management pattern that syncs with localStorage. Great for persisting user preferences.
 
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Simulate a custom hook pattern! This shows how you might structure reusable stateful logic (without actual React)."
+  data-snippet-id="js-favorites-2-0-6"
+  data-code="&#47;&#47; Simulate localStorage (since we can't use real localStorage in artifacts)
+const mockStorage = {};
+const mockLocalStorage = {
+  getItem: (key) => mockStorage[key] || null,
+  setItem: (key, value) => {
+    mockStorage[key] = value;
+    console.log(`📱 Stored ${key}:`, value);
+  },
+  removeItem: (key) => {
+    delete mockStorage[key];
+    console.log(`🗑️ Removed ${key}`);
+  }
+};
+&#47;&#47; Custom hook pattern (simplified without React)
+const useLocalStorage = (key, defaultValue) => {
+  &#47;&#47; Initialize value
+  let storedValue;
+  try {
+    const item = mockLocalStorage.getItem(key);
+    storedValue = item ? JSON.parse(item) : defaultValue;
+  } catch (error) {
+    storedValue = defaultValue;
+  }\n
+  const setValue = (value) => {
+    try {
+      &#47;&#47; Allow value to be a function so we have the same API as useState
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      storedValue = valueToStore;
+      mockLocalStorage.setItem(key, JSON.stringify(valueToStore));
+    } catch (error) {
+      console.error('Error saving to localStorage:', error);
+    }
+  };\n  
+  return [storedValue, setValue];
+};
+&#47;&#47; Usage examples
+console.log('Creating user preferences hook:');
+const [theme, setTheme] = useLocalStorage('theme', 'light');
+console.log('Current theme:', theme);\n
+console.log('Changing theme to dark:');
+setTheme('dark');\n
+console.log('Creating counter hook:');
+const [count, setCount] = useLocalStorage('count', 0);
+console.log('Current count:', count);\n
+console.log('Incrementing counter:');
+setCount(count + 1);
+setCount(count + 2);\n
+console.log('Creating settings hook:');
+const [settings, setSettings] = useLocalStorage('settings', { notifications: true, autoSave: false });
+console.log('Current settings:', settings);\n
+console.log('Updating settings:');
+setSettings({ ...settings, autoSave: true, language: 'en' });\n
+console.log('Mock storage contents:');
+console.log(mockStorage);">
+</div>
+
 <br/>
 
 ---
@@ -157,5 +510,83 @@ const observeElement = (element, callback) => {
 };
 ```
 **Function:** Efficiently detect when elements enter the viewport for lazy loading images or infinite scroll.
+
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Simulate intersection observer patterns! This shows how you might implement lazy loading and viewport detection."
+  data-snippet-id="js-favorites-2-0-7"
+  data-code="&#47;&#47; Mock Intersection Observer (simplified simulation)
+class MockIntersectionObserver {
+  constructor(callback, options = {}) {
+    this.callback = callback;
+    this.options = options;
+    this.observedElements = new Set();
+  }\n
+  observe(element) {
+    this.observedElements.add(element);
+    console.log(`👁️ Started observing:`, element);
+    &#47;&#47; Simulate element becoming visible after random delay
+    setTimeout(() => {
+      if (this.observedElements.has(element)) {
+        console.log(`✨ Element entered viewport:`, element);
+        this.callback([{
+          target: element,
+          isIntersecting: true,
+          intersectionRatio: 0.5
+        }]);
+      }
+    }, Math.random() * 2000 + 500);
+  }\n
+  unobserve(element) {
+    this.observedElements.delete(element);
+    console.log(`👁️ Stopped observing:`, element);
+  }\n
+  disconnect() {
+    this.observedElements.clear();
+    console.log(`👁️ Observer disconnected`);
+  }
+}
+&#47;&#47; Use mock instead of real IntersectionObserver
+const IntersectionObserver = MockIntersectionObserver;
+&#47;&#47; Lazy loading utility
+const observeElement = (element, callback) => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        callback(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  });\n  
+  observer.observe(element);
+  return () => observer.unobserve(element);
+};
+&#47;&#47; Mock DOM elements
+const elements = [
+  { id: 'image1', src: 'placeholder.jpg', dataSrc: 'photo1.jpg' },
+  { id: 'image2', src: 'placeholder.jpg', dataSrc: 'photo2.jpg' },
+  { id: 'image3', src: 'placeholder.jpg', dataSrc: 'photo3.jpg' },
+  { id: 'section1', text: 'Hidden content 1' },
+  { id: 'section2', text: 'Hidden content 2' }
+];\n
+console.log('Setting up lazy loading observers:');
+&#47;&#47; Lazy load images
+elements.filter(el => el.src).forEach(element => {
+  observeElement(element, (target) => {
+    console.log(`🖼️ Loading image: ${target.id}`);
+    target.src = target.dataSrc;
+    console.log(`✅ Image loaded: ${target.dataSrc}`);
+  });
+});
+&#47;&#47; Lazy load content sections
+elements.filter(el => el.text).forEach(element => {
+  observeElement(element, (target) => {
+    console.log(`📝 Loading content: ${target.id}`);
+    console.log(`✅ Content revealed: ${target.text}`);
+  });
+});\n
+console.log('Waiting for elements to enter viewport...');">
+</div>
 
 <br/>

@@ -25,6 +25,15 @@ console.log({ myVariable });
 ```
 **Function:** Logs both the variable name and value, making debugging easier than `console.log(myVariable)`.
 
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Change myVariable or add other variables and see what happens!"
+  data-snippet-id="js-common-0-0-1"
+  data-code="const myVariable = 'Hello World';
+  console.log({ myVariable });">
+</div>
+
 <br/>
 
 ---
@@ -36,6 +45,20 @@ console.log({ myVariable });
 const [first, second, ...rest] = ['a', 'b', 'c', 'd'];
 ```
 **Function:** Extract values from arrays into distinct variables. The rest operator captures remaining elements.
+
+<div 
+  data-component="TestItOut" 
+  data-title="JS Snippets Playground"
+  data-description="Create an array then destructure it! Try changing the array values or destructuring pattern."
+  data-snippet-id="js-common-0-0-2"
+  data-code="const [first, second, ...rest] = ['a', 'b', 'c', 'd'];
+  console.log('First:', first);
+  console.log('Second:', second);
+  console.log('Rest:', rest);
+  &#47;&#47; Try with numbers
+  const [x, y, ...others] = [1, 2, 3, 4, 5];
+  console.log('X:', x, 'Y:', y, 'Others:', others);">
+</div>
 
 <br/>
 
@@ -49,6 +72,20 @@ const { name: userName, age: userAge } = user;
 ```
 **Function:** Extract object properties and assign them to variables with different names.
 
+<div 
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Create an object then destructure it!"
+  data-snippet-id="js-common-0-0-3"
+  data-code="const user = { name: 'John', age: 30, city: 'New York' };
+  const { name: userName, age: userAge } = user;
+  console.log('User Name:', userName);
+  console.log('User Age:', userAge);
+  &#47;&#47; Try with more properties
+  const { city: userCity = 'Unknown' } = user;
+  console.log('User City:', userCity);">
+</div>
+
 <br/>
 
 ---
@@ -60,6 +97,22 @@ const { name: userName, age: userAge } = user;
 const message = `Hello ${name}, you are ${age} years old`;
 ```
 **Function:** String interpolation using backticks and `${}` syntax for embedding expressions.
+
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Practice inserting variables into the message string! Try adding calculations or function calls inside the ${} syntax."
+  data-snippet-id="js-common-0-0-4"
+  data-code="const name = 'World';
+  const age = 25;
+  const message = `Hello ${name}, you are ${age} years old`;
+  console.log(message);
+  &#47;&#47; Try with expressions
+  const price = 19.99;
+  const tax = 0.08;
+  const total = `Total: $${(price * (1 + tax)).toFixed(2)}`;
+  console.log(total);">
+</div>
 
 <br/>
 
@@ -74,6 +127,24 @@ const greet = name => `Hello ${name}`;
 ```
 **Function:** Concise function syntax. Parentheses optional for single parameters, curly braces optional for single expressions.
 
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Experiment with different arrow function syntaxes! Try functions with no parameters, one parameter, or multiple parameters."
+  data-snippet-id="js-common-0-0-5"
+  data-code="const add = (a, b) => a + b;
+  const greet = name => `Hello ${name}`;\n
+  console.log('5 + 3 =', add(5, 3));
+  console.log(greet('Developer'));
+  &#47;&#47; Try different arrow function styles
+  const multiply = (x, y) => x * y;
+  const square = x => x * x;
+  const sayHi = () => 'Hi there!';\n
+  console.log('4 * 6 =', multiply(4, 6));
+  console.log('Square of 7:', square(7));
+  console.log(sayHi());">
+</div>
+
 <br/>
 
 ---
@@ -85,6 +156,23 @@ const greet = name => `Hello ${name}`;
 const doubled = numbers.map(n => n * 2);
 ```
 **Function:** Transform each element in an array and return a new array with the results.
+
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Try different transformations like squaring numbers, converting strings, or creating objects from arrays!"
+  data-snippet-id="js-common-0-0-6" 
+  data-code="const numbers = [1, 2, 3, 4, 5];
+  const doubled = numbers.map(n => n * 2);
+  console.log('Original:', numbers);
+  console.log('Doubled:', doubled);
+  &#47;&#47; Try different transformations
+  const names = ['alice', 'bob', 'charlie'];
+  const capitalized = names.map(name => name.charAt(0).toUpperCase() + name.slice(1));
+  console.log('Capitalized:', capitalized); const ages = [16, 21, 30, 45];
+  const ageGroups = ages.map(age => age >= 18 ? 'Adult' : 'Minor');
+  console.log('Age Groups:', ageGroups);">
+</div>
 
 <br/>
 
@@ -98,6 +186,28 @@ const adults = users.filter(user => user.age >= 18);
 ```
 **Function:** Create a new array with elements that pass a test condition.
 
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Try different filter conditions! Filter by age, name length, or any other property you can think of."
+  data-snippet-id="js-common-0-0-7"
+  data-code="const users = [
+    { name: 'Alice', age: 25 },
+    { name: 'Bob', age: 16 },
+    { name: 'Charlie', age: 30 },
+    { name: 'Diana', age: 17 }
+  ];
+  const adults = users.filter(user => user.age >= 18);
+  console.log('All users:', users);
+  console.log('Adults only:', adults);
+  &#47;&#47; Try different filters
+  const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const evenNumbers = numbers.filter(n => n % 2 === 0);
+  const bigNumbers = numbers.filter(n => n > 5);
+  console.log('Even numbers:', evenNumbers);
+  console.log('Numbers > 5:', bigNumbers);">
+</div>
+
 <br/>
 
 ---
@@ -110,6 +220,29 @@ const user = users.find(user => user.id === targetId);
 ```
 **Function:** Returns the first element that matches the condition, or undefined if none found.
 
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Try searching for different IDs, names, or create your own search criteria!"
+  data-snippet-id="js-common-0-0-8"
+  data-code="const users = [
+    { id: 1, name: 'Alice', email: 'alice@example.com' },
+    { id: 2, name: 'Bob', email: 'bob@example.com' },
+    { id: 3, name: 'Charlie', email: 'charlie@example.com' }
+  ];
+  const targetId = 2;
+  const user = users.find(user => user.id === targetId);
+  console.log('Found user:', user);
+  &#47;&#47; Try finding by different properties
+  const userByName = users.find(user => user.name === 'Alice');
+  console.log('Found by name:', userByName);\n
+  const userByEmail = users.find(user => user.email.includes('charlie'));
+  console.log('Found by email:', userByEmail);
+  &#47;&#47; What happens if not found?
+  const notFound = users.find(user => user.id === 999);
+  console.log('Not found:', notFound);">
+</div>
+
 <br/>
 
 ---
@@ -121,6 +254,28 @@ const user = users.find(user => user.id === targetId);
 const message = age >= 18 ? 'Adult' : 'Minor';
 ```
 **Function:** A shorthand for simple if-else statements. Condition ? valueIfTrue : valueIfFalse.
+
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Try different ages and conditions! Experiment with nested ternary operators but keep them readable."
+  data-snippet-id="js-common-0-0-9"
+  data-code="const age = 20;
+  const message = age >= 18 ? 'Adult' : 'Minor';
+  console.log(`Age ${age}: ${message}`);
+  &#47;&#47; Try with different ages
+  const checkAge = (userAge) => {
+    const status = userAge >= 18 ? 'Can vote' : 'Cannot vote yet';
+    return `${userAge} years old: ${status}`;
+  };\n
+  console.log(checkAge(16));
+  console.log(checkAge(21));
+  console.log(checkAge(65));
+  &#47;&#47; Nested ternary (be careful!)
+  const score = 85;
+  const grade = score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : 'F';
+  console.log(`Score ${score}: Grade ${grade}`);">
+</div>
 
 <br/>
 
@@ -135,4 +290,18 @@ function greet(name = 'Guest', age = 0) {
 }
 ```
 **Function:** Provide default values for function parameters when no argument is passed.
+
+<div 
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Try calling with different parameters!"
+  data-snippet-id="js-common-0-0-10"
+  data-code="function greet(name = 'Guest', age = 0) {
+    return `Hello ${name}, age ${age}`;
+  }
+  console.log(greet());
+  console.log(greet('Alice'));
+  console.log(greet('Bob', 25));">
+</div>
+
 <br/>

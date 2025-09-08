@@ -49,8 +49,7 @@ app.prepare().then(() => {
       try { await runSpotifyIngestion(); } finally { isRunning = false; }
     });
 
-    //schedule('10 */6 * * *', async () => {
-      schedule('*/5 * * * *', async () => {
+    schedule('10 */6 * * *', async () => {
       console.log(`⏱️ Attempting daily stats aggregation at ${new Date().toISOString()}`);
       await aggregateDailyStats();
     });

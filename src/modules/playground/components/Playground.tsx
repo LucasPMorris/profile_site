@@ -29,23 +29,26 @@ const Playground = ({
   const handleRunCode = () => {
     try {
       setError(false);
-
+      
       let capturedConsoleOutput = '';
       const originalConsoleLog = console.log;
-
-      console.log = (message) => (capturedConsoleOutput += `${message}\n`);
-
+      
+      // Better console.log capture that handles multiple arguments
+      console.log = (...args) => {
+        const message = args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+        ).join(' ');
+        capturedConsoleOutput += `${message}\n`;
+      };
+      
       const result = new Function(code)();
       console.log = originalConsoleLog;
-
+      
       setOutput(capturedConsoleOutput + (result?.toString() ?? ''));
     } catch (error) {
       setError(true);
-      if (error instanceof Error) {
-        setOutput(error.toString());
-      } else {
-        setOutput('An unknown error occurred.');
-      }
+      if (error instanceof Error) { setOutput(error.toString()); }
+      else { setOutput('An unknown error occurred.'); }
     }
   };
 
@@ -53,29 +56,10 @@ const Playground = ({
     <>
       {isHeading && <PlaygroundHeader />}
 
-      <CodePlayground
-        id={id}
-        onFullScreen={handleFullScreen}
-        code={code}
-        output={output}
-        isError={isError}
-        onRunCode={handleRunCode}
-        onSetCode={setCode}
-        onSetOutput={setOutput}
-      />
+      <CodePlayground id={id} onFullScreen={handleFullScreen} code={code} output={output} isError={isError} onRunCode={handleRunCode} onSetCode={setCode} onSetOutput={setOutput} />
 
       <ModalWrapper isOpen={isFullScreen} onClose={handleFullScreen}>
-        <CodePlayground
-          id={id}
-          isFullScreen={isFullScreen}
-          onCloseFullScreen={handleFullScreen}
-          code={code}
-          output={output}
-          isError={isError}
-          onRunCode={handleRunCode}
-          onSetCode={setCode}
-          onSetOutput={setOutput}
-        />
+        <CodePlayground id={id} isFullScreen={isFullScreen} onCloseFullScreen={handleFullScreen} code={code} output={output} isError={isError} onRunCode={handleRunCode} onSetCode={setCode} onSetOutput={setOutput} />
       </ModalWrapper>
     </>
   );

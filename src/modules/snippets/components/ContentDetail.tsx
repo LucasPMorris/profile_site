@@ -11,11 +11,11 @@ import ContentBody from './ContentBody';
 import ContentPlayground from './ContentPlayground';
 
 interface ContentListItemProps { id: number; parent_slug: string; slug: string; title: string; }
+
 interface ContentDetailProps { content: string; frontMatter: SubContentMetaProps; }
 
 const ContentDetail = ({ content, frontMatter }: ContentDetailProps) => {
   const [contentList, setContentList] = useState<ContentListItemProps[]>([]);
-
   const [currentId, setCurrentId] = useState<number>(0);
   const [nextTitle, setNextTitle] = useState<string | null>(null);
   const [previousTitle, setPreviousTitle] = useState<string | null>(null);
@@ -27,9 +27,10 @@ const ContentDetail = ({ content, frontMatter }: ContentDetailProps) => {
   const meta = frontMatter;
   const isShowPlayground = meta?.is_playground ?? false;
   const initialCode = meta?.initial_code ?? '';
+  const language = meta?.language;
 
-  const { data: resContentData } = useSWR(`/api/content?category=${parentSlug}`, fetcher );
-  const { data: viewsData } = useSWR( `/api/views?slug=${contentSlug}&type=snippet`, fetcher );
+  const { data: resContentData } = useSWR(`/api/content?category=${parentSlug}`, fetcher);
+  const { data: viewsData } = useSWR(`/api/views?slug=${contentSlug}&type=snippet`, fetcher);
 
   const getNextOrPreviousContent = useCallback(
     (contents: ContentListItemProps[], step: number) => {
@@ -53,7 +54,7 @@ const ContentDetail = ({ content, frontMatter }: ContentDetailProps) => {
   }, [resContentData]);
 
   useEffect(() => {
-    const getId = contentList?.find((item: ContentListItemProps) => item.slug === contentSlug );
+    const getId = contentList?.find((item: ContentListItemProps) => item.slug === contentSlug);
     const currentContentId = getId?.id as number;
     setCurrentId(currentContentId);
 
@@ -62,17 +63,17 @@ const ContentDetail = ({ content, frontMatter }: ContentDetailProps) => {
       previousContent && setPreviousTitle(previousContent.title);
     }
 
-    if (currentContentId < contentList.length - 1) {
+    if (currentContentId < contentList.length) {
       const nextContent = getNextOrPreviousContent(contentList, 1);
-      nextContent && setNextTitle(nextContent?.title);
+      nextContent && setNextTitle(nextContent.title);
     }
   }, [contentList, contentSlug, getNextOrPreviousContent]);
 
   return (
     <>
       {content && <ContentBody content={content} />}
-      <NavigationSection currentIndex={currentId} totalItems={contentList.length} handleNext={() => handleNavigation(1)} handlePrevious={() => handleNavigation(-1)} previousTitle={previousTitle} nextTitle={nextTitle}/>
-      {isShowPlayground && <ContentPlayground initialCode={initialCode} />}
+      <NavigationSection currentIndex={currentId} totalItems={contentList.length} handleNext={() => handleNavigation(1)} handlePrevious={() => handleNavigation(-1)} previousTitle={previousTitle} nextTitle={nextTitle} />
+      { isShowPlayground && language !== 'JavaScript' && ( <ContentPlayground initialCode={initialCode} /> )}
     </>
   );
 };

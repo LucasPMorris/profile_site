@@ -28,6 +28,30 @@ const username = user.name ?? 'Anonymous';
 ```
 **Function:** Returns the right side if left side is null or undefined (but not for falsy values like 0 or '').
 
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Compare nullish coalescing (??) with logical OR (||) - see how they handle different falsy values!"
+  data-snippet-id="js-uncommon-1-0-1"
+  data-code="const user1 = { name: 'Alice' };
+const user2 = { name: null };
+const user3 = { name: '' };
+const user4 = { name: 0 };
+const user5 = {};\n
+console.log('With ??:');
+console.log('Alice:', user1.name ?? 'Anonymous');
+console.log('null:', user2.name ?? 'Anonymous');
+console.log('empty string:', user3.name ?? 'Anonymous');
+console.log('zero:', user4.name ?? 'Anonymous');
+console.log('undefined:', user5.name ?? 'Anonymous');\n
+console.log('With ||:');
+console.log('Alice:', user1.name || 'Anonymous');
+console.log('null:', user2.name || 'Anonymous');
+console.log('empty string:', user3.name || 'Anonymous');
+console.log('zero:', user4.name || 'Anonymous');
+console.log('undefined:', user5.name || 'Anonymous');">
+</div>
+
 <br/>
 
 ---
@@ -40,6 +64,38 @@ const city = user?.address?.city;
 ```
 **Function:** Safely access nested object properties without throwing errors if intermediate values are null/undefined.
 
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Try accessing deeply nested properties safely! See what happens with and without optional chaining."
+  data-snippet-id="js-uncommon-1-0-2"
+  data-code="const users = [
+  { 
+    name: 'Alice', 
+    address: { city: 'New York', country: 'USA' },
+    contacts: { phone: '123-456-7890' }
+  },
+  { 
+    name: 'Bob', 
+    address: null 
+  },
+  { 
+    name: 'Charlie'
+  }
+];\n
+users.forEach(user => {
+  console.log(`${user.name}:`);
+  console.log('  City:', user?.address?.city ?? 'Not provided');
+  console.log('  Phone:', user?.contacts?.phone ?? 'Not provided');
+  console.log('  Zip:', user?.address?.zip ?? 'Not provided');
+});
+&#47;&#47; Try with arrays too
+const data = { items: [{ value: 42 }, null, { value: 99 }] };
+console.log('First item value:', data?.items?.[0]?.value);
+console.log('Second item value:', data?.items?.[1]?.value);
+console.log('Third item value:', data?.items?.[2]?.value);">
+</div>
+
 <br/>
 
 ---
@@ -51,6 +107,31 @@ const city = user?.address?.city;
 const range = Array.from({length: 5}, (_, i) => i + 1); // [1,2,3,4,5]
 ```
 **Function:** Create arrays from array-like objects or with a mapping function for generating sequences.
+
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Generate different number sequences and patterns! Try creating ranges, squares, or even random values."
+  data-snippet-id="js-uncommon-1-0-3"
+  data-code="&#47;&#47; Basic range
+const range = Array.from({length: 5}, (_, i) => i + 1);
+console.log('Range 1-5:', range);
+&#47;&#47; Even numbers
+const evens = Array.from({length: 6}, (_, i) => (i + 1) * 2);
+console.log('First 6 evens:', evens);
+&#47;&#47; Squares
+const squares = Array.from({length: 5}, (_, i) => (i + 1) ** 2);
+console.log('First 5 squares:', squares);
+&#47;&#47; Alphabet
+const alphabet = Array.from({length: 26}, (_, i) => String.fromCharCode(65 + i));
+console.log('Alphabet:', alphabet.join(''));
+&#47;&#47; Random numbers
+const random = Array.from({length: 5}, () => Math.floor(Math.random() * 100));
+console.log('Random numbers:', random);
+&#47;&#47; From string
+const letters = Array.from('Hello');
+console.log('Letters from Hello:', letters);">
+</div>
 
 <br/>
 
@@ -66,6 +147,41 @@ Object.entries(obj).forEach(([key, value]) => {
 ```
 **Function:** Convert object to array of [key, value] pairs for easy iteration over object properties.
 
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Practice iterating over objects in different ways! Try filtering, mapping, or transforming the entries."
+  data-snippet-id="js-uncommon-1-0-4"
+  data-code="const student = {
+  name: 'Alex',
+  age: 20,
+  grade: 'A',
+  subjects: ['Math', 'Physics', 'Chemistry'],
+  isActive: true
+};\n
+console.log('All properties:');
+Object.entries(student).forEach(([key, value]) => {
+  console.log(`${key}: ${value}`);
+});\n
+console.log('String properties only:');
+Object.entries(student)
+  .filter(([key, value]) => typeof value === 'string')
+  .forEach(([key, value]) => {
+    console.log(`${key}: ${value}`);
+  });
+&#47;&#47; Convert back to object with transformed values
+const uppercased = Object.fromEntries(
+  Object.entries(student).map(([key, value]) => [
+    key,
+    typeof value === 'string' ? value.toUpperCase() : value
+  ])
+);
+console.log('Uppercased strings:', uppercased);
+&#47;&#47; Get just the keys and values
+console.log('Keys:', Object.keys(student));
+console.log('Values:', Object.values(student));">
+</div>
+
 <br/>
 
 ---
@@ -77,6 +193,45 @@ Object.entries(obj).forEach(([key, value]) => {
 const {name, age, ...otherProps} = user;
 ```
 **Function:** Extract specific properties and collect remaining properties into a new object.
+
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Practice separating object properties! Try extracting different combinations of properties."
+  data-snippet-id="js-uncommon-1-0-5"
+  data-code="const user = {
+  id: 1,
+  name: 'Sarah',
+  age: 28,
+  email: 'sarah@example.com',
+  city: 'Boston',
+  country: 'USA',
+  preferences: {
+    theme: 'dark',
+    notifications: true
+  }
+};
+&#47;&#47; Extract name and age, rest goes to otherProps
+const {name, age, ...otherProps} = user;
+console.log('Name:', name);
+console.log('Age:', age);
+console.log('Other props:', otherProps);
+&#47;&#47; Extract contact info
+const {email, city, country, ...nonContactInfo} = user;
+console.log('Contact:', {email, city, country});
+console.log('Non-contact info:', nonContactInfo);
+&#47;&#47; Useful for function parameters
+function updateUser({id, ...updates}) {
+  console.log(`Updating user ${id} with:`, updates);
+  return {...user, ...updates};
+}\n
+const updatedUser = updateUser({
+  id: 1,
+  age: 29,
+  city: 'New York'
+});
+console.log('Updated user:', updatedUser);">
+</div>
 
 <br/>
 
@@ -90,6 +245,48 @@ const propName = 'dynamicKey';
 const obj = { [propName]: 'value' };
 ```
 **Function:** Use variables as object property names by wrapping them in square brackets.
+
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Create objects with dynamic property names! Try building objects based on user input or conditions."
+  data-snippet-id="js-uncommon-1-0-6"
+  data-code="&#47;&#47; Basic computed property
+const propName = 'dynamicKey';
+const obj = { [propName]: 'value' };
+console.log('Basic:', obj);
+&#47;&#47; Multiple computed properties
+const prefix = 'user';
+const user = {
+  [`${prefix}Name`]: 'John',
+  [`${prefix}Age`]: 30,
+  [`${prefix}Email`]: 'john@example.com'
+};
+console.log('User object:', user);
+&#47;&#47; Function calls as property names
+const getPropertyName = (type) => `data_${type}_value`;
+const data = {
+  [getPropertyName('string')]: 'Hello',
+  [getPropertyName('number')]: 42,
+  [getPropertyName('boolean')]: true
+};
+console.log('Data object:', data);
+&#47;&#47; Building objects from arrays
+const fields = ['name', 'age', 'city'];
+const values = ['Alice', 25, 'Paris'];
+const person = {};
+fields.forEach((field, index) => {
+  person[field] = values[index];
+});
+console.log('Person from arrays:', person);
+&#47;&#47; Using expressions
+const timestamp = Date.now();
+const logEntry = {
+  [`log_${timestamp}`]: 'Application started',
+  message: 'System initialized'
+};
+console.log('Log entry:', logEntry);">
+</div>
 
 <br/>
 
@@ -106,6 +303,45 @@ const lookup = items.reduce((acc, item) => {
 ```
 **Function:** Transform an array into an object, useful for creating lookup tables or grouping.
 
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Transform arrays into useful objects! Try creating lookup tables, counting occurrences, or grouping data."
+  data-snippet-id="js-uncommon-1-0-7"
+  data-code="const items = [
+  {id: 1, name: 'Apple', category: 'fruit', price: 1.20},
+  {id: 2, name: 'Banana', category: 'fruit', price: 0.80},
+  {id: 3, name: 'Carrot', category: 'vegetable', price: 0.50},
+  {id: 4, name: 'Broccoli', category: 'vegetable', price: 2.00}
+];
+&#47;&#47; Create lookup table by ID
+const lookup = items.reduce((acc, item) => {
+  acc[item.id] = item;
+  return acc;
+}, {});
+console.log('Lookup by ID:', lookup);
+&#47;&#47; Group by category
+const byCategory = items.reduce((acc, item) => {
+  acc[item.category] = acc[item.category] || [];
+  acc[item.category].push(item);
+  return acc;
+}, {});
+console.log('Grouped by category:', byCategory);
+&#47;&#47; Count occurrences
+const fruits = ['apple', 'banana', 'apple', 'orange', 'banana', 'apple'];
+const counts = fruits.reduce((acc, fruit) => {
+  acc[fruit] = (acc[fruit] || 0) + 1;
+  return acc;
+}, {});
+console.log('Fruit counts:', counts);
+&#47;&#47; Calculate totals by category
+const totals = items.reduce((acc, item) => {
+  acc[item.category] = (acc[item.category] || 0) + item.price;
+  return acc;
+}, {});
+console.log('Price totals by category:', totals);">
+</div>
+
 <br/>
 
 ---
@@ -119,6 +355,37 @@ user.count ??= 0;
 ```
 **Function:** Assign values only if current value is falsy (||=) or nullish (??=).
 
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Practice efficient conditional assignment! See how ||= and ??= behave differently with various values."
+  data-snippet-id="js-uncommon-1-0-8"
+  data-code="let user = { name: 'John' };\n
+console.log('Initial user:', user);
+&#47;&#47; Set default preferences if not exists
+user.preferences ||= { theme: 'light', lang: 'en' };
+console.log('After setting preferences:', user);
+&#47;&#47; Try setting again (won't override)
+user.preferences ||= { theme: 'dark', lang: 'fr' };
+console.log('After trying to set again:', user);
+&#47;&#47; Nullish assignment
+user.count ??= 0;
+user.score ??= 100;
+user.name ??= 'Anonymous';
+console.log('After nullish assignments:', user);
+&#47;&#47; Compare behaviors
+let test = { a: '', b: 0, c: false, d: null, e: undefined };
+console.log('Before assignments:', test);
+&#47;&#47; Using ||=
+test.a ||= 'default';
+test.b ||= 999;
+test.c ||= true;
+&#47;&#47; Using ??=
+test.d ??= 'default';
+test.e ??= 'default';
+console.log('After assignments:', test);">
+</div>
+
 <br/>
 
 ---
@@ -131,6 +398,44 @@ const pipe = (...fns) => value => fns.reduce((acc, fn) => fn(acc), value);
 const process = pipe(trim, toLowerCase, capitalize);
 ```
 **Function:** Combine multiple functions into a single function that applies them in sequence.
+
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="Build function pipelines! Create chains of transformations that process data step by step."
+  data-snippet-id="js-uncommon-1-0-9"
+  data-code="&#47;&#47; Helper functions
+const trim = str => str.trim();
+const toLowerCase = str => str.toLowerCase();
+const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
+const removeSpaces = str => str.replace(/\s+/g, '');
+const addPrefix = prefix => str => `${prefix}${str}`;
+&#47;&#47; Function composition utility
+const pipe = (...fns) => value => fns.reduce((acc, fn) => fn(acc), value);
+&#47;&#47; Create processing pipelines
+const cleanText = pipe(trim, toLowerCase, capitalize);
+const createId = pipe(trim, toLowerCase, removeSpaces, addPrefix('id_'));
+&#47;&#47; Test the pipelines
+const messyText = '  hello WORLD  ';
+console.log('Original:', `'${messyText}'`);
+console.log('Cleaned:', cleanText(messyText));
+console.log('As ID:', createId(messyText));
+&#47;&#47; Number processing pipeline
+const double = x => x * 2;
+const addTen = x => x + 10;
+const square = x => x * x;
+const processNumber = pipe(double, addTen, square);
+console.log('Process 5:', processNumber(5));
+console.log('Process 3:', processNumber(3));
+&#47;&#47; Array processing
+const numbers = [1, 2, 3, 4, 5];
+const processArray = pipe(
+  arr => arr.map(double),
+  arr => arr.filter(x => x > 4),
+  arr => arr.reduce((sum, x) => sum + x, 0)
+);
+console.log('Array result:', processArray(numbers));">
+</div>
 
 <br/>
 
@@ -149,5 +454,45 @@ const debounce = (func, delay) => {
 };
 ```
 **Function:** Limit function execution frequency, useful for search inputs or resize events.
+
+<div
+  data-component="TestItOut"
+  data-title="JS Snippets Playground"
+  data-description="See debouncing in action! Watch how rapid function calls get controlled and delayed."
+  data-snippet-id="js-uncommon-1-0-10"
+  data-code="&#47;&#47; Debounce utility
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+};
+&#47;&#47; Functions to debounce
+const search = (query) => console.log(`Searching for: ${query}`);
+const saveData = (data) => console.log(`Saving: ${data}`);
+const logMessage = (msg) => console.log(`Log: ${msg} at ${new Date().toLocaleTimeString()}`);
+&#47;&#47; Create debounced versions
+const debouncedSearch = debounce(search, 500);
+const debouncedSave = debounce(saveData, 1000);
+const debouncedLog = debounce(logMessage, 300);
+console.log('Simulating rapid search typing:');
+debouncedSearch('a');
+debouncedSearch('ap');
+debouncedSearch('app');
+debouncedSearch('appl');
+debouncedSearch('apple');\n
+console.log('Multiple save attempts:');
+debouncedSave('draft 1');
+debouncedSave('draft 2');
+debouncedSave('final version');\n
+console.log('Rapid logging (only last will show):');
+debouncedLog('First message');
+debouncedLog('Second message');
+debouncedLog('Third message');
+&#47;&#47; Compare with immediate execution
+console.log('Immediate (not debounced):');
+logMessage('Immediate message');">
+</div>
 
 <br/>
