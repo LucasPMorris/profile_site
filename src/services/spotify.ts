@@ -4,8 +4,9 @@ import querystring, { stringify } from 'querystring';
 
 import { PAIR_DEVICES } from '@/common/constant/devices';
 import { SpotifyDataResponseProps } from '@/common/types/spotify';
-import { AccessTokenResponseProps, DeviceDataProps, DeviceResponseProps, NowPlayingResponseProps, SongProps, TopTracksResponseProps, TrackProps, TopArtistsResponseProps, ArtistProps, PlayHistoryResponseProps, TrackHistoryProps, RawRecentlyPlayedResponse } from '@/common/types/spotify';
+import { AccessTokenResponseProps, DeviceDataProps, DeviceResponseProps, NowPlayingResponseProps, SongProps, RawRecentlyPlayedResponse } from '@/common/types/spotify';
 import prisma from '@/common/libs/prisma';
+import { getISOWeek } from 'date-fns';
 
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;

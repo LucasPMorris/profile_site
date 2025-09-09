@@ -11,13 +11,13 @@ import { ArtistProps, TrackProps } from '@/common/types/spotify';
 import TopTracks from './TopTracks';
 import Overview from './Overview';
 import DateRangeSelector from '@/common/components/elements/DateRangeSelector';
+import { format, getISOWeek, startOfISOWeek } from 'date-fns';
 
 const fallback = '/spotify-icon.svg';
 
 interface SpotifyStatItem { name?: string; value?: string; title?: string; artists?: string; songUrl?: string;   explicit?: boolean; common_album?: { image?: string }; image?: string; artist_url?: string; }
-
 interface SpotifyStatGroup { title: string; styles: { bg: string }; data: SpotifyStatItem[]; }
-interface HeatMapProps { date: string; weekday: string;  hourly_plays: number[];}
+interface HeatMapProps { date: string; weekday: string; hourly_plays: number[];}
 
 const SpotifyStats = () => {
   const [startDate, setStartDate] = useState(() => { const d = new Date(); d.setDate(d.getDate() - 30); return d.toISOString().split('T')[0]; });
@@ -45,26 +45,43 @@ const SpotifyStats = () => {
   const totalTopTrackPlays = data?.topTracks?.length ?? 0;
   const explicitCount = data?.topTracks?.filter((track: TrackProps) => track.explicit).length ?? 0;
   const percentExplicit = ((explicitCount / totalTopTrackPlays) * 100).toFixed(1);
-  const weekdayMap = new Map<string, number[]>();
+  const hourlyMap = new Map<string, number[]>();
 
   data.playFrequency.forEach(({ weekday, hourly_plays }: HeatMapProps) => {
-    if (!weekdayMap.has(weekday)) { weekdayMap.set(weekday, Array(24).fill(0)); }
-      const bucket = weekdayMap.get(weekday)!;
-      hourly_plays.forEach((count, hour) => { bucket[hour] += count;
-    });
+    if (!hourlyMap.has(weekday)) { hourlyMap.set(weekday, Array(24).fill(0)); }
+      const bucket = hourlyMap.get(weekday)!;
+      hourly_plays.forEach((count, hour) => { bucket[hour] += count; });
   });  
 
-  const weekdayDateMap = new Map<string, string[]>();
-  
-  data.playFrequency.forEach(({ weekday, date, hourly_plays }: HeatMapProps) => {
-    if (!weekdayDateMap.has(weekday)) { weekdayDateMap.set(weekday, []); }
-    const bucket = weekdayMap.get(weekday)!;
-    hourly_plays.forEach((count, hour) => { bucket[hour] += count; });
-    weekdayDateMap.get(weekday)!.push(date);
+  const weekdayMap = new Map<string, {start: Date, counts: number[]}>();
+  data.playFrequency.forEach(({ date, hourly_plays }: HeatMapProps) => {
+    const d = new Date(date);
+    const weekStart = startOfISOWeek(d);
+    const label = `${format(weekStart, "MMM d ''yy")}`; // e.g., "Jul 28 – Aug 3"
+    const weekday = d.getUTCDay(); // 0 = Sun, 6 = Sat
+    const totalPlays = hourly_plays.reduce((a, b) => a + b, 0);
+
+    if (!weekdayMap.has(label)) {
+      weekdayMap.set(label, { start: weekStart, counts: Array(7).fill(0) });
+    }
+
+    weekdayMap.get(label)!.counts[weekday] += totalPlays;
+  });
+
+  const monthlyMap = new Map<string, number[]>();
+  data.playFrequency.forEach(({ date, hourly_plays }: HeatMapProps) => {
+    const d = new Date(date);
+    const year = d.getFullYear().toString();
+    const monthIndex = d.getMonth(); // 0 = Jan, 11 = Dec
+
+    const totalPlays = hourly_plays.reduce((a, b) => a + b, 0);
+
+    if (!monthlyMap.has(year)) { monthlyMap.set(year, Array(12).fill(0)); }
+    monthlyMap.get(year)![monthIndex] += totalPlays;
   });
 
   const weekdayOrder = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const sortedWeekdays = weekdayOrder.filter(day => weekdayMap.has(day));
+  const sortedWeekdays = weekdayOrder.filter(day => hourlyMap.has(day));
   const maxPlays = Math.max(...(data.playFrequency as { hourly_plays: number[] }[]).flatMap(({ hourly_plays }) => hourly_plays));
 
   const spotifyStats: SpotifyStatGroup[] = [
@@ -91,7 +108,7 @@ const SpotifyStats = () => {
       <SectionHeading title='Spotify' icon={<SpotifyIcon className='mr-1' />} />
       <DateRangeSelector startDate={startDate} endDate={endDate} setStartDate={setStartDate} setEndDate={setEndDate} />
       <SectionSubHeading><div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>My audio listening habits!</div></SectionSubHeading>
-      <Overview spotifyStats={spotifyStats} weekdayMap={weekdayMap} sortedWeekdays={sortedWeekdays} weekdayDateMap={weekdayDateMap} maxPlays={maxPlays} />
+      <Overview spotifyStats={spotifyStats} hourlyMap={hourlyMap} sortedWeekdays={sortedWeekdays} weekdayMap={weekdayMap} monthlyMap={monthlyMap} maxPlays={maxPlays} />
       <TopTracks spotifyStats={spotifyStats} />
       <TopArtists spotifyStats={spotifyStats} />
     </section>
