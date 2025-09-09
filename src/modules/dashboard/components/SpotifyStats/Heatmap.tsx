@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import React, { useState } from 'react';
 import Card from '@/common/components/elements/Card';
 import { HeatmapDisplayProps } from '@/common/types/spotify';
+import { addDays, format } from 'date-fns';
 
 const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapDisplayProps) => {
   const [resolution, setResolution] = useState<'Hourly' | 'Daily' | 'Monthly'>('Hourly');
@@ -93,10 +94,14 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
               <div key={day} className='text-[12px] text-neutral-500 text-center'>{day}</div>
             ))}
 
-            {paginatedWeeks.map(([label, { counts }]) => (
+            {paginatedWeeks.map(([label, { start, counts }]) => (
               <React.Fragment key={label}>
                 <div className='text-[12px] text-neutral-500 text-right pr-1'>{label}</div>
-                {counts.map((count, i) => ( <div key={`${label}-${i}`} className={clsx('h-5 w-5 rounded-sm cursor-default', getIntensityClass(count))} title={`${label} – ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][i]}: ${count} plays`}/> ))}
+                {counts.map((count, i) => { 
+                  const cellDate = addDays(start, i - 1);
+                  const dateLabel = format(cellDate, 'EEE, MMM d'); // e.g., "Tue, Jul 30"
+                  return ( <div key={`${label}-${i}`} className={clsx('h-5 w-5 rounded-sm cursor-default', getIntensityClass(count))} title={`${dateLabel}: ${count} plays`}/> );
+                })}
               </React.Fragment>
             ))}
 
