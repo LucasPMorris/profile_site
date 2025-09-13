@@ -1,0 +1,958 @@
+<svg viewBox="5 15 288 375" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#DE6274;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#881337;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container -->
+  <rect x="20" y="20" width="260" height="365" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Header -->
+  <rect x="20" y="20" width="260" height="45" rx="12" fill="url(#headerGrad)"/>
+  <rect x="20" y="53" width="260" height="12" fill="url(#headerGrad)"/>
+  
+  <text x="150" y="45" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="500" fill="white">
+    artiststat
+  </text>
+  
+  <!-- Primary and Foreign Key Fields -->
+  <text x="35" y="90" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">id</text>
+  <text x="265" y="90" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <text x="35" y="115" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">artist_id</text>
+  <text x="265" y="115" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <!-- Incoming relationship indicator for artist_id -->
+  <circle cx="10" cy="112" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="140" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">count</text>
+  <text x="265" y="140" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <text x="35" y="165" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">bucket_scope</text>
+  <text x="265" y="165" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <text x="35" y="190" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">yearbucketid</text>
+  <text x="265" y="190" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int?</text>
+  
+  <!-- Incoming relationship indicator for yearbucketid -->
+  <circle cx="10" cy="187" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="215" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">monthbucketid</text>
+  <text x="265" y="215" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int?</text>
+  
+  <!-- Incoming relationship indicator for monthbucketid -->
+  <circle cx="10" cy="212" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="240" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">weekbucketid</text>
+  <text x="265" y="240" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int?</text>
+  
+  <!-- Incoming relationship indicator for weekbucketid -->
+  <circle cx="10" cy="237" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <!-- Separator line -->
+  <line x1="35" y1="260" x2="265" y2="260" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Relationship objects -->
+  <text x="35" y="285" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">artist</text>
+  <text x="265" y="285" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">spartist</text>
+  
+  <!-- Outgoing relationship indicator -->
+  <rect x="286" y="278" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="310" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">yearbucket</text>
+  <text x="265" y="310" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">yearbucket?</text>
+  
+  <!-- Outgoing relationship indicator -->
+  <rect x="286" y="303" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="335" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">monthbucket</text>
+  <text x="265" y="335" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">monthbucket?</text>
+  
+  <!-- Outgoing relationship indicator -->
+  <rect x="286" y="328" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="360" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">weekbucket</text>
+  <text x="265" y="360" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">weekbucket?</text>
+  
+  <!-- Outgoing relationship indicator -->
+  <rect x="286" y="353" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>  
+  
+  <!-- Bottom color bar with curved bottom corners -->
+  <path d="M 20 375 L 280 375 L 280 378 Q 280 390 268 390 L 32 390 Q 20 390 20 378 Z" fill="url(#headerGrad)"/>
+</svg>
+
+<svg viewBox="5 15 288 340" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E7572;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06395C;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container -->
+  <rect x="20" y="20" width="260" height="330" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Header -->
+  <rect x="20" y="20" width="260" height="45" rx="12" fill="url(#headerGrad)"/>
+  <rect x="20" y="53" width="260" height="12" fill="url(#headerGrad)"/>
+  
+  <text x="150" y="45" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="500" fill="white">
+    monthbucket
+  </text>
+  
+  <!-- Primary and Foreign Key Fields -->
+  <text x="35" y="90" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">id</text>
+  <text x="265" y="90" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <!-- Outgoing relationship indicator for id -->
+  <rect x="286" y="83" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="115" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">month</text>
+  <text x="265" y="115" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <text x="35" y="140" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">range_start</text>
+  <text x="265" y="140" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">DateTime</text>
+  
+  <text x="35" y="165" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">range_end</text>
+  <text x="265" y="165" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">DateTime</text>
+  
+  <text x="35" y="190" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">yearbucketid</text>
+  <text x="265" y="190" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <!-- Incoming relationship indicator for yearbucketid -->
+  <circle cx="10" cy="187" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <!-- Separator line -->
+  <line x1="35" y1="210" x2="265" y2="210" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Relationship arrays -->
+  <text x="35" y="235" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">yearbucket</text>
+  <text x="265" y="235" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">yearbucket</text>
+  
+  <!-- Outgoing relationship indicator -->
+  <rect x="286" y="228" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="260" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">weekbuckets</text>
+  <text x="265" y="260" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">weekbucket[]</text>
+  
+  <!-- Incoming relationship indicator -->
+  <polygon points="12,253 18,256 12,259" fill="#3b82f6" stroke="white" stroke-width="1"/>
+
+  <text x="35" y="285" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">trackstats</text>
+  <text x="265" y="285" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">trackstat[]</text>
+  
+  <!-- Incoming relationship indicator -->
+  <polygon points="12,278 18,281 12,284" fill="#3b82f6" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="310" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">artiststats</text>
+  <text x="265" y="310" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">artiststat[]</text>
+  
+  <!-- Incoming relationship indicator -->
+  <polygon points="12,303 18,306 12,309" fill="#3b82f6" stroke="white" stroke-width="1"/>   
+  
+  <!-- Bottom color bar with curved bottom corners -->
+  <path d="M 20 335 L 280 335 L 280 338 Q 280 350 268 350 L 32 350 Q 20 350 20 338 Z" fill="url(#headerGrad)"/>
+</svg>
+
+<svg viewBox="5 15 288 220" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#D1982F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7E4722;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container -->
+  <rect x="20" y="20" width="260" height="210" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Header -->
+  <rect x="20" y="20" width="260" height="45" rx="12" fill="url(#headerGrad)"/>
+  <rect x="20" y="53" width="260" height="12" fill="url(#headerGrad)"/>
+  
+  <text x="150" y="45" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="500" fill="white">
+    spalbumartist
+  </text>
+  
+  <!-- Foreign Key Fields -->
+  <text x="35" y="90" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">album_id</text>
+  <text x="265" y="90" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <!-- Incoming relationship indicator for album_id -->
+  <circle cx="10" cy="87" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="115" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">artist_id</text>
+  <text x="265" y="115" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <!-- Incoming relationship indicator for artist_id -->
+  <circle cx="10" cy="112" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <!-- Separator line -->
+  <line x1="35" y1="140" x2="265" y2="140" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Relationship objects -->
+  <text x="35" y="165" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">album</text>
+  <text x="265" y="165" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">spalbum</text>
+  
+  <!-- Outgoing relationship indicator for album -->
+  <rect x="286" y="158" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="190" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">artist</text>
+  <text x="265" y="190" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">spartist</text>
+  
+  <!-- Outgoing relationship indicator for artist -->
+  <rect x="286" y="183" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <!-- Bottom color bar with curved bottom corners -->
+  <path d="M 20 215 L 280 215 L 280 218 Q 280 230 268 230 L 32 230 Q 20 230 20 218 Z" fill="url(#headerGrad)"/>
+</svg>
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="5 15 288 290">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#427BD6;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#143AA3;stop-opacity:1"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container -->
+  <rect x="20" y="20" width="260" height="270" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Header -->
+  <rect x="20" y="20" width="260" height="45" rx="12" fill="url(#headerGrad)"/>
+  <rect x="20" y="53" width="260" height="12" fill="url(#headerGrad)"/>
+  
+  <text x="150" y="45" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="500" fill="white">
+    spalbum
+  </text>
+  
+  <!-- Primary Fields -->
+  <text x="35" y="90" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">album_id</text>
+  <text x="265" y="90" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <!-- Outgoing relationship indicator for album_id (other tables reference this) -->
+  <rect x="286" y="83" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="115" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">name</text>
+  <text x="265" y="115" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <text x="35" y="140" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">release_date</text>
+  <text x="265" y="140" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">DateTime?</text>
+  
+  <text x="35" y="165" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">image_url</text>
+  <text x="265" y="165" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String?</text>
+  
+  <!-- Separator line -->
+  <line x1="35" y1="185" x2="265" y2="185" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Relationship arrays -->
+  <text x="35" y="210" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">album_artists</text>
+  <text x="265" y="210" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">spalbumartist[]</text>
+  
+  <!-- Incoming relationship indicator for album_artists (this table receives these relationships) -->
+  <polygon points="12,203 18,206 12,209" fill="#3b82f6" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="235" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">tracks</text>
+  <text x="265" y="235" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">sptrack[]</text>
+  
+  <!-- Incoming relationship indicator for tracks -->
+  <polygon points="12,228 18,231 12,234" fill="#3b82f6" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="260" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">common_tracks</text>
+  <text x="265" y="260" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">sptrack[]</text>
+  
+  <!-- Incoming relationship indicator for common_tracks -->
+  <polygon points="12,253 18,256 12,259" fill="#3b82f6" stroke="white" stroke-width="1"/>
+  
+  <!-- Bottom color bar with curved bottom corners -->
+  <path d="M 20 275 L 280 275 L 280 278 Q 280 290 268 290 L 32 290 Q 20 290 20 278 Z" fill="url(#headerGrad)"/>
+</svg>
+
+<svg viewBox="5 15 288 315" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#427BD6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#143AA3;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container -->
+  <rect x="20" y="20" width="260" height="295" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Header -->
+  <rect x="20" y="20" width="260" height="45" rx="12" fill="url(#headerGrad)"/>
+  <rect x="20" y="53" width="260" height="12" fill="url(#headerGrad)"/>
+  
+  <text x="150" y="45" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="500" fill="white">
+    spartist
+  </text>
+  
+  <!-- Primary Fields -->
+  <text x="35" y="90" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">artist_id</text>
+  <text x="265" y="90" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <!-- Outgoing relationship indicator for artist_id (other tables reference this) -->
+  <rect x="286" y="83" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="115" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">name</text>
+  <text x="265" y="115" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <text x="35" y="140" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">artist_url</text>
+  <text x="265" y="140" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <text x="35" y="165" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">image_url</text>
+  <text x="265" y="165" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String?</text>
+  
+  <!-- Separator line -->
+  <line x1="35" y1="185" x2="265" y2="185" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Relationship arrays -->
+  <text x="35" y="210" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">track_artists</text>
+  <text x="265" y="210" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">sptrackartist[]</text>
+  
+  <!-- Incoming relationship indicator for track_artists -->
+  <polygon points="12,203 18,206 12,209" fill="#3b82f6" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="235" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">album_artists</text>
+  <text x="265" y="235" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">spalbumartist[]</text>
+  
+  <!-- Incoming relationship indicator for album_artists -->
+  <polygon points="12,228 18,231 12,234" fill="#3b82f6" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="260" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">daily_stats</text>
+  <text x="265" y="260" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">spdailyartiststat[]</text>
+  
+  <!-- Incoming relationship indicator for daily_stats -->
+  <polygon points="12,253 18,256 12,259" fill="#3b82f6" stroke="white" stroke-width="1"/>
+
+  <text x="35" y="285" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">artiststats</text>
+  <text x="265" y="285" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">artiststat[]</text>
+  
+  <!-- Incoming relationship indicator for artist_stats -->
+  <polygon points="12,278 18,281 12,284" fill="#3b82f6" stroke="white" stroke-width="1"/>
+  
+  <!-- Bottom color bar with curved bottom corners -->
+  <path d="M 20 300 L 280 300 L 280 303 Q 280 315 268 315 L 32 315 Q 20 315 20 303 Z" fill="url(#headerGrad)"/>
+</svg>
+
+<svg viewBox="5 15 288 250" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#B87DB2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#573851;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container -->
+  <rect x="20" y="20" width="260" height="240" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Header -->
+  <rect x="20" y="20" width="260" height="45" rx="12" fill="url(#headerGrad)"/>
+  <rect x="20" y="53" width="260" height="12" fill="url(#headerGrad)"/>
+  
+  <text x="150" y="45" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="500" fill="white">
+    spdailyartiststat
+  </text>
+  
+  <!-- Primary and Foreign Key Fields -->
+  <text x="35" y="90" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">id</text>
+  <text x="265" y="90" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <text x="35" y="115" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">stats_id</text>
+  <text x="265" y="115" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <!-- Incoming relationship indicator for stats_id -->
+  <circle cx="10" cy="112" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="140" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">artist_id</text>
+  <text x="265" y="140" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <!-- Incoming relationship indicator for artist_id -->
+  <circle cx="10" cy="137" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="165" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">count</text>
+  <text x="265" y="165" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <!-- Separator line -->
+  <line x1="35" y1="185" x2="265" y2="185" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Relationship objects -->
+  <text x="35" y="210" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">artist</text>
+  <text x="265" y="210" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">spartist</text>
+  
+  <!-- Outgoing relationship indicator for artist -->
+  <rect x="286" y="203" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="235" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">stats</text>
+  <text x="265" y="235" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">spdailyplaystats</text>
+  
+  <!-- Outgoing relationship indicator for stats -->
+  <rect x="286" y="228" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <!-- Bottom color bar with curved bottom corners -->
+  <path d="M 20 250 L 280 250 L 280 253 Q 280 265 268 265 L 32 265 Q 20 265 20 253 Z" fill="url(#headerGrad)"/>
+</svg>
+
+<svg viewBox="5 15 288 270" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#B87DB2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#573851;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container -->
+  <rect x="20" y="20" width="260" height="260" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Header -->
+  <rect x="20" y="20" width="260" height="45" rx="12" fill="url(#headerGrad)"/>
+  <rect x="20" y="53" width="260" height="12" fill="url(#headerGrad)"/>
+  
+  <text x="150" y="45" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="500" fill="white">
+    spdailyplaystats
+  </text>
+  
+  <!-- Primary Fields -->
+  <text x="35" y="90" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">id</text>
+  <text x="265" y="90" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <!-- Outgoing relationship indicator for id -->
+  <rect x="286" y="83" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="115" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">date</text>
+  <text x="265" y="115" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">DateTime</text>
+  
+  <text x="35" y="140" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">weekday</text>
+  <text x="265" y="140" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <text x="35" y="165" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">hourly_plays</text>
+  <text x="265" y="165" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Json</text>
+  
+  <!-- Separator line -->
+  <line x1="35" y1="185" x2="265" y2="185" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Relationship arrays -->
+  <text x="35" y="210" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">top_tracks</text>
+  <text x="265" y="210" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">spdailytrackstat[]</text>
+  
+  <!-- Incoming relationship indicator for top_tracks -->
+  <polygon points="12,203 18,206 12,209" fill="#3b82f6" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="235" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">top_artists</text>
+  <text x="265" y="235" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">spdailyartiststat[]</text>
+  
+  <!-- Incoming relationship indicator for top_artists -->
+  <polygon points="12,228 18,231 12,234" fill="#3b82f6" stroke="white" stroke-width="1"/>
+  
+  <!-- Bottom color bar with curved bottom corners -->
+  <path d="M 20 265 L 280 265 L 280 268 Q 280 280 268 280 L 32 280 Q 20 280 20 268 Z" fill="url(#headerGrad)"/>
+</svg>
+
+<svg viewBox="5 15 288 250" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#B87DB2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#573851;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container -->
+  <rect x="20" y="20" width="260" height="240" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
+  
+  <!-- Header -->
+  <rect x="20" y="20" width="260" height="45" rx="12" fill="url(#headerGrad)"/>
+  <rect x="20" y="53" width="260" height="12" fill="url(#headerGrad)"/>
+  
+  <text x="150" y="45" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="500" fill="white">
+    spdailytrackstat
+  </text>
+  
+  <!-- Primary and Foreign Key Fields -->
+  <text x="35" y="90" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">id</text>
+  <text x="265" y="90" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <text x="35" y="115" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">stats_id</text>
+  <text x="265" y="115" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <!-- Incoming relationship indicator for stats_id -->
+  <circle cx="10" cy="112" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="140" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">track_id</text>
+  <text x="265" y="140" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <!-- Incoming relationship indicator for track_id -->
+  <circle cx="10" cy="137" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="165" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">count</text>
+  <text x="265" y="165" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <!-- Separator line -->
+  <line x1="35" y1="185" x2="265" y2="185" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Relationship objects -->
+  <text x="35" y="210" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">track</text>
+  <text x="265" y="210" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">sptrack</text>
+  
+  <!-- Outgoing relationship indicator for track -->
+  <rect x="286" y="203" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="235" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">stats</text>
+  <text x="265" y="235" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">spdailyplaystats</text>
+  
+  <!-- Outgoing relationship indicator for stats -->
+  <rect x="286" y="228" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <!-- Bottom color bar with curved bottom corners -->
+  <path d="M 20 250 L 280 250 L 280 253 Q 280 265 268 265 L 32 265 Q 20 265 20 253 Z" fill="url(#headerGrad)"/>
+</svg>
+
+<svg viewBox="5 15 288 220" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#427BD6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#143AA3;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container -->
+  <rect x="20" y="20" width="260" height="180" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Header -->
+  <rect x="20" y="20" width="260" height="45" rx="12" fill="url(#headerGrad)"/>
+  <rect x="20" y="53" width="260" height="12" fill="url(#headerGrad)"/>
+  
+  <text x="150" y="45" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="500" fill="white">
+    spplayhistory
+  </text>
+  
+  <!-- Fields -->
+  <text x="35" y="90" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">track_id</text>
+  <text x="265" y="90" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <!-- Incoming relationship indicator for track_id -->
+  <circle cx="10" cy="87" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="115" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">played_at</text>
+  <text x="265" y="115" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">DateTime</text>
+  
+  <!-- Separator line -->
+  <line x1="35" y1="140" x2="265" y2="140" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Relationship objects -->
+  <text x="35" y="165" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">track</text>
+  <text x="265" y="165" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">sptrack</text>
+  
+  <!-- Outgoing relationship indicator for track -->
+  <rect x="286" y="158" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <!-- Bottom color bar with curved bottom corners -->
+  <path d="M 20 185 L 280 185 L 280 188 Q 280 200 268 200 L 32 200 Q 20 200 20 188 Z" fill="url(#headerGrad)"/>
+</svg>
+
+<svg viewBox="5 15 288 220" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#D1982F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7E4722;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container -->
+  <rect x="20" y="20" width="260" height="210" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Header -->
+  <rect x="20" y="20" width="260" height="45" rx="12" fill="url(#headerGrad)"/>
+  <rect x="20" y="53" width="260" height="12" fill="url(#headerGrad)"/>
+  
+  <text x="150" y="45" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="500" fill="white">
+    sptrackartist
+  </text>
+  
+  <!-- Foreign Key Fields -->
+  <text x="35" y="90" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">track_id</text>
+  <text x="265" y="90" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <!-- Incoming relationship indicator for track_id -->
+  <circle cx="10" cy="87" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="115" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">artist_id</text>
+  <text x="265" y="115" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <!-- Incoming relationship indicator for artist_id -->
+  <circle cx="10" cy="112" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <!-- Separator line -->
+  <line x1="35" y1="140" x2="265" y2="140" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Relationship objects -->
+  <text x="35" y="165" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">track</text>
+  <text x="265" y="165" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">sptrack</text>
+  
+  <!-- Outgoing relationship indicator for track -->
+  <rect x="286" y="158" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="190" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">artist</text>
+  <text x="265" y="190" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">spartist</text>
+  
+  <!-- Outgoing relationship indicator for artist -->
+  <rect x="286" y="183" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <!-- Bottom color bar with curved bottom corners -->
+  <path d="M 20 215 L 280 215 L 280 218 Q 280 230 268 230 L 32 230 Q 20 230 20 218 Z" fill="url(#headerGrad)"/>
+</svg>
+
+<svg viewBox="5 15 288 495" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#427BD6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#143AA3;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container -->
+  <rect x="20" y="20" width="260" height="470" rx="12" fill="#eeeeee" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Header -->
+  <rect x="20" y="20" width="260" height="45" rx="12" fill="url(#headerGrad)"/>
+  <rect x="20" y="53" width="260" height="12" fill="url(#headerGrad)"/>
+  
+  <text x="150" y="45" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="500" fill="white">
+    sptrack
+  </text>
+  
+  <!-- Primary and Foreign Key Fields -->
+  <text x="35" y="90" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">track_id</text>
+  <text x="265" y="90" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <!-- Outgoing relationship indicator for track_id -->
+  <rect x="286" y="83" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="115" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">album_id</text>
+  <text x="265" y="115" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <!-- Incoming relationship indicator for album_id -->
+  <circle cx="10" cy="112" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="140" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">common_album_id</text>
+  <text x="265" y="140" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String?</text>
+  
+  <!-- Incoming relationship indicator for common_album_id -->
+  <circle cx="10" cy="137" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="165" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">title</text>
+  <text x="265" y="165" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <text x="35" y="190" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">duration</text>
+  <text x="265" y="190" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <text x="35" y="215" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">release_date</text>
+  <text x="265" y="215" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">DateTime?</text>
+  
+  <text x="35" y="240" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">song_url</text>
+  <text x="265" y="240" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String?</text>
+  
+  <text x="35" y="265" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">explicit</text>
+  <text x="265" y="265" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Boolean</text>
+  
+  <text x="35" y="290" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">isrc</text>
+  <text x="265" y="290" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <!-- Separator line -->
+  <line x1="35" y1="310" x2="265" y2="310" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Relationship arrays -->
+  <text x="35" y="335" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">album</text>
+  <text x="265" y="335" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">spalbum</text>
+  
+  <!-- Outgoing relationship indicator for album -->
+  <rect x="286" y="328" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="360" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">common_album</text>
+  <text x="265" y="360" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">spalbum?</text>
+  
+  <!-- Outgoing relationship indicator for common_album -->
+  <rect x="286" y="353" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="385" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">plays</text>
+  <text x="265" y="385" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">spplayhistory[]</text>
+  
+  <!-- Incoming relationship indicator for plays -->
+  <polygon points="12,378 18,381 12,384" fill="#3b82f6" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="410" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">track_artists</text>
+  <text x="265" y="410" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">sptrackartist[]</text>
+  
+  <!-- Incoming relationship indicator for track_artists -->
+  <polygon points="12,403 18,406 12,409" fill="#3b82f6" stroke="white" stroke-width="1"/>
+
+  <text x="35" y="435" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">daily_stats</text>
+  <text x="265" y="435" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">spdailytrackstat[]</text>
+  
+  <!-- Incoming relationship indicator for dailystats -->
+  <polygon points="12,428 18,431 12,434" fill="#3b82f6" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="460" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">trackstats</text>
+  <text x="265" y="460" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">trackstat[]</text>  
+  
+  <!-- Incoming relationship indicator for trackstats -->
+  <polygon points="12,453 18,456 12,459" fill="#3b82f6" stroke="white" stroke-width="1"/>
+  
+  <!-- Bottom color bar with curved bottom corners -->
+  <path d="M 20 475 L 280 475 L 280 478 Q 280 490 268 490 L 32 490 Q 20 490 20 478 Z" fill="url(#headerGrad)"/>
+</svg>
+
+<svg viewBox="5 15 288 375" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#DE6274;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#881337;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container -->
+  <rect x="20" y="20" width="260" height="365" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Header -->
+  <rect x="20" y="20" width="260" height="45" rx="12" fill="url(#headerGrad)"/>
+  <rect x="20" y="53" width="260" height="12" fill="url(#headerGrad)"/>
+  
+  <text x="150" y="45" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="500" fill="white">
+    trackstat
+  </text>
+  
+  <!-- Primary and Foreign Key Fields -->
+  <text x="35" y="90" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">id</text>
+  <text x="265" y="90" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <text x="35" y="115" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">track_id</text>
+  <text x="265" y="115" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <!-- Incoming relationship indicator for track_id -->
+  <circle cx="10" cy="112" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="140" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">count</text>
+  <text x="265" y="140" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <text x="35" y="165" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">bucket_scope</text>
+  <text x="265" y="165" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <text x="35" y="190" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">yearbucketid</text>
+  <text x="265" y="190" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int?</text>
+  
+  <!-- Incoming relationship indicator for yearbucketid -->
+  <circle cx="10" cy="187" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="215" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">monthbucketid</text>
+  <text x="265" y="215" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int?</text>
+  
+  <!-- Incoming relationship indicator for monthbucketid -->
+  <circle cx="10" cy="212" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="240" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">weekbucketid</text>
+  <text x="265" y="240" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int?</text>
+  
+  <!-- Incoming relationship indicator for weekbucketid -->
+  <circle cx="10" cy="237" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <!-- Separator line -->
+  <line x1="35" y1="260" x2="265" y2="260" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Relationship objects -->
+  <text x="35" y="285" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">track</text>
+  <text x="265" y="285" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">sptrack</text>
+  
+  <!-- Outgoing relationship indicator -->
+  <rect x="286" y="278" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="310" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">yearbucket</text>
+  <text x="265" y="310" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">yearbucket?</text>
+  
+  <!-- Outgoing relationship indicator -->
+  <rect x="286" y="303" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="335" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">monthbucket</text>
+  <text x="265" y="335" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">monthbucket?</text>
+  
+  <!-- Outgoing relationship indicator -->
+  <rect x="286" y="328" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="360" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">weekbucket</text>
+  <text x="265" y="360" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">weekbucket?</text>
+  
+  <!-- Outgoing relationship indicator -->
+  <rect x="286" y="353" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>  
+  
+  <!-- Bottom color bar with curved bottom corners -->
+  <path d="M 20 375 L 280 375 L 280 378 Q 280 390 268 390 L 32 390 Q 20 390 20 378 Z" fill="url(#headerGrad)"/>
+</svg>
+
+<svg viewBox="5 15 288 315" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E7572;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06395C;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container -->
+  <rect x="20" y="20" width="260" height="305" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
+  
+  <!-- Header -->
+  <rect x="20" y="20" width="260" height="45" rx="12" fill="url(#headerGrad)"/>
+  <rect x="20" y="53" width="260" height="12" fill="url(#headerGrad)"/>
+  
+  <text x="150" y="45" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="500" fill="white">
+    weekbucket
+  </text>
+  
+  <!-- Primary and Foreign Key Fields -->
+  <text x="35" y="90" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">id</text>
+  <text x="265" y="90" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <!-- Outgoing relationship indicator for id -->
+  <rect x="286" y="83" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="115" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">week</text>
+  <text x="265" y="115" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <text x="35" y="140" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">range_start</text>
+  <text x="265" y="140" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">DateTime</text>
+  
+  <text x="35" y="165" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">range_end</text>
+  <text x="265" y="165" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">DateTime</text>
+  
+  <text x="35" y="190" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">monthbucketid</text>
+  <text x="265" y="190" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <!-- Incoming relationship indicator for monthbucketid -->
+  <circle cx="10" cy="187" r="4" fill="#6366f1" stroke="white" stroke-width="1"/>
+  
+  <!-- Separator line -->
+  <line x1="35" y1="210" x2="265" y2="210" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Relationship arrays -->
+  <text x="35" y="235" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">monthbucket</text>
+  <text x="265" y="235" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">monthbucket</text>
+  
+  <!-- Outgoing relationship indicator -->
+  <rect x="286" y="228" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="260" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">trackstats</text>
+  <text x="265" y="260" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">tracksstat[]</text>
+  
+  <!-- Incoming relationship indicator -->
+  <polygon points="12,253 18,256 12,259" fill="#3b82f6" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="285" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">artiststats</text>
+  <text x="265" y="285" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">artiststat[]</text>
+  
+  <!-- Incoming relationship indicator -->
+  <polygon points="12,278 18,281 12,284" fill="#3b82f6" stroke="white" stroke-width="1"/>  
+  
+  <!-- Bottom color bar with curved bottom corners -->
+  <path d="M 20 310 L 280 310 L 280 313 Q 280 325 268 325 L 32 325 Q 20 325 20 313 Z" fill="url(#headerGrad)"/>
+</svg>
+
+<svg viewBox="5 15 288 295" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E7572;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06395C;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container -->
+  <rect x="20" y="20" width="260" height="285" rx="12" fill="#eeeeee" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Header -->
+  <rect x="20" y="20" width="260" height="45" rx="12" fill="url(#headerGrad)"/>
+  <rect x="20" y="53" width="260" height="12" fill="url(#headerGrad)"/>
+  
+  <text x="150" y="45" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="500" fill="white">
+    yearbucket
+  </text>
+  
+  <!-- Primary Fields -->
+  <text x="35" y="90" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">id</text>
+  <text x="265" y="90" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <!-- Outgoing relationship indicator for id -->
+  <rect x="286" y="83" width="6" height="6" fill="#22c55e" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="115" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">year</text>
+  <text x="265" y="115" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+  
+  <text x="35" y="140" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">range_start</text>
+  <text x="265" y="140" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">DateTime</text>
+  
+  <text x="35" y="165" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">range_end</text>
+  <text x="265" y="165" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">DateTime</text>
+  
+  <!-- Separator line -->
+  <line x1="35" y1="185" x2="265" y2="185" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Relationship arrays -->
+  <text x="35" y="210" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">monthbuckets</text>
+  <text x="265" y="210" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">monthbucket[]</text>
+  
+  <!-- Incoming relationship indicator -->
+  <polygon points="12,203 18,206 12,209" fill="#3b82f6" stroke="white" stroke-width="1"/>
+  
+  <text x="35" y="235" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">trackstats</text>
+  <text x="265" y="235" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">trackstat[]</text>
+  
+  <!-- Incoming relationship indicator -->
+  <polygon points="12,228 18,231 12,234" fill="#3b82f6" stroke="white" stroke-width="1"/>
+
+  <text x="35" y="260" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">artiststats</text>
+  <text x="265" y="260" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">artiststat[]</text>
+  
+  <!-- Incoming relationship indicator -->
+  <polygon points="12,253 18,256 12,259" fill="#3b82f6" stroke="white" stroke-width="1"/>
+  
+  <!-- Bottom color bar with curved bottom corners -->
+  <path d="M 20 290 L 280 290 L 280 293 Q 280 305 268 305 L 32 305 Q 20 305 20 293 Z" fill="url(#headerGrad)"/>
+</svg>
