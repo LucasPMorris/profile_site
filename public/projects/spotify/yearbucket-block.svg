@@ -10,7 +10,7 @@
   </defs>
   
   <!-- Main container -->
-  <rect x="20" y="20" width="260" height="285" rx="12" fill="#eeeeee" stroke="#e2e8f0" stroke-width="1"/>
+  <rect x="20" y="20" width="260" height="285" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
   
   <!-- Header -->
   <rect x="20" y="20" width="260" height="45" rx="12" fill="url(#headerGrad)"/>
