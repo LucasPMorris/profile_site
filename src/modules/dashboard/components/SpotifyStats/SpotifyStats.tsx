@@ -1,6 +1,6 @@
 import { SiWakatime, SiSpotify as SpotifyIcon } from 'react-icons/si';
 import useSWR from 'swr';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 import SectionHeading from '@/common/components/elements/SectionHeading';
@@ -11,7 +11,9 @@ import { ArtistProps, TrackProps } from '@/common/types/spotify';
 import TopTracks from './TopTracks';
 import Overview from './Overview';
 import DateRangeSelector from '@/common/components/elements/DateRangeSelector';
-import { format, getISOWeek, startOfISOWeek } from 'date-fns';
+import { format, getISOWeek, startOfDay, startOfISOWeek, startOfWeek } from 'date-fns';
+import Heatmap from './Heatmap';
+import clsx from 'clsx';
 
 const fallback = '/spotify-icon.svg';
 
@@ -24,8 +26,14 @@ const SpotifyStats = () => {
   const [endDate, setEndDate] = useState(() => { const d = new Date(); return d.toISOString().split('T')[0]; });
   const swrKey = `/api/spotify?start=${startDate}&end=${endDate}`;
   const { data } = useSWR(swrKey, fetcher);
+  const [selectedArtistId, setSelectedArtistId] = useState<string | null>(null);
 
-  if (!data) {
+  useEffect(() => {
+    if (data?.topArtists?.length && !selectedArtistId) { setSelectedArtistId(data.topArtists[0].artistId); }
+  }, [data, selectedArtistId]);
+
+  const updating = true;
+  if (!data || updating) {
     return (
       <section className='flex flex-col gap-y-2'>
         <SectionHeading title='Spotify' icon={<SpotifyIcon className='mr-1' />} />
@@ -53,22 +61,21 @@ const SpotifyStats = () => {
       hourly_plays.forEach((count, hour) => { bucket[hour] += count; });
   });  
 
-  const weekdayMap = new Map<string, {start: Date, counts: number[]}>();
+  const weekdayMap = new Map<string, {start: Date, counts: (number | null)[]}>();
   data.playFrequency.forEach(({ date, hourly_plays }: HeatMapProps) => {
-    const d = new Date(date);
-    const weekStart = startOfISOWeek(d);
+    const d = startOfDay(new Date(date));
+    const weekStart = startOfWeek(d, { weekStartsOn: 0 });
     const label = `${format(weekStart, "MMM d ''yy")}`; // e.g., "Jul 28 – Aug 3"
-    const weekday = d.getUTCDay(); // 0 = Sun, 6 = Sat
+    const weekday = d.getDay(); // 0 = Sun, 6 = Sat
     const totalPlays = hourly_plays.reduce((a, b) => a + b, 0);
 
-    if (!weekdayMap.has(label)) {
-      weekdayMap.set(label, { start: weekStart, counts: Array(7).fill(0) });
-    }
+    if (!weekdayMap.has(label)) { weekdayMap.set(label, { start: weekStart, counts: Array(7).fill(null) }); }
 
-    weekdayMap.get(label)!.counts[weekday] += totalPlays;
-  });
+    const counts = weekdayMap.get(label)!.counts;
+    counts[weekday] = (counts[weekday] ?? 0) + totalPlays;
+  });  
 
-  const monthlyMap = new Map<string, number[]>();
+  const monthlyMap = new Map<string, (number | null)[]>();
   data.playFrequency.forEach(({ date, hourly_plays }: HeatMapProps) => {
     const d = new Date(date);
     const year = d.getFullYear().toString();
@@ -76,8 +83,42 @@ const SpotifyStats = () => {
 
     const totalPlays = hourly_plays.reduce((a, b) => a + b, 0);
 
-    if (!monthlyMap.has(year)) { monthlyMap.set(year, Array(12).fill(0)); }
-    monthlyMap.get(year)![monthIndex] += totalPlays;
+    if (!monthlyMap.has(year)) { monthlyMap.set(year, Array(12).fill(null)); }
+    const current = monthlyMap.get(year)![monthIndex];
+    if (monthlyMap.get(year)) { monthlyMap.get(year)![monthIndex] = (monthlyMap.get(year)![monthIndex] ?? 0) + totalPlays; }
+  });
+
+  const selectedArtistPlays = data.playFrequency.filter(
+    (entry: any) => entry.artist_id === selectedArtistId
+  );
+
+  const artistHourlyMap = new Map<string, number[]>();
+  const artistWeekdayMap = new Map<string, { start: Date; counts: (number | null)[] }>();
+  const artistMonthlyMap = new Map<string, (number | null)[]>();
+  let artistMaxPlays = 0;
+
+  selectedArtistPlays.forEach(({ date, weekday, hourly_plays }: HeatMapProps) => {
+    const totalPlays = hourly_plays.reduce((a, b) => a + b, 0);
+    artistMaxPlays = Math.max(artistMaxPlays, ...hourly_plays);
+
+    // Hourly
+    if (!artistHourlyMap.has(weekday)) { artistHourlyMap.set(weekday, Array(24).fill(0)); }
+    hourly_plays.forEach((count, hour) => { artistHourlyMap.get(weekday)![hour] += count; });
+
+    // Weekly
+    const d = startOfDay(new Date(date));
+    const weekStart = startOfWeek(d, { weekStartsOn: 0 });
+    const label = `${format(weekStart, "MMM d ''yy")}`;
+    const dayIndex = d.getDay();
+
+    if (!artistWeekdayMap.has(label)) { artistWeekdayMap.set(label, { start: weekStart, counts: Array(7).fill(null) }); }
+    artistWeekdayMap.get(label)!.counts[dayIndex] = (artistWeekdayMap.get(label)!.counts[dayIndex] ?? 0) + totalPlays;
+
+    // Monthly
+    const year = d.getFullYear().toString();
+    const monthIndex = d.getMonth();
+    if (!artistMonthlyMap.has(year)) { artistMonthlyMap.set(year, Array(12).fill(null)); }
+    artistMonthlyMap.get(year)![monthIndex] = (artistMonthlyMap.get(year)![monthIndex] ?? 0) + totalPlays; 
   });
 
   const weekdayOrder = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -111,6 +152,27 @@ const SpotifyStats = () => {
       <Overview spotifyStats={spotifyStats} hourlyMap={hourlyMap} sortedWeekdays={sortedWeekdays} weekdayMap={weekdayMap} monthlyMap={monthlyMap} maxPlays={maxPlays} />
       <TopTracks spotifyStats={spotifyStats} />
       <TopArtists spotifyStats={spotifyStats} />
+      {data.topArtists.length > 0 && (
+        <div className='flex flex-col gap-2'>
+          <div className='flex flex-wrap gap-2'>
+            {data.topArtists.map((artist: ArtistProps) => (
+              <button
+                key={artist.artistId} onClick={() => setSelectedArtistId(artist.artistId)}
+                className={
+                  clsx('px-3 py-1 rounded-full text-sm font-medium transition',
+                  selectedArtistId === artist.artistId
+                    ? 'bg-purple-600 text-white shadow-md'
+                    : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'
+                )}
+              >
+                {artist.name}
+              </button>
+            ))}
+          </div>
+          <Heatmap hourlyMap={artistHourlyMap} sortedWeekdays={weekdayOrder.filter(day => artistHourlyMap.has(day))} weekdayMap={artistWeekdayMap} monthlyMap={artistMonthlyMap} maxPlays={artistMaxPlays} />
+
+        </div>
+      )}      
     </section>
   );
 };
