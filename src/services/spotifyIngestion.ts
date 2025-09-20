@@ -5,6 +5,7 @@ import prisma from '../common/libs/prisma.ts';
 import { getArtistsByIds, getRecentlyPlayedFromSpotify } from './spotify.ts'; // your wrapper for the API call
 import { RawRecentlyPlayedResponse } from '@/common/types/spotify.ts';
 import { getISOWeek } from 'date-fns';
+import { Prisma } from '@prisma/client';
 
 export const chunk = <T>(arr: T[], size: number): T[][] => {
   const chunks: T[][] = [];
@@ -195,177 +196,180 @@ export const ingestSpotifyPlays = async ( manualIngestion: boolean = false, _man
   } 
 };
 
-// export const updateBucketedStats = async (): Promise<void> => {
-// No longer needed, used once and moved connecting pages to .archivedStuff
-//   const startDate = new Date('2017-07-23'); // First Sunday before first play
-//   const endDate = new Date(); // Today
+export const updateBucketedStats = async (): Promise<void> => {
+  const startDate = new Date('2017-07-23'); // First Sunday before first play
+  const endDate = new Date(); // Today
 
-//   let current = new Date(startDate);
+  let current = new Date(startDate);
 
-//   while (current <= endDate) {
-//     const year = current.getUTCFullYear();
-//     const month = current.getUTCMonth() + 1;
+  while (current <= endDate) {
+    const year = current.getUTCFullYear();
+    const month = current.getUTCMonth() + 1;
 
-//     const monthStart = new Date(Date.UTC(year, month - 1, 1));
-//     const monthEnd = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+    const monthStart = new Date(Date.UTC(year, month - 1, 1));
+    const monthEnd = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
 
-//     console.log(`📆 Processing ${year}-${month.toString().padStart(2, '0')}`);
+    console.log(`📆 Processing ${year}-${month.toString().padStart(2, '0')}`);
 
-//     const plays = await prisma.spplayhistory.findMany({
-//       where: { played_at: { gte: monthStart, lte: monthEnd } },
-//       include: { track: { include: { track_artists: true } } }
-//     });
+    const plays = await prisma.spplayhistory.findMany({
+      where: { played_at: { gte: monthStart, lte: monthEnd } },
+      include: { track: { include: { track_artists: true } } }
+    });
 
-//     if (plays.length === 0) {
-//       console.log(`🟡 No plays found for ${year}-${month}, skipping.`);
-//       await sleep(10000);
-//       current.setUTCMonth(current.getUTCMonth() + 1);
-//       continue;
-//     }
+    if (plays.length === 0) {
+      console.log(`🟡 No plays found for ${year}-${month}, skipping.`);
+      await sleep(10000);
+      current.setUTCMonth(current.getUTCMonth() + 1);
+      continue;
+    }
 
-//     const buckets = {
-//       year: new Map(),
-//       month: new Map(),
-//       week: new Map()
-//     };
+    const buckets = {
+      year: new Map(),
+      month: new Map(),
+      week: new Map()
+    };
 
-//     for (const play of plays) {
-//       const date = new Date(play.played_at);
-//       const y = date.getUTCFullYear();
-//       const m = date.getUTCMonth() + 1;
-//       const w = getISOWeek(date);
+    for (const play of plays) {
+      const date = new Date(play.played_at);
+      const y = date.getUTCFullYear();
+      const m = date.getUTCMonth() + 1;
+      const w = getISOWeek(date);
 
-//       const yearKey = `${y}`;
-//       const monthKey = `${y}-${m}`;
-//       const weekKey = `${y}-W${w}`;
+      const yearKey = `${y}`;
+      const monthKey = `${y}-${m}`;
+      const weekKey = `${y}-W${w}`;
 
-//       const trackId = play.track_id;
-//       const artistIds = play.track.track_artists.map(a => a.artist_id);
+      const trackId = play.track_id;
+      const artistIds = play.track.track_artists.map(a => a.artist_id);
 
-//       for (const scope of ['year', 'month', 'week'] as const) {
-//         const key = scope === 'year' ? yearKey : scope === 'month' ? monthKey : weekKey;
-//         const bucket = buckets[scope];
-//         if (!bucket.has(key)) {
-//           bucket.set(key, { tracks: new Map(), artists: new Map() });
-//         }
+      for (const scope of ['year', 'month', 'week'] as const) {
+        const key = scope === 'year' ? yearKey : scope === 'month' ? monthKey : weekKey;
+        const bucket = buckets[scope];
+        if (!bucket.has(key)) {
+          bucket.set(key, { tracks: new Map(), artists: new Map() });
+        }
 
-//         const stats = bucket.get(key)!;
-//         stats.tracks.set(trackId, (stats.tracks.get(trackId) ?? 0) + 1);
-//         for (const artistId of artistIds) {
-//           stats.artists.set(artistId, (stats.artists.get(artistId) ?? 0) + 1);
-//         }
-//       }
-//     }
+        const stats = bucket.get(key)!;
+        stats.tracks.set(trackId, (stats.tracks.get(trackId) ?? 0) + 1);
+        for (const artistId of artistIds) {
+          stats.artists.set(artistId, (stats.artists.get(artistId) ?? 0) + 1);
+        }
+      }
+    }
 
-//     for (const scope of ['year', 'month', 'week'] as const) {
-//       const bucketMap = buckets[scope];
-//       for (const [key, { tracks, artists }] of bucketMap.entries()) {
-//         const [y, mOrW] = key.includes('W') ? key.split('-W') : key.split('-');
-//         const yInt = parseInt(y);
-//         const mInt = scope === 'month' || scope === 'week' ? parseInt(mOrW) : undefined;
-//         const wInt = scope === 'week' ? parseInt(mOrW) : undefined;
+    for (const scope of ['year', 'month', 'week'] as const) {
+      const bucketMap = buckets[scope];
+      for (const [key, { tracks, artists }] of bucketMap.entries()) {
+        const [y, mOrW] = key.includes('W') ? key.split('-W') : key.split('-');
+        const yInt = parseInt(y);
+        const mInt = scope === 'month' || scope === 'week' ? parseInt(mOrW) : undefined;
+        const wInt = scope === 'week' ? parseInt(mOrW) : undefined;
 
-//         const yearBucket = await prisma.yearbucket.findFirst({ where: { year: yInt } });
-//         const monthBucket = scope !== 'year'
-//           ? await prisma.monthbucket.findFirst({ where: { yearbucketid: yearBucket?.id, month: mInt } })
-//           : undefined;
-//         const weekBucket = scope === 'week'
-//           ? await prisma.weekbucket.findFirst({ where: { monthbucketid: monthBucket?.id, week: wInt } })
-//           : undefined;
+        const yearBucket = await prisma.yearbucket.findFirst({ where: { year: yInt } });
+        const monthBucket = scope !== 'year'
+          ? await prisma.monthbucket.findFirst({ where: { yearbucketid: yearBucket?.id, month: mInt } })
+          : undefined;
+        const weekBucket = scope === 'week'
+          ? await prisma.weekbucket.findFirst({ where: { monthbucketid: monthBucket?.id, week: wInt } })
+          : undefined;
 
-//         const trackChunks: Prisma.trackstatCreateManyInput[][] =  chunk(Array.from(tracks.entries() as Iterable<[string, number]>).map(([track_id, count]: [string, number]) => (
-//           { track_id, count, bucket_scope: scope, yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id } )), 200 );
+        const trackChunks: Prisma.trackstatCreateManyInput[][] =  chunk(Array.from(tracks.entries() as Iterable<[string, number]>).map(([track_id, count]: [string, number]) => (
+          { track_id, count, bucket_scope: scope, yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id } )), 200 );
 
-//         const artistChunks: Prisma.artiststatCreateManyInput[][] =  chunk(Array.from(artists.entries() as Iterable<[string, number]>).map(([artist_id, count]: [string, number]) => (
-//             { artist_id, count, bucket_scope: scope, yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id } )), 200 );
+        const artistChunks: Prisma.artiststatCreateManyInput[][] =  chunk(Array.from(artists.entries() as Iterable<[string, number]>).map(([artist_id, count]: [string, number]) => (
+            { artist_id, count, bucket_scope: scope, yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id } )), 200 );
 
-//         for (let i = 0; i < trackChunks.length; i++) {
-//           await prisma.trackstat.createMany({ data: trackChunks[i], skipDuplicates: true });
-//           console.log(`✅ ${key} track chunk ${i + 1} of ${trackChunks.length} inserted`);
-//         }
+        for (let i = 0; i < trackChunks.length; i++) {
+          await prisma.trackstat.createMany({ data: trackChunks[i], skipDuplicates: true });
+          console.log(`✅ ${key} track chunk ${i + 1} of ${trackChunks.length} inserted`);
+        }
 
-//         for (let i = 0; i < artistChunks.length; i++) {
-//           await prisma.artiststat.createMany({ data: artistChunks[i], skipDuplicates: true });
-//           console.log(`✅ ${key} artist chunk ${i + 1} of ${artistChunks.length} inserted`);
-//         }
-//       }
-//     }
+        for (let i = 0; i < artistChunks.length; i++) {
+          await prisma.artiststat.createMany({ data: artistChunks[i], skipDuplicates: true });
+          console.log(`✅ ${key} artist chunk ${i + 1} of ${artistChunks.length} inserted`);
+        }
+      }
+    }
 
-//     await sleep(10000);
-//     console.log(`🎧 Found ${plays.length} plays for ${year}-${month}`);
-//     current.setUTCMonth(current.getUTCMonth() + 1);
-//   }
+    await sleep(10000);
+    console.log(`🎧 Found ${plays.length} plays for ${year}-${month}`);
+    current.setUTCMonth(current.getUTCMonth() + 1);
+  }
 
-//   console.log('🎉 Bucketed stats update complete');
-// };
+  console.log('🎉 Bucketed stats update complete');
+};
 
-// export const backFillNoPlayDays = async (): Promise<void> => {
-//   const firstPlay = await prisma.spplayhistory.findFirst({ orderBy: { played_at: 'asc' }, select: { played_at: true } });
-//   if (!firstPlay) { console.error('No play history found.'); return; }
+export const backFillNoPlayDays = async (): Promise<void> => {
+  const firstPlay = await prisma.spplayhistory.findFirst({ orderBy: { played_at: 'asc' }, select: { played_at: true } });
+  if (!firstPlay) { console.error('No play history found.'); return; }
 
-//   const start = new Date(firstPlay.played_at);
-//   const end = new Date();
+  const start = new Date(firstPlay.played_at);
+  const end = new Date();
 
-//   const everyDate: Date[] = [];
-//   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) { 
-//     const normalized = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
-//     everyDate.push(normalized);
-//    }
+  const everyDate: Date[] = [];
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) { 
+    const normalized = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+    everyDate.push(normalized);
+   }
 
-//   for (const date of everyDate) {
-//     const existing = await prisma.spdailyplaystats.findUnique({ where: { date } });
-//     if (existing) continue;
+  for (const date of everyDate) {
+    const existing = await prisma.spdailyplaystats.findUnique({ where: { date } });
+    if (existing) continue;
 
-//     await prisma.spdailyplaystats.create({ data: { date, weekday: date.toLocaleDateString('en-US', { weekday: 'short' }), hourly_plays: Array(24).fill(0) } });
+    await prisma.spdailyplaystats.create({ data: { date, weekday: date.toLocaleDateString('en-US', { weekday: 'short' }), hourly_plays: Array(24).fill(0) } });
 
-//     console.log(`🟦 Backfilled empty stats for ${date.toISOString().split('T')[0]}`);
-//   } 
-// }  
+    console.log(`🟦 Backfilled empty stats for ${date.toISOString().split('T')[0]}`);
+  } 
+}  
 
-// export const updateDailyStats = async (): Promise<void> => {
-//   const dates = await prisma.spplayhistory.findMany({ select: { played_at: true }, orderBy: { played_at: 'asc' } });
-//   const uniqueDates = Array.from(new Set( dates.map(d => d.played_at.toISOString().split('T')[0]) ));
+export const updateDailyStats = async (): Promise<void> => {
+  const dates = await prisma.spplayhistory.findMany({ select: { played_at: true }, orderBy: { played_at: 'asc' } });
+  const uniqueDates = Array.from(new Set( dates.map(d => d.played_at.toISOString().split('T')[0]) ));
 
-//   console.log(`Found ${uniqueDates.length} unique play dates from history.`);
-//   const existingStats = await prisma.spdailyplaystats.findMany({ select: { date: true } });
-//   const existingDates = new Set(existingStats.map(stat => stat.date.toISOString().split('T')[0]));
-//   const filteredDates = uniqueDates.filter(date => !existingDates.has(date));
-//   console.log(`Found ${filteredDates.length} new dates to process.`);
+  console.log(`Found ${uniqueDates.length} unique play dates from history.`);
+  const existingStats = await prisma.spdailyplaystats.findMany({ select: { date: true } });
+  const existingDates = new Set(existingStats.map(stat => stat.date.toISOString().split('T')[0]));
+  const filteredDates = uniqueDates.filter(date => !existingDates.has(date));
+  console.log(`Found ${filteredDates.length} new dates to process.`);
   
-//   for (const dateStr of filteredDates) {
-//     const start = new Date(`${dateStr}T00:00:00.000Z`);
-//     const end = new Date(`${dateStr}T23:59:59.999Z`);
+  for (const dateStr of filteredDates) {
+    const start = new Date(`${dateStr}T00:00:00.000Z`);
+    const end = new Date(`${dateStr}T23:59:59.999Z`);
 
-//     const plays = await prisma.spplayhistory.findMany({ where: { played_at: { gte: start, lte: end } }, include: { track: { include: { track_artists: true } } }});
+    const plays = await prisma.spplayhistory.findMany({ where: { played_at: { gte: start, lte: end } }, include: { track: { include: { track_artists: true } } }});
 
-//     const hourlyPlays = Array(24).fill(0);
-//     const trackCounts: Record<string, number> = {};
-//     const artistCounts: Record<string, number> = {};
+    const hourlyPlays = Array(24).fill(0);
+    const trackCounts: Record<string, number> = {};
+    const artistCounts: Record<string, number> = {};
 
-//     for (const play of plays) {
-//       console.log(`⏳ Normalizing stats for ${dateStr}`);
-//       const hour = new Date(play.played_at).getHours();
-//       hourlyPlays[hour]++;
+    for (const play of plays) {
+      console.log(`⏳ Normalizing stats for ${dateStr}`);
+      const hour = new Date(play.played_at).getHours();
+      hourlyPlays[hour]++;
 
-//       const trackId = play.track_id;
-//       trackCounts[trackId] = (trackCounts[trackId] ?? 0) + 1;
+      const trackId = play.track_id;
+      trackCounts[trackId] = (trackCounts[trackId] ?? 0) + 1;
 
-//       for (const artist of play.track.track_artists) { artistCounts[artist.artist_id] = (artistCounts[artist.artist_id] ?? 0) + 1; }
-//     }
+      for (const artist of play.track.track_artists) { artistCounts[artist.artist_id] = (artistCounts[artist.artist_id] ?? 0) + 1; }
+    }
 
-//     const topTracks = Object.entries(trackCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([track_id, count]) => ({ track_id, count }));
-//     const topArtists = Object.entries(artistCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([artist_id, count]) => ({ artist_id, count }));
+    const topTracks = Object.entries(trackCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([track_id, count]) => ({ track_id, count }));
+    const topArtists = Object.entries(artistCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([artist_id, count]) => ({ artist_id, count }));
 
-//     await prisma.spdailyplaystats.create({
-//       data: {
-//         date: start,
-//         weekday: start.toLocaleDateString('en-US', { weekday: 'short' }),
-//         hourly_plays: hourlyPlays,
-//         top_tracks: { create: topTracks },
-//         top_artists: { create: topArtists }
-//       }
-//     });
+    await prisma.spdailyplaystats.create({
+      data: {
+        date: start,
+        weekday: start.toLocaleDateString('en-US', { weekday: 'short' }),
+        hourly_plays: hourlyPlays,
+        top_tracks: { create: topTracks },
+        top_artists: { create: topArtists }
+      }
+    });
 
-//     console.log(`✅ Normalized stats for ${dateStr}`);
-//   }
-// };
+    console.log(`✅ Normalized stats for ${dateStr}`);
+  }
+};
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

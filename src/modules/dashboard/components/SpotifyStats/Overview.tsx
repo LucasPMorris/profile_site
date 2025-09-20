@@ -1,7 +1,7 @@
 import Card from '@/common/components/elements/Card';
 import Heatmap from './Heatmap';
 
-interface HeatmapProps { spotifyStats: any; hourlyMap: Map<string, number[]>; sortedWeekdays: string[]; weekdayMap: Map<string, { start: Date, counts: number[]}>; monthlyMap: Map<string, number[]>; maxPlays: number; }
+interface HeatmapProps { spotifyStats: any; hourlyMap: Map<string, number[]>; sortedWeekdays: string[]; weekdayMap: Map<string, { start: Date, counts: (number | null)[]}>; monthlyMap: Map<string, (number | null)[]>; maxPlays: number; }
 interface SpotifyStatItem { name?: string; value?: string; title?: string; artists?: string; songUrl?: string;   explicit?: boolean; common_album?: { image?: string }; image?: string; artist_url?: string; }
 
 const Overview = ({ spotifyStats, hourlyMap, sortedWeekdays, weekdayMap, monthlyMap, maxPlays }: HeatmapProps) => {

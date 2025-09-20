@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
 import Card from '@/common/components/elements/Card';
 import { HeatmapDisplayProps } from '@/common/types/spotify';
 import { addDays, format } from 'date-fns';
@@ -8,12 +8,14 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
   const [resolution, setResolution] = useState<'Hourly' | 'Daily' | 'Monthly'>('Hourly');
   const [pageIndex, setPageIndex] = useState(0);
   const pageSize = 10;
-
+  const uniqueId = useId();
+  
   const maxHourlyCount = Math.max(...Array.from(hourlyMap.values()).flat());
-  const maxDailyCount = Math.max(...Array.from(weekdayMap.values()).flatMap(({ counts }) => counts));
-  const maxMonthlyCount = Math.max(...Array.from(monthlyMap.values()).flat());
+  const maxDailyCount = Math.max(...Array.from(weekdayMap.values()).flatMap(({ counts }) => counts.filter((count): count is number => count !== null)));
+  const maxMonthlyCount = Math.max(...Array.from(monthlyMap.values()).flat().filter((count): count is number => count !== null));
 
-  const getIntensityClass = (count: number) => {
+  const getIntensityClass = (count: (number | null)) => {
+    if(count === null || count === undefined) return 'bg-neutral-700';
     let ratio = 1;
     switch (resolution) {
       case 'Hourly': 
@@ -48,14 +50,7 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
         <div className='flex gap-3 items-center'>
           {['Hourly', 'Daily', 'Monthly'].map(option => (
             <label key={option} className='text-sm text-neutral-600 dark:text-neutral-400 flex items-center'>
-              <input
-                type='radio'
-                name='resolution'
-                value={option}
-                checked={resolution === option}
-                onChange={() => setResolution(option as any)}
-                className='mr-1 accent-rose-600'
-              />
+              <input type='radio' name={`resolution-${uniqueId}`} value={option} checked={resolution === option} onChange={() => setResolution(option as any)} className='mr-1 accent-rose-600' />
               {option}
             </label>
           ))}
@@ -98,11 +93,12 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
               <React.Fragment key={label}>
                 <div className='text-[12px] text-neutral-500 text-right pr-1'>{label}</div>
                 {counts.map((count, i) => { 
-                  const cellDate = addDays(start, i - 1);
-                  const dateLabel = format(cellDate, 'EEE, MMM d'); // e.g., "Tue, Jul 30"
-                  return ( <div key={`${label}-${i}`} className={clsx('h-5 w-5 rounded-sm cursor-default', getIntensityClass(count))} title={`${dateLabel}: ${count} plays`}/> );
+                  const cellDate = addDays(start, i);
+                  const dateLabel = format(cellDate, 'EEE, MMM d', { weekStartsOn: 0 }); // e.g., "Tue, Jul 30"
+                  const title = count === null || count === undefined ? `${dateLabel}: No data` : `${dateLabel}: ${count} plays`;
+                  return ( <div key={`${label}-${i}`} className={clsx('h-5 w-5 rounded-sm cursor-default', getIntensityClass(count))} title={title} /> );
                 })}
-              </React.Fragment>
+             </React.Fragment>
             ))}
 
             {totalPages > 1 && (
@@ -125,13 +121,17 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
               .map(([yearLabel, monthlyCounts]) => (
                 <React.Fragment key={yearLabel}>
                   <div className='text-[12px] text-neutral-500 text-right pr-1'>{yearLabel}</div>
-                  {monthlyCounts.map((count, i) => (
-                    <div
-                      key={`${yearLabel}-${i}`}
-                      className={clsx('h-5 w-5 rounded-sm cursor-default', getIntensityClass(count))}
-                      title={`${yearLabel} – ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][i]}: ${count} plays`}
-                    />
-                  ))}
+                  {monthlyCounts.map((count, i) => {
+                    const monthName = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][i];
+                    const title = count === null ? `${monthName}: No data` : `${monthName}: ${count} plays`;
+                    return (
+                      <div
+                        key={`${yearLabel}-${i}`}
+                        className={clsx('h-5 w-5 rounded-sm cursor-default', getIntensityClass(count))}
+                        title={title}
+                      />
+                    )
+                  })}
                 </React.Fragment>
               ))}
           </div>

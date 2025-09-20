@@ -463,3 +463,75 @@
 [2025-09-05T11:30:04.381Z] 🚀 Ingesting chunk #148 with 400 tracks @ 2025-09-05T11:30:04.381Z
 [2025-09-05T11:35:52.565Z] 🚀 Ingesting chunk #149 with 172 tracks @ 2025-09-05T11:35:52.565Z
 [2025-09-05T11:37:58.670Z] All files processed.
+[2025-09-20T21:02:38.704Z] 🧨 Clearing old stats...
+[2025-09-20T21:02:38.836Z] ✅ Old stats cleared
+[2025-09-20T21:02:38.842Z] 📆 Processing 2025-09
+[2025-09-20T21:08:20.490Z] 🧨 Clearing old stats...
+[2025-09-20T21:08:39.971Z] ✅ Old stats cleared
+[2025-09-20T21:08:40.127Z] 📆 Processing 2017-07
+[2025-09-20T21:14:54.850Z] 🧨 Clearing old stats...
+[2025-09-20T21:15:17.304Z] 🧨 Clearing old stats...
+[2025-09-20T21:15:18.579Z] ✅ Old stats cleared
+[2025-09-20T21:15:18.687Z] 📆 Processing 2017-07
+[2025-09-20T21:16:19.782Z] 🎧 Stats regenerated for 2017-7
+[2025-09-20T21:16:26.714Z] 📆 Processing 2017-08
+[2025-09-20T21:30:49.486Z] 🧨 Clearing old stats...
+[2025-09-20T21:30:50.792Z] ✅ Old stats cleared
+[2025-09-20T21:30:50.898Z] 📆 Processing 2017-07
+[2025-09-20T21:36:02.534Z] 🧨 Clearing old stats...
+[2025-09-20T21:36:03.798Z] ✅ Old stats cleared
+[2025-09-20T21:36:03.902Z] 📆 Processing 2017-07
+[2025-09-20T21:38:11.142Z] ⚠️ Skipping week scope for 2017-7 (week 26) — no weekBucket found
+[2025-09-20T21:38:11.143Z] 🎧 Stats regenerated for 2017-7
+[2025-09-20T21:38:16.148Z] 📆 Processing 2017-08
+[2025-09-20T21:53:48.429Z] 🧨 Clearing old stats...
+[2025-09-20T21:53:49.823Z] ✅ Old stats cleared
+[2025-09-20T21:53:49.929Z] 📆 Processing 2017-07
+[2025-09-20T21:54:54.285Z] ⚠️ Skipping year scope for 2017 — no yearBucket found
+[2025-09-20T21:54:54.285Z] ⚠️ Skipping week scope for 2017-7 (week 26) — no weekBucket found
+[2025-09-20T21:54:54.285Z] 🎧 Stats regenerated for 2017-7
+[2025-09-20T21:54:59.288Z] 📆 Processing 2017-08
+[2025-09-20T21:57:40.293Z] ⚠️ Skipping year scope for 2017 — no yearBucket found
+[2025-09-20T22:00:09.559Z] 🧨 Clearing old stats...
+[2025-09-20T22:00:11.084Z] ✅ Old stats cleared
+[2025-09-20T22:00:11.202Z] 📆 Processing 2017-07
+[2025-09-20T22:02:35.245Z] ⚠️ Skipping week scope for 2017-7 (week 26) — no weekBucket found
+[2025-09-20T22:02:35.245Z] 🎧 Stats regenerated for 2017-7
+[2025-09-20T22:02:40.249Z] 📆 Processing 2017-08
+[2025-09-20T22:09:48.611Z] 🧨 Clearing old stats...
+[2025-09-20T22:09:49.985Z] ✅ Old stats cleared
+[2025-09-20T22:09:50.093Z] 📆 Processing 2017-07
+[2025-09-20T22:11:56.269Z] ⚠️ Skipping week scope for 2017-7 (week 26) — no weekBucket found
+[2025-09-20T22:11:56.269Z] 🎧 Stats regenerated for 2017-7
+[2025-09-20T22:12:01.270Z] 📆 Processing 2017-08
+[2025-09-20T22:19:42.649Z] 🎧 Stats regenerated for 2017-8
+[2025-09-20T22:19:47.654Z] 📆 Processing 2017-09
+[2025-09-20T22:29:39.100Z] 🧨 Clearing old stats...
+[2025-09-20T22:29:40.533Z] ✅ Old stats cleared
+[2025-09-20T22:29:40.649Z] 📆 Processing 2017-07
+[2025-09-20T22:29:41.343Z] ⚠️ Skipping week scope for 2017-7 (week 26) — no weekBucket found
+[2025-09-20T22:30:49.823Z] 🎧 Stats regenerated for 2017-7
+[2025-09-20T22:30:56.547Z] 📆 Processing 2017-08
+[2025-09-20T22:33:35.924Z] 🎧 Stats regenerated for 2017-8
+[2025-09-20T22:33:40.929Z] 📆 Processing 2017-09
+[2025-09-20T22:37:53.225Z] 🎧 Stats regenerated for 2017-9
+[2025-09-20T22:37:58.228Z] 📆 Processing 2017-10
+[2025-09-20T22:43:50.925Z] 🎧 Stats regenerated for 2017-10
+[2025-09-20T22:43:55.931Z] 📆 Processing 2017-11
+[2025-09-20T22:48:29.777Z] 🎧 Stats regenerated for 2017-11
+[2025-09-20T22:48:36.808Z] 📆 Processing 2017-12
+[2025-09-20T22:53:00.919Z] 🎧 Stats regenerated for 2017-12
+[2025-09-20T22:53:05.924Z] 📆 Processing 2018-01
+[2025-09-20T22:53:06.690Z] ⚠️ Skipping week scope for 2018-1 (week 52) — no weekBucket found
+[2025-09-20T22:55:07.276Z] 🎧 Stats regenerated for 2018-1
+[2025-09-20T22:55:12.278Z] 📆 Processing 2018-02
+[2025-09-20T23:02:32.380Z] 🎧 Stats regenerated for 2018-2
+[2025-09-20T23:02:37.385Z] 📆 Processing 2018-03
+[2025-09-20T23:11:50.214Z] 🎧 Stats regenerated for 2018-3
+[2025-09-20T23:11:55.214Z] 📆 Processing 2018-04
+[2025-09-20T23:15:51.583Z] 🎧 Stats regenerated for 2018-4
+[2025-09-20T23:15:56.587Z] 📆 Processing 2018-05
+[2025-09-20T23:17:36.578Z] 🎧 Stats regenerated for 2018-5
+[2025-09-20T23:17:43.628Z] 📆 Processing 2018-06
+[2025-09-20T23:19:01.816Z] 🎧 Stats regenerated for 2018-6
+[2025-09-20T23:19:06.818Z] 📆 Processing 2018-07

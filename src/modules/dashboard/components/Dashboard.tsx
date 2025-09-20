@@ -13,7 +13,7 @@ const Dashboard = () => {
       <Breakline className='mb-8 mt-10' />
       {/* <HikingStats />
       <Breakline className='mb-8 mt-10' /> */}
-      <SpotifyStats />
+      {/* <SpotifyStats /> */}
       <Breakline className='mb-8 mt-10' />
       <div className='space-y-10'>
         {GITHUB_ACCOUNTS?.filter((account) => account?.is_active).map(

@@ -61,7 +61,7 @@ export interface TrackHistoryProps {
 
 export interface HeatmapFrequencies { date: string; weekday: string; hourly_plays: number[]; }
 
-export interface HeatmapDisplayProps { hourlyMap: Map<string, number[]>; sortedWeekdays: string[]; weekdayMap: Map<string, { start: Date, counts: number[] }>; monthlyMap: Map<string, number[]>; maxPlays: number; }
+export interface HeatmapDisplayProps { hourlyMap: Map<string, number[]>; sortedWeekdays: string[]; weekdayMap: Map<string, { start: Date, counts: (number | null)[] }>; monthlyMap: Map<string, (number | null)[]>; maxPlays: number; }
 
 export interface PlayHistoryResponseProps { status: number; data: TrackHistoryProps[]; }
 

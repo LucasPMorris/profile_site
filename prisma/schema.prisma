@@ -257,6 +257,7 @@ model artiststat {
   id            Int       @id @default(autoincrement())
   artist_id     String
   count         Int
+  hourly_plays  Json?
   bucket_scope  String    // 'year' | 'month' | 'week'
   yearbucketid  Int?      
   monthbucketid Int?      
@@ -265,12 +266,17 @@ model artiststat {
   yearbucket    yearbucket?   @relation("YearArtistStats", fields: [yearbucketid], references: [id])
   monthbucket   monthbucket?  @relation("MonthArtistStats", fields: [monthbucketid], references: [id])
   weekbucket    weekbucket?   @relation("WeekArtistStats", fields: [weekbucketid], references: [id])
+
+  @@unique([artist_id, weekbucketid])
+  @@unique([artist_id, monthbucketid])
+  @@unique([artist_id, yearbucketid])
 }
 
 model trackstat {
   id            Int       @id @default(autoincrement())
   track_id      String
   count         Int
+  hourly_plays  Json?
   bucket_scope  String    // 'year' | 'month' | 'week'
   yearbucketid  Int?      
   monthbucketid Int?      
@@ -279,4 +285,8 @@ model trackstat {
   yearbucket    yearbucket?   @relation("YearTrackStats", fields: [yearbucketid], references: [id])
   monthbucket   monthbucket?  @relation("MonthTrackStats", fields: [monthbucketid], references: [id])
   weekbucket    weekbucket?   @relation("WeekTrackStats", fields: [weekbucketid], references: [id])
+
+  @@unique([track_id, weekbucketid])
+  @@unique([track_id, monthbucketid])
+  @@unique([track_id, yearbucketid])  
 }
