@@ -1,4 +1,4 @@
-import * as React from 'react';
+// import * as React from 'react';
 import { HTMLMotionProps } from 'framer-motion';
 
 // This extends all HTML motion components to accept all standard HTML props.

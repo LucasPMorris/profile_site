@@ -188,26 +188,19 @@ const MDXPreview: React.FC<MDXPreviewProps> = ({ content, isVisualMode, onConten
 };
 
 const MDXEditor = () => {
-  const [content, setContent] = useState(`# Welcome to MDX Editor
+  const [content, setContent] = useState(`# Header 1
 
-This is a **live preview** MDX editor with visual editing capabilities!
+## Header 2
 
-<div class="flex gap-4">
-<div class="w-1/2"><div class="pb-5 pt-5"><p>Throughout life, we experience what many have coined as "chapters"—distinct segments where:</p></div><div class="ml-2 pb-2"><ul><li><em>one's course shifts</em></li><li><em>the tint of the glasses through which one perceives the world deepens or fades</em></li><li><em>or the circuitry within one's mind gets rewired.</em></li></ul></div><p>These chapters are often marked by major events: some positive, some painful; some planned, others entirely unexpected. But all of them, in their own way, signal transformation.</p></div>
-<div class="w-1/2"><div class="pb-2 relative"><img width="500" class="z-10 object-contain rounded-lg shadow-lg" src="https://lucas.untethered4life.com/images/blogid1_chapters.png" alt="Chapters Image"/></div></div>
-</div>
+### Header 3
 
-## Visual Editing Features
+Text Markdown: *italic*, **bold**, \`inline code\`.
 
-- **Column Resizing**: Click the visual mode button and drag the blue divider between columns
-- **Live Preview**: See changes instantly as you edit
-- **Code Sync**: Visual changes update the MDX code automatically
-
-### Try It Out
-
-Switch to visual mode using the button in the header, then drag the column divider to resize the text and image sections!
-
-You can write *italic text*, **bold text**, and even \`inline code\`.
+\`\`\`
+##Optional Header
+// #canCollapse  Optional
+<html></html> 
+\`\`\`
 
 > This is a blockquote that will be styled according to your theme.`);
 
@@ -223,14 +216,14 @@ You can write *italic text*, **bold text**, and even \`inline code\`.
   }, []);
 
   // Auto-save functionality
-  useEffect(() => {
-    const autoSave = setTimeout(() => {
-      setSavedStatus('Auto-saved');
-      setTimeout(() => setSavedStatus(''), 2000);
-    }, 3000);
+  // useEffect(() => {
+  //   const autoSave = setTimeout(() => {
+  //     setSavedStatus('Auto-saved');
+  //     setTimeout(() => setSavedStatus(''), 2000);
+  //   }, 3000);
 
-    return () => clearTimeout(autoSave);
-  }, [content, metadata]);
+  //   return () => clearTimeout(autoSave);
+  // }, [content, metadata]);
 
   const insertMarkdown = useCallback((before: string, after: string = '') => {
     const textarea = document.getElementById('mdx-editor');
@@ -286,17 +279,17 @@ You can write *italic text*, **bold text**, and even \`inline code\`.
   };
 
   // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === 's') {
-        e.preventDefault();
-        handleSave();
-      }
-    };
+  // useEffect(() => {
+  //   const handleKeyDown = (e: KeyboardEvent) => {
+  //     if (e.ctrlKey && e.key === 's') {
+  //       e.preventDefault();
+  //       handleSave();
+  //     }
+  //   };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  //   document.addEventListener('keydown', handleKeyDown);
+  //   return () => document.removeEventListener('keydown', handleKeyDown);
+  // }, []);
 
   return (
     <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white dark:bg-neutral-900' : ''} flex flex-col h-screen`}>
