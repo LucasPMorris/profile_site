@@ -41,8 +41,7 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
 
   const totalPages = Math.ceil(sortedWeeks.length / pageSize);
   const paginatedWeeks = sortedWeeks.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
-  // const sortedWeekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
+  
   return (
     <Card className='col-span-6 h-full rounded-xl border border-neutral-400 bg-neutral-100 p-3 pb-2 dark:border-neutral-900 mb-4'>
       <div className='flex items-center justify-between mb-1'>

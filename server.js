@@ -39,7 +39,7 @@ app.prepare().then(() => {
     } catch (error) { console.error('❌ Error in scheduled task:', error); }
   }
 
-  if (!dev && process.env.CRON_ENABLED === 'true') {
+  if (!dev) {
     schedule('*/30 * * * *', async () => {
       if (isRunning) { console.warn(`⚠️ Skipping run — previous job still running`); return; }
 

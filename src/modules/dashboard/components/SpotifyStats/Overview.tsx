@@ -5,7 +5,6 @@ interface HeatmapProps { spotifyStats: any; hourlyMap: Map<string, number[]>; so
 interface SpotifyStatItem { name?: string; value?: string; title?: string; artists?: string; songUrl?: string;   explicit?: boolean; common_album?: { image?: string }; image?: string; artist_url?: string; }
 
 const Overview = ({ spotifyStats, hourlyMap, sortedWeekdays, weekdayMap, monthlyMap, maxPlays }: HeatmapProps) => {
-
   return (
       <div className='grid grid-cols-8 gap-4 mb-3'>
         {spotifyStats?.[0]?.data?.map((subItem: SpotifyStatItem) => 'value' in subItem ? (
@@ -20,6 +19,5 @@ const Overview = ({ spotifyStats, hourlyMap, sortedWeekdays, weekdayMap, monthly
       </div>
   )
 };
-
 
 export default Overview;

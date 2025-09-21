@@ -30,7 +30,8 @@ const SpotifyStats = () => {
 
   useEffect(() => {
     if (data?.topArtists?.length && !selectedArtistId) { setSelectedArtistId(data.topArtists[0].artistId); }
-  }, [data, selectedArtistId]);
+    if (data?.topTracks?.length && !selectedTrackId) { setSelectedTrackId(data.topTracks[0].artistId); }
+  }, [data, selectedArtistId, selectedTrackId]);
 
   if (!data) {
     return (
@@ -56,8 +57,9 @@ const SpotifyStats = () => {
   // Initialize hourly map with proper weekday handling
   const hourlyMap = new Map<string, number[]>();
 
-  data.playFrequency.forEach(({ weekday, hourly_plays }: HeatMapProps) => {
-    if (!hourlyMap.has(weekday)) { hourlyMap.set(weekday, Array(24).fill(0)); }
+  data.playFrequency.forEach(({ date, hourly_plays }: HeatMapProps) => {
+    const weekday = format(new Date(date), 'EEEE'); // 'Monday', 'Tuesday', etc.
+    if (!hourlyMap.has(weekday)) hourlyMap.set(weekday, Array(24).fill(0));
     const bucket = hourlyMap.get(weekday)!;
     hourly_plays.forEach((count, hour) => { bucket[hour] += count; });
   });
@@ -233,7 +235,7 @@ const SpotifyStats = () => {
       {data.topArtists?.length > 0 && (
         <div className='flex flex-col gap-2'>
           <h3 className='text-lg font-semibold'>Artist-Specific Listening Patterns</h3>
-          <div className='flex flex-wrap gap-2'>
+          <div className='flex flex-wrap gap-2 mb-3'>
             {data.topArtists.map((artist: ArtistProps) => (
               <button key={artist.artistId} onClick={() => setSelectedArtistId(artist.artistId)}
                 className={clsx('px-3 py-1 rounded-full text-sm font-medium transition',
@@ -247,7 +249,7 @@ const SpotifyStats = () => {
             ))}
           </div>
           
-          {selectedArtistId && selectedArtistPlays.length > 0 && ( <Heatmap hourlyMap={artistHourlyMap} sortedWeekdays={weekdayOrder.filter(day => artistHourlyMap.has(day))} weekdayMap={artistWeekdayMap} monthlyMap={artistMonthlyMap} maxPlays={0} />)}
+          {selectedArtistId && selectedArtistPlays.length > 0 && ( <Heatmap hourlyMap={artistHourlyMap} sortedWeekdays={weekdayOrder.filter(day => artistHourlyMap.has(day))} weekdayMap={artistWeekdayMap} monthlyMap={artistMonthlyMap} maxPlays={0} /> )}
           {selectedArtistId && selectedArtistPlays.length === 0 && ( <div className='p-4 text-center text-neutral-500 bg-neutral-100 rounded-lg'> No listening data available for this artist in the selected date range.</div>)}    
         </div>
       )}
