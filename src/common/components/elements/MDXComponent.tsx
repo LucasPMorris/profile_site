@@ -106,14 +106,7 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
 
           return (
             <div className="my-6 flex justify-center">
-              <Image
-                src={typeof src === 'string' ? src : ''}
-                alt={alt}
-                width={fallbackWidth}
-                height={fallbackHeight}
-                className={fallbackClassName}
-                style={fallbackStyle}
-              />
+              <Image src={typeof src === 'string' ? src : ''} alt={alt} width={fallbackWidth} height={fallbackHeight} className={fallbackClassName} style={fallbackStyle} />
             </div>
           );
         },
@@ -163,13 +156,12 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
                 </div>
               );
             }
-            console.log("Rendering SvgScroll with props:", props);
             const src = props['data-src'] || '';
             const width = props['data-width'] ? parseInt(props['data-width']) : undefined;
             const height = props['data-height'] ? parseInt(props['data-height']) : undefined;
             const initialScale = props['data-initial-scale'] ? parseFloat(props['data-initial-scale']) : undefined;
             return <SvgScroll src={src} width={width} height={height} initialScale={initialScale} />;            
-          }          
+          }
 
           return <div {...props} />;
         },

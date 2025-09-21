@@ -118,7 +118,6 @@ model spartist {
 
   track_artists sptrackartist[]
   album_artists spalbumartist[]
-  daily_stats   spdailyartiststat[]
   artiststats  artiststat[]
 }
 
@@ -160,7 +159,6 @@ model sptrack {
 
   plays           spplayhistory[]
   track_artists   sptrackartist[]
-  daily_stats     spdailytrackstat[]
   trackstats   trackstat[]
 
   @@index([track_id])
@@ -191,33 +189,6 @@ model spdailyplaystats {
   date         DateTime  @unique
   weekday      String
   hourly_plays Json
-
-  top_tracks   spdailytrackstat[]
-  top_artists  spdailyartiststat[]
-}
-
-model spdailytrackstat {
-  id         Int      @id @default(autoincrement())
-  stats_id   Int
-  track_id   String
-  count      Int
-
-  track      sptrack  @relation(fields: [track_id], references: [track_id])
-  stats      spdailyplaystats @relation(fields: [stats_id], references: [id], onDelete: Cascade)
-
-  @@unique([stats_id, track_id])
-}
-
-model spdailyartiststat {
-  id         Int      @id @default(autoincrement())
-  stats_id   Int
-  artist_id  String
-  count      Int
-
-  artist     spartist @relation(fields: [artist_id], references: [artist_id])
-  stats      spdailyplaystats @relation(fields: [stats_id], references: [id], onDelete: Cascade)
-
-  @@unique([stats_id, artist_id])
 }
 
 model yearbucket {

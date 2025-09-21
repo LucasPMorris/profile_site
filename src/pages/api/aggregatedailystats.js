@@ -25,8 +25,8 @@ export default async function handler(req, res) {
       await aggregateDailyStats(target);
     }
 
-    const endTime = Date();
-    const duration = endTime - startTime;
+const endTime = new Date();
+const duration = endTime.getTime() - startTime.getTime();
     console.log('Daily stats ingestion completed: ', endTime, 'Execution Time: ', duration, 'ms');
     
     res.status(200).json({ success: true, message: 'Daily stats ingestion completed successfully' });

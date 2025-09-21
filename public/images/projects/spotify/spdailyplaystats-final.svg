@@ -1,0 +1,41 @@
+<svg viewBox="5 15 288 245" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#B87DB2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#573851;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Main container -->
+  <rect x="20" y="20" width="260" height="185" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Header -->
+  <rect x="20" y="20" width="260" height="45" rx="12" fill="url(#headerGrad)"/>
+  <rect x="20" y="53" width="260" height="12" fill="url(#headerGrad)"/>
+  
+  <text x="150" y="45" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="500" fill="white">
+    spdailyplaystats
+  </text>
+  
+  <!-- Primary Fields -->
+  <text x="35" y="90" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">id</text>
+  <text x="265" y="90" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Int</text>
+   
+  <text x="35" y="115" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">date</text>
+  <text x="265" y="115" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">DateTime</text>
+  
+  <text x="35" y="140" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">weekday</text>
+  <text x="265" y="140" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">String</text>
+  
+  <text x="35" y="165" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#374151">hourly_plays</text>
+  <text x="265" y="165" text-anchor="end" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6b7280">Json</text>
+  
+  <!-- Separator line -->
+  <line x1="35" y1="185" x2="265" y2="185" stroke="#e5e7eb" stroke-width="1"/>
+    
+  <!-- Bottom color bar with curved bottom corners -->
+  <path d="M 20 190 L 280 190 L 280 193 Q 280 205 268 205 L 32 205 Q 20 205 20 193 Z" fill="url(#headerGrad)"/>
+</svg>
