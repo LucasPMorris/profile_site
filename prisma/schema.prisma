@@ -218,46 +218,70 @@ model weekbucket {
   week          Int           // ISO week number
   range_start   DateTime
   range_end     DateTime
+
   monthbucketid Int
   monthbucket   monthbucket   @relation(fields: [monthbucketid], references: [id])
+
+  daybuckets    daybucket[]   @relation("WeekToDayBuckets")
+
   artiststats   artiststat[]  @relation("WeekArtistStats")
   trackstats    trackstat[]   @relation("WeekTrackStats")
+}
+
+model daybucket {
+  id           Int        @id @default(autoincrement())
+  start_date   DateTime
+  bucket_scope String @default("day")
+
+  weekbucketid  Int?
+  weekbucket    weekbucket?   @relation("WeekToDayBuckets", fields: [weekbucketid], references: [id])
+
+  artiststats  artiststat[] @relation("DayArtistStats")
+  trackstats   trackstat[] @relation("DayTrackStats")
 }
 
 model artiststat {
   id            Int       @id @default(autoincrement())
   artist_id     String
+  stat_date     DateTime
   count         Int
   hourly_plays  Json?
-  bucket_scope  String    // 'year' | 'month' | 'week'
+  bucket_scope  String  @default("day")
   yearbucketid  Int?      
   monthbucketid Int?      
-  weekbucketid  Int?      
+  weekbucketid  Int?
+  daybucketid   Int?      
   artist        spartist  @relation(fields: [artist_id], references: [artist_id])
   yearbucket    yearbucket?   @relation("YearArtistStats", fields: [yearbucketid], references: [id])
   monthbucket   monthbucket?  @relation("MonthArtistStats", fields: [monthbucketid], references: [id])
   weekbucket    weekbucket?   @relation("WeekArtistStats", fields: [weekbucketid], references: [id])
+  daybucket     daybucket? @relation("DayArtistStats", fields: [daybucketid], references: [id])
 
   @@unique([artist_id, weekbucketid])
   @@unique([artist_id, monthbucketid])
   @@unique([artist_id, yearbucketid])
+  @@unique([artist_id, stat_date])
 }
 
 model trackstat {
   id            Int       @id @default(autoincrement())
   track_id      String
+  stat_date     DateTime
   count         Int
   hourly_plays  Json?
-  bucket_scope  String    // 'year' | 'month' | 'week'
+  bucket_scope  String  @default("day")
   yearbucketid  Int?      
   monthbucketid Int?      
-  weekbucketid  Int?      
+  weekbucketid  Int?
+  daybucketid   Int?      
   track         sptrack   @relation(fields: [track_id], references: [track_id])
   yearbucket    yearbucket?   @relation("YearTrackStats", fields: [yearbucketid], references: [id])
   monthbucket   monthbucket?  @relation("MonthTrackStats", fields: [monthbucketid], references: [id])
   weekbucket    weekbucket?   @relation("WeekTrackStats", fields: [weekbucketid], references: [id])
+  daybucket     daybucket?    @relation("DayTrackStats", fields: [daybucketid], references: [id])  
 
   @@unique([track_id, weekbucketid])
   @@unique([track_id, monthbucketid])
-  @@unique([track_id, yearbucketid])  
+  @@unique([track_id, yearbucketid])
+  @@unique([track_id, stat_date])  
 }

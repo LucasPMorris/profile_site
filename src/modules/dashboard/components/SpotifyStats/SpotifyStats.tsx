@@ -1,4 +1,4 @@
-import { SiWakatime, SiSpotify as SpotifyIcon } from 'react-icons/si';
+import { SiSpotify as SpotifyIcon } from 'react-icons/si';
 import useSWR from 'swr';
 import { useEffect, useState } from 'react';
 
@@ -10,18 +10,20 @@ import { ArtistProps, TrackProps } from '@/common/types/spotify';
 import TopTracks from './TopTracks';
 import Overview from './Overview';
 import DateRangeSelector from '@/common/components/elements/DateRangeSelector';
-import { format, getISOWeek, startOfDay, startOfISOWeek, startOfWeek } from 'date-fns';
+import { format, startOfDay, startOfWeek } from 'date-fns';
 import Heatmap from './Heatmap';
 import clsx from 'clsx';
+import Card from '@/common/components/elements/Card';
+import { formatDynamicAPIAccesses } from 'next/dist/server/app-render/dynamic-rendering';
 
 const fallback = '/spotify-icon.svg';
 
-interface SpotifyStatItem { name?: string; value?: string; title?: string; artists?: string; songUrl?: string; explicit?: boolean; common_album?: { image?: string }; image?: string; artist_url?: string; }
+interface SpotifyStatItem { name?: string; value?: string; title?: string; artists?: string; songUrl?: string; explicit?: boolean; common_album?: { image?: string }; image?: string; artist_url?: string; trackId?: string; }
 interface SpotifyStatGroup { title: string; styles: { bg: string }; data: SpotifyStatItem[]; }
 interface HeatMapProps { date: string; weekday: string; hourly_plays: number[]; artistId?: string; trackId?: string; }
 
 const SpotifyStats = () => {
-  const [startDate, setStartDate] = useState(() => { const d = new Date(); d.setDate(d.getDate() - 30); return d.toISOString().split('T')[0]; });
+  const [startDate, setStartDate] = useState(() => { const d = new Date(); d.setDate(d.getDate() - 365); return d.toISOString().split('T')[0]; });
   const [endDate, setEndDate] = useState(() => { const d = new Date(); return d.toISOString().split('T')[0]; });
   const swrKey = `/api/spotify?start=${startDate}&end=${endDate}`;
   const { data } = useSWR(swrKey, fetcher);
@@ -30,7 +32,7 @@ const SpotifyStats = () => {
 
   useEffect(() => {
     if (data?.topArtists?.length && !selectedArtistId) { setSelectedArtistId(data.topArtists[0].artistId); }
-    if (data?.topTracks?.length && !selectedTrackId) { setSelectedTrackId(data.topTracks[0].artistId); }
+    if (data?.topTracks?.length && !selectedTrackId) { setSelectedTrackId(data.topTracks[0].trackId); }
   }, [data, selectedArtistId, selectedTrackId]);
 
   if (!data) {
@@ -49,10 +51,6 @@ const SpotifyStats = () => {
       </section>
     );
   }
-
-  const totalTopTrackPlays = data?.topTracks?.length ?? 0;
-  const explicitCount = data?.topTracks?.filter((track: TrackProps) => track.explicit).length ?? 0;
-  const percentExplicit = ((explicitCount / totalTopTrackPlays) * 100).toFixed(1);
   
   // Initialize hourly map with proper weekday handling
   const hourlyMap = new Map<string, number[]>();
@@ -100,12 +98,12 @@ const SpotifyStats = () => {
   const sortedWeekdays = weekdayOrder.filter(day => hourlyMap.has(day));
 
   // Artist-specific heatmap data (only if we have artists)
-  const selectedArtistPlays = data.artistHeatmaps.filter((p: HeatMapProps) => p.artistId === selectedArtistId);
+  const selectedArtistPlays: HeatMapProps[] = data.artistHeatmaps.filter((p: HeatMapProps) => p.artistId === selectedArtistId);
   const artistHourlyMap = new Map<string, number[]>();
   const artistWeekdayMap = new Map<string, { start: Date; counts: (number | null)[] }>();
   const artistMonthlyMap = new Map<string, (number | null)[]>();
 
-  const selectedTrackPlays = data.trackHeatMaps.filter((p: HeatMapProps) => p.trackId === selectedTrackId);
+  const selectedTrackPlays: HeatMapProps[] = data.trackHeatMaps.filter((p: HeatMapProps) => p.trackId === selectedTrackId);
   const trackHourlyMap = new Map<string, number[]>();
   const trackWeekdayMap = new Map<string, { start: Date; counts: (number | null)[] }>();
   const trackMonthlyMap = new Map<string, (number | null)[]>();
@@ -156,106 +154,103 @@ const SpotifyStats = () => {
     trackMonthlyMap.get(year)![monthIndex] = (trackMonthlyMap.get(year)![monthIndex] ?? 0) + totalPlays;
   });
 
-  const maxPlays = Math.max(...(data.playFrequency as { hourly_plays: number[] }[]).flatMap(({ hourly_plays }) => hourly_plays));
+  const totalDays = startDate && endDate ? Math.max(1, Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24))) : 1;
 
+  const overallTotalPlays = data.playFrequency.reduce((sum: number, p: HeatMapProps) => sum + p.hourly_plays.reduce((a, b) => a + b, 0), 0);
+  const avgPlaysPerDay = (overallTotalPlays / totalDays).toFixed(1);
+ 
   const spotifyStats: SpotifyStatGroup[] = [
     {
       title: 'Listening Overview',
       styles: { bg: 'bg-green-300/30 dark:bg-green-800/30' },
-      data: [ 
-        { name: 'Total Tracks', value: data.meta.totalTrackCount.toString() }, 
-        { name: 'Total Artists', value: data.meta.totalArtistCount.toString() }, 
-        { name: 'Explicit Content', value: `${percentExplicit}%` } 
-      ],
+      data: [ { name: 'Total Tracks', value: data.meta.totalTrackCount.toString() }, { name: 'Total Artists', value: data.meta.totalArtistCount.toString() }, { name: 'Explicit Content', value: `${data.meta.percentExplicit}%` }, { name: 'Avg/Day', value: `${avgPlaysPerDay}`}  ],
     },
     {
-      title: 'Top Artists', 
-      styles: { bg: 'bg-purple-300/30 dark:bg-purple-800/30' },
-      data: data?.topArtists?.map((artist: ArtistProps): ArtistProps => ({ 
-        artistId: artist.artistId, 
-        name: artist.name, 
-        artist_url: artist.artist_url, 
-        image: artist.image, 
-      })) ?? [],
+      title: 'Top Artists', styles: { bg: 'bg-purple-300/30 dark:bg-purple-800/30' },
+      data: data?.topArtists?.map((artist: ArtistProps): ArtistProps => ({ artistId: artist.artistId,  name: artist.name,  artist_url: artist.artist_url, image: artist.image })
+      ) ?? [],
     },
     {
-      title: 'Top Tracks', 
-      styles: { bg: 'bg-yellow-300/30 dark:bg-yellow-800/30' },
+      title: 'Top Tracks',  styles: { bg: 'bg-yellow-300/30 dark:bg-yellow-800/30' },
       data: data.topTracks?.map((track: TrackProps): SpotifyStatItem => ({
-        title: track.title,
-        artists: track.artists,
-        songUrl: track.songUrl,
-        explicit: track.explicit,
-        common_album: track.common_album ? { image: track.common_album.image } : undefined, image: track.common_album?.image, })) ?? [],
+        trackId: track.trackId, title: track.title, artists: track.artists, songUrl: track.songUrl, explicit: track.explicit,
+        common_album: track.common_album ? { image: track.common_album.image } : undefined, image: track.common_album?.image, })
+      ) ?? [],
     },
   ];
+
+  const maxPlays = Math.max(...(data.playFrequency as { hourly_plays: number[] }[]).flatMap(({ hourly_plays }) => hourly_plays));
+  const uniqueTracks = Array.from( new Set( selectedArtistPlays.filter(p => p.trackId && typeof p.trackId === 'string').map(p => p.trackId))).length;
+  const totalPlays = selectedArtistPlays.reduce((sum, p) => sum + p.hourly_plays.reduce((a, b) => a + b, 0), 0);
+  const activeDays = new Set(selectedTrackPlays.map((p: HeatMapProps) => p.date)).size;
+  const totalTrackPlays = selectedTrackPlays.reduce((sum: number, p: HeatMapProps) => sum + p.hourly_plays.reduce((a, b) => a + b, 0), 0);
+  const firstPlayed = selectedArtistPlays.map(p => new Date(p.date)).sort((a, b) => a.getTime() - b.getTime())[0];
 
   return (
     <section className='flex flex-col gap-y-4 relative'>
       <SectionHeading title='Spotify' icon={<SpotifyIcon className='mr-1' />} />
       <DateRangeSelector startDate={startDate} endDate={endDate} setStartDate={setStartDate} setEndDate={setEndDate} />
-      <SectionSubHeading><div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>My audio listening habits!</div></SectionSubHeading>
+      <SectionSubHeading><div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>My personal history represented through music!</div></SectionSubHeading>
       
       {/* Main Overview and Heatmap */}
       <Overview spotifyStats={spotifyStats} hourlyMap={hourlyMap} sortedWeekdays={sortedWeekdays} weekdayMap={weekdayMap} monthlyMap={monthlyMap} maxPlays={maxPlays} />
-      
-      {/* Top Artist round about */}
-      <TopTracks spotifyStats={spotifyStats} />
 
-      {/* Track-specific heatmap section */}
-      {data.topTracks?.length > 0 && (
-        <div className='flex flex-col gap-2'>
-          <h3 className='text-lg font-semibold'>Track-Specific Listening Patterns</h3>
-          <div className='flex flex-wrap gap-2'>
-            {data.topTracks.map((track: TrackProps) => (
-              <button key={track.trackId} onClick={() => setSelectedTrackId(track.trackId)}
-                className={clsx('px-3 py-1 rounded-full text-sm font-medium transition',
-                  selectedTrackId === track.trackId
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'
-                )}
-              >
-                {track.title}
-              </button>
-            ))}
-          </div>
-
-          {selectedTrackId && selectedTrackPlays.length > 0 && ( <Heatmap hourlyMap={trackHourlyMap} sortedWeekdays={weekdayOrder.filter(day => trackHourlyMap.has(day))} weekdayMap={trackWeekdayMap} monthlyMap={trackMonthlyMap} maxPlays={0} /> )}
-          {selectedTrackId && selectedTrackPlays.length === 0 && ( <div className='p-4 text-center text-neutral-500 bg-neutral-100 rounded-lg'>No listening data available for this track in the selected date range.</div> )}
-        </div>
-      )}
-
-      {/* Show message if no artists at all */}
-      {(!data.topTracks || data.topTracks.length === 0) && ( <div className='p-4 text-center text-neutral-500 bg-neutral-100 rounded-lg'> No top track data available. Check your Spotify data ingestion. </div> )}
-
-      {/* Top Artist round about */}
-      <TopArtists spotifyStats={spotifyStats} />
-      
-      {/* Artist-specific heatmap section */}
+      {/* Top Artist Section */}
+      <TopArtists spotifyStats={spotifyStats} selectedArtistId={selectedArtistId} onArtistSelect={setSelectedArtistId} />
       {data.topArtists?.length > 0 && (
-        <div className='flex flex-col gap-2'>
-          <h3 className='text-lg font-semibold'>Artist-Specific Listening Patterns</h3>
-          <div className='flex flex-wrap gap-2 mb-3'>
-            {data.topArtists.map((artist: ArtistProps) => (
-              <button key={artist.artistId} onClick={() => setSelectedArtistId(artist.artistId)}
-                className={clsx('px-3 py-1 rounded-full text-sm font-medium transition',
-                  selectedArtistId === artist.artistId
-                    ? 'bg-purple-600 text-white shadow-md'
-                    : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'
-                )}
-              >
-                {artist.name}
-              </button>
-            ))}
-          </div>
-          
-          {selectedArtistId && selectedArtistPlays.length > 0 && ( <Heatmap hourlyMap={artistHourlyMap} sortedWeekdays={weekdayOrder.filter(day => artistHourlyMap.has(day))} weekdayMap={artistWeekdayMap} monthlyMap={artistMonthlyMap} maxPlays={0} /> )}
-          {selectedArtistId && selectedArtistPlays.length === 0 && ( <div className='p-4 text-center text-neutral-500 bg-neutral-100 rounded-lg'> No listening data available for this artist in the selected date range.</div>)}    
-        </div>
+        <>        
+            {selectedArtistId && selectedArtistPlays.length > 0 && (
+              <div className='grid grid-cols-1 md:grid-cols-5 gap-4 mb-4'>
+                {/* Left-Side Artist Stats */}
+                <div className='md:col-span-1 flex flex-col gap-4'>
+                  <div className='col-span-1'><h3 className='text-md font-semibold'>{data.topArtists.find((a: any) => a.artistId === selectedArtistId)?.name} Listening History</h3></div>
+                  <Card className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900'>
+                    <span className='text-xs font-medium text-neutral-500 dark:text-neutral-400 tracking-wide uppercase'>First Played</span>
+                    <span className='text-lg font-semibold text-neutral-800 dark:text-neutral-100'>{format(firstPlayed, 'MMM,  yyyy')}</span>
+                  </Card>
+                  <Card className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900'>
+                    <span className='text-xs font-medium text-neutral-500 dark:text-neutral-400 tracking-wide uppercase'>Total Plays</span>
+                    <span className='text-lg font-semibold text-neutral-800 dark:text-neutral-100'>{totalPlays}</span>
+                  </Card>
+                </div>
+                <div className='md:col-span-4 flex flex-col gap-2'>  
+                  <Heatmap hourlyMap={artistHourlyMap}  sortedWeekdays={weekdayOrder.filter(day => artistHourlyMap.has(day))}  weekdayMap={artistWeekdayMap}  monthlyMap={artistMonthlyMap}  maxPlays={maxPlays} />
+                </div>
+              </div>
+            )}
+            {selectedArtistId && selectedArtistPlays.length === 0 && ( <div className='p-4 text-center text-neutral-500 bg-neutral-100 rounded-lg'> No top artist data available for the time frame selected.</div>)}    
+        </>
       )}
       
       {/* Show message if no artists at all */}
       {(!data.topArtists || data.topArtists.length === 0) && ( <div className='p-4 text-center text-neutral-500 bg-neutral-100 rounded-lg'> No top artists data available. Check your Spotify data ingestion. </div> )}
+
+      {/* Top Track Section */}
+      <TopTracks spotifyStats={spotifyStats} selectedTrackId={selectedTrackId} onTrackSelect={setSelectedTrackId} />
+      {data.topTracks?.length > 0 && (
+        <div className='grid grid-cols-1 md:grid-cols-5 gap-4 mb-4'>
+          {/* Left Column: Track Stats */}
+          <div className='md:col-span-1 flex flex-col gap-4'>
+            <h3 className='text-lg font-semibold'>{data.topTracks.find((t: any) => t.trackId === selectedTrackId)?.title} Listening History</h3>
+
+            <Card className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900'>
+              <span className='text-xs font-medium text-neutral-500 dark:text-neutral-400 tracking-wide uppercase'>Total Plays</span>
+              <span className='text-lg font-semibold text-neutral-800 dark:text-neutral-100'>{totalTrackPlays}</span>
+            </Card>
+
+            <Card className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900'>
+              <span className='text-xs font-medium text-neutral-500 dark:text-neutral-400 tracking-wide uppercase'>Active Days</span>
+              <span className='text-lg font-semibold text-neutral-800 dark:text-neutral-100'>{activeDays}</span>
+            </Card>
+          </div>
+
+          {/* Right Column: Heatmap */}
+          <div className='md:col-span-4 flex flex-col gap-2'><Heatmap hourlyMap={trackHourlyMap} sortedWeekdays={weekdayOrder.filter(day => trackHourlyMap.has(day))} weekdayMap={trackWeekdayMap} monthlyMap={trackMonthlyMap} maxPlays={maxPlays} /></div>
+        </div>
+      )}
+
+      {/* Show message if no tracks at all */}
+      {(!data.topTracks || data.topTracks.length === 0) && ( <div className='p-4 text-center text-neutral-500 bg-neutral-100 rounded-lg'> No top track data available for time frame selected. </div> )}
     </section>
   );
 };

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
+import { Prisma } from '@prisma/client';
 import querystring, { stringify } from 'querystring';
 
 import { PAIR_DEVICES } from '../../src/common/constant/devices';
@@ -161,19 +162,21 @@ export const getSpotifyStatsByDateRange = async ( startDate: Date, endDate: Date
     const [artistStats, trackStats] = await Promise.all([
       prisma.artiststat.findMany({
         where: { OR: [
-            { bucket_scope: 'year', yearbucketid: { in: yearBucketIds } },
-            { bucket_scope: 'month', monthbucketid: { in: monthBucketIds } },
-            { bucket_scope: 'week', weekbucketid: { in: weekBucketIds } },
-            { bucket_scope: 'day' } ]
+          { bucket_scope: 'year', yearbucketid: { in: yearBucketIds } },
+          { bucket_scope: 'month', monthbucketid: { in: monthBucketIds } },
+          { bucket_scope: 'week', weekbucketid: { in: weekBucketIds } },
+          { bucket_scope: 'day' }
+        ]
         },
         include: { artist: true }
       }),
       prisma.trackstat.findMany({
         where: { OR: [
-            { bucket_scope: 'year', yearbucketid: { in: yearBucketIds } },
-            { bucket_scope: 'month', monthbucketid: { in: monthBucketIds } },
-            { bucket_scope: 'week', weekbucketid: { in: weekBucketIds } },
-            { bucket_scope: 'day' } ]
+          { bucket_scope: 'year', yearbucketid: { in: yearBucketIds } },
+          { bucket_scope: 'month', monthbucketid: { in: monthBucketIds } },
+          { bucket_scope: 'week', weekbucketid: { in: weekBucketIds } },
+          { bucket_scope: 'day' }
+        ]
         },
         include: { track: { include: { album: true, common_album: true, track_artists: { include: { artist: true } } } } }
       })
@@ -184,22 +187,19 @@ export const getSpotifyStatsByDateRange = async ( startDate: Date, endDate: Date
       if (stat.bucket_scope === 'year') return bucketLookup.year[stat.yearbucketid ?? -1];
       if (stat.bucket_scope === 'month') return bucketLookup.month[stat.monthbucketid ?? -1];
       if (stat.bucket_scope === 'week') return bucketLookup.week[stat.weekbucketid ?? -1];
+      if (stat.bucket_scope === 'day') return stat.stat_date ?? null; // ✅ Use stat_date
       return null;
     };
 
-    const normalizedArtistStats = artistStats.map(stat => ({
-      ...stat,
-      bucket_date: resolveBucketDate(stat)
-    }));
+    const normalizedArtistStats = artistStats.map(stat => ({ ...stat, bucket_date: resolveBucketDate(stat) }));
+    const normalizedTrackStats = trackStats.map(stat => ({...stat, bucket_date: resolveBucketDate(stat) }));
 
-    const normalizedTrackStats = trackStats.map(stat => ({
-      ...stat,
-      bucket_date: resolveBucketDate(stat)
-    }));
+    const filteredArtistStats = normalizedArtistStats.filter(stat => stat.bucket_date instanceof Date && stat.bucket_date >= startDate && stat.bucket_date <= endDate );
+    const filteredTrackStats = normalizedTrackStats.filter(stat => stat.bucket_date instanceof Date && stat.bucket_date >= startDate && stat.bucket_date <= endDate );    
 
     // 7. Build top artists
     const artistMap = new Map<string, { artist: any; count: number }>();
-    for (const stat of artistStats) {
+    for (const stat of filteredArtistStats) {
       const key = stat.artist_id;
       const existing = artistMap.get(key);
       if (existing) existing.count += stat.count;
@@ -211,7 +211,7 @@ export const getSpotifyStatsByDateRange = async ( startDate: Date, endDate: Date
 
     // 8. Build top tracks
     const trackMap = new Map<string, { track: any; count: number }>();
-    for (const stat of trackStats) {
+    for (const stat of filteredTrackStats) {
       const key = stat.track_id;
       const existing = trackMap.get(key);
       if (existing) existing.count += stat.count;
@@ -236,7 +236,11 @@ export const getSpotifyStatsByDateRange = async ( startDate: Date, endDate: Date
     // 9. Format heatmaps
     const formatHeatmap = (stats: any[]): HeatmapFrequencies[] =>
       stats
-        .filter(stat => stat.bucket_date instanceof Date)
+        .filter(stat =>
+          stat.bucket_date instanceof Date &&
+          stat.bucket_date >= startDate &&
+          stat.bucket_date <= endDate
+        )
         .map(stat => ({
           date: stat.bucket_date.toISOString().split('T')[0],
           weekday: format(stat.bucket_date, 'EEEE'),
@@ -250,11 +254,15 @@ export const getSpotifyStatsByDateRange = async ( startDate: Date, endDate: Date
     const artistHeatmaps = topArtists.flatMap(({ artistId }) => formatHeatmap(normalizedArtistStats.filter(s => s.artist_id === artistId)) );
     const trackHeatMaps = topTracks.flatMap(({ trackId }) => formatHeatmap(normalizedTrackStats.filter(s => s.track_id === trackId)) );
 
+    const explicitCount = filteredTrackStats.filter(stat => stat.track?.explicit).reduce((sum, stat) => sum + stat.count, 0);
+    const totalCount = filteredTrackStats.reduce((sum, stat) => sum + stat.count, 0);
+    const percentExplicit = totalCount > 0 ? parseFloat(((explicitCount / totalCount) * 100).toFixed(1)) : 0.0;
+
     // 10. Return final response
-    return { status: 200, data: { topArtists, topTracks, playFrequency, artistHeatmaps, trackHeatMaps,  meta: { totalTrackCount: trackMap.size, totalArtistCount: artistMap.size }} };
+    return { status: 200, data: { topArtists, topTracks, playFrequency, artistHeatmaps, trackHeatMaps,  meta: { totalTrackCount: trackMap.size, totalArtistCount: artistMap.size, percentExplicit: percentExplicit }} };
   
   } catch (error) {
     console.error('Error in getSpotifyStatsByDateRange:', error);
-    return { status: 500, data: { topArtists: [], topTracks: [], playFrequency: [], artistHeatmaps: [], trackHeatMaps: [], meta: { totalTrackCount: 0, totalArtistCount: 0 } } }; 
+    return { status: 500, data: { topArtists: [], topTracks: [], playFrequency: [], artistHeatmaps: [], trackHeatMaps: [], meta: { totalTrackCount: 0, totalArtistCount: 0, percentExplicit: 0} } }; 
   }
 };

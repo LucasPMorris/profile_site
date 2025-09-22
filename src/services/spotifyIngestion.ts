@@ -176,13 +176,9 @@ export const aggregateDailyStats = async (targetDate: Date): Promise<void> => {
   const monthBucket = await prisma.monthbucket.findFirst({ where: { yearbucketid: yearBucket?.id, month } });
   const weekBucket = await prisma.weekbucket.findFirst({ where: { monthbucketid: monthBucket?.id, week } });
 
-  const trackStats = Array.from(trackHourlyMap.entries())
-    .map(([track_id, hourly_plays]) => ({ track_id, count: hourly_plays.reduce((a, b) => a + b, 0), hourly_plays, bucket_scope: 'day', yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id })
-  );
+  const trackStats = Array.from(trackHourlyMap.entries()).map(([track_id, hourly_plays]) => ({ track_id, stat_date: start, count: hourly_plays.reduce((a, b) => a + b, 0), hourly_plays, bucket_scope: 'day' }) );
   
-  const artistStats = Array.from(artistHourlyMap.entries())
-    .map(([artist_id, hourly_plays]) => ({ artist_id, count: hourly_plays.reduce((a, b) => a + b, 0), hourly_plays, bucket_scope: 'day', yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id})
-  );
+  const artistStats = Array.from(artistHourlyMap.entries()).map(([artist_id, hourly_plays]) => ({ artist_id, stat_date: start, count: hourly_plays.reduce((a, b) => a + b, 0), hourly_plays, bucket_scope: 'day' }));
 
   await prisma.trackstat.createMany({ data: trackStats, skipDuplicates: true });
   await prisma.artiststat.createMany({ data: artistStats, skipDuplicates: true });
@@ -209,7 +205,7 @@ export const ingestSpotifyPlays = async ( manualIngestion: boolean = false, _man
   const trackArtistJoins: { track_id: string; artist_id: string; }[] = [];
   const playHistoryToInsert: { track_id: string; played_at: Date; }[] = [];
 
-  for (const item of items as any[]) { // Using 'any' here because the raw structure from Spotify is not typed
+  for (const item of items as any[]) {
     const { track, played_at } = item;
     const isrc = track.external_ids?.isrc;
 
@@ -233,7 +229,7 @@ export const ingestSpotifyPlays = async ( manualIngestion: boolean = false, _man
   await prisma.spplayhistory.createMany({ data: playHistoryToInsert, skipDuplicates: true });
   await prisma.sptrack.createMany({ data: tracksToUpsert.map(({ isrc, ...rest }) => ({ ...rest, isrc: isrc ?? '' })), skipDuplicates: true });
 
-  // Upsert tracks and joins (still needs per-item logic)
+  // Upsert tracks and joins
   for (const join of trackArtistJoins) { await prisma.sptrackartist.upsert({ where: { track_id_artist_id: { track_id: join.track_id, artist_id: join.artist_id } }, update: {}, create: join }); }
   for (const join of uniqueTrackJoins) { await prisma.sptrackartist.upsert({ where: { track_id_artist_id: join }, update: {}, create: join }); }
 

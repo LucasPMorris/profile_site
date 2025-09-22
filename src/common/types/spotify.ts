@@ -65,7 +65,7 @@ export interface HeatmapDisplayProps { hourlyMap: Map<string, number[]>; sortedW
 
 export interface PlayHistoryResponseProps { status: number; data: TrackHistoryProps[]; }
 
-export interface SpotifyDataProps { topArtists: ArtistProps[]; topTracks: TrackProps[]; artistHeatmaps: HeatmapFrequencies[]; trackHeatMaps: HeatmapFrequencies[]; playFrequency: HeatmapFrequencies[]; meta: { totalTrackCount: number; totalArtistCount: number; }; }
+export interface SpotifyDataProps { topArtists: ArtistProps[]; topTracks: TrackProps[]; artistHeatmaps: HeatmapFrequencies[]; trackHeatMaps: HeatmapFrequencies[]; playFrequency: HeatmapFrequencies[]; meta: { totalTrackCount: number; totalArtistCount: number; percentExplicit: number}; }
 
 export interface SpotifyStatsProps {  topArtists: ArtistProps[]; topTracks: TrackProps[]; }
 
