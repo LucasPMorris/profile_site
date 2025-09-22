@@ -23,7 +23,7 @@ interface SpotifyStatGroup { title: string; styles: { bg: string }; data: Spotif
 interface HeatMapProps { date: string; weekday: string; hourly_plays: number[]; artistId?: string; trackId?: string; }
 
 const SpotifyStats = () => {
-  const [startDate, setStartDate] = useState(() => { const d = new Date(); d.setDate(d.getDate() - 365); return d.toISOString().split('T')[0]; });
+  const [startDate, setStartDate] = useState(() => { const d = new Date(); d.setDate(d.getDate() - 30); return d.toISOString().split('T')[0]; });
   const [endDate, setEndDate] = useState(() => { const d = new Date(); return d.toISOString().split('T')[0]; });
   const swrKey = `/api/spotify?start=${startDate}&end=${endDate}`;
   const { data } = useSWR(swrKey, fetcher);
