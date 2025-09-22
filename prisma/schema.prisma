@@ -141,6 +141,7 @@ model spalbum {
 model spalbumartist {
   album_id  String
   artist_id String
+
   album     spalbum  @relation(fields: [album_id], references: [album_id], onDelete: Cascade)
   artist    spartist @relation(fields: [artist_id], references: [artist_id], onDelete: Cascade)
 
@@ -148,6 +149,7 @@ model spalbumartist {
   @@index([album_id, artist_id], map: "idx_spalbumartist_album_artist")
   @@index([artist_id], map: "idx_spalbumartist_artist_id")
 }
+
 
 model sptrack {
   track_id        String          @id
@@ -176,25 +178,32 @@ model sptrack {
 model sptrackartist {
   track_id  String
   artist_id String
+
+  // Relations
   track     sptrack  @relation(fields: [track_id], references: [track_id])
   artist    spartist @relation(fields: [artist_id], references: [artist_id])
 
-  @@id([track_id, artist_id])
-  @@index([artist_id], map: "idx_sptrackartist_artist_id")
-  @@index([track_id, artist_id], map: "idx_sptrackartist_track_artist")
+  @@id([track_id, artist_id], name: "track_id_artist_id")
+  @@index([track_id, artist_id], name: "idx_sptrackartist_track_artist")
+  @@index([artist_id], name: "idx_sptrackartist_artist_id")
 }
 
 model spplayhistory {
+  id         Int      @id @default(autoincrement())
   track_id   String
   played_at  DateTime
   created_at DateTime @default(now())
-  id         Int      @id @default(autoincrement())
+
+  // Relations
   track      sptrack  @relation(fields: [track_id], references: [track_id])
 
-  @@unique([track_id, played_at])
-  @@index([played_at], map: "idx_spplayhistory_played_at")
-  @@index([played_at(sort: Desc), track_id], map: "idx_spplayhistory_played_at_track_id")
-  @@index([track_id], map: "idx_spplayhistory_track_id")
+  // Composite unique constraint
+  @@unique([track_id, played_at], name: "track_id_played_at")
+  
+  // Performance Indexes  
+  @@index([played_at(sort: Desc), track_id], name: "idx_spplayhistory_played_at_track_id")
+  @@index([played_at], name: "idx_spplayhistory_played_at")
+  @@index([track_id], name: "idx_spplayhistory_track_id")
 }
 
 model spdailyplaystats {
