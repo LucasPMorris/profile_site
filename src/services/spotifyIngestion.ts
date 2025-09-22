@@ -57,8 +57,12 @@ const assignCommonAlbumUrls = async (dryRun = false): Promise<void> => {
   const grouped = new Map<string, TrackVariantForSelection[]>();
 
   for (const track of tracks) {
-    if (!grouped.has(track.isrc)) grouped.set(track.isrc, []);
-    grouped.get(track.isrc)!.push(track);
+    if (track.isrc) {
+        if (!grouped.has(track.isrc)) grouped.set(track.isrc, []);
+          grouped.get(track.isrc)!.push({...track, isrc: track.isrc ?? '', // Ensure isrc is a string
+            duration: track.duration ?? 0, // Ensure duration is a number
+        });
+    }
   }
 
   const updates: { isrc: string; common_album_id: string }[] = [];

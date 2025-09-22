@@ -113,7 +113,7 @@ export const getSpotifyStatsByDateRange = async ( startDate: Date, endDate: Date
     const playFrequency = dailyStats.map((stat) => ({
       date: stat.date.toISOString().split('T')[0],
       weekday: stat.weekday,
-      hourly_plays: Array.isArray(stat.hourly_plays) ? stat.hourly_plays : Array(24).fill(0)
+      hourly_plays: Array.isArray(stat.hourly_plays) && stat.hourly_plays.length === 24 ? stat.hourly_plays : Array(24).fill(0)
     }));
 
     // 2. Resolve bucket ranges

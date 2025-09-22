@@ -51,7 +51,7 @@ const TopTracks = ({ spotifyStats, selectedTrackId, onTrackSelect }: TopTracksPr
             })}
           </ul>
         </div>
-        <div className='absolute -bottom-8 left-1/2 transform -translate-x-1/2 z-50 flex gap-3'>
+        <div className='absolute -bottom-8 left-1/2 transform -translate-x-1/2 z-1 flex gap-3'>
           <button onClick={handlePrevTrack} className='relative w-24 h-10 flex items-center justify-center text-3xl bg-blue-700 text-neutral-300 rounded-md shadow overflow-hidden group hover:bg-blue-900 transition'> ← </button>
           <button onClick={handleNextTrack} className='relative w-24 h-10 flex items-center justify-center text-3xl bg-blue-700 text-neutral-300 rounded-md shadow overflow-hidden group hover:bg-blue-900 transition' > → </button>
         </div>
