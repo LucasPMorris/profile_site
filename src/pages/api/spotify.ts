@@ -52,7 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log(`Fetching Spotify stats for ${start} to ${end}`);
     const startTime = Date.now();
-    const data = await getSpotifyStatsByDateRange(start as string, end as string);
+    const data = await getSpotifyStatsByDateRange(new Date(start as string), new Date(end as string));
     const duration = Date.now() - startTime;
     console.log(`Spotify stats fetched in ${duration}ms`);
 
