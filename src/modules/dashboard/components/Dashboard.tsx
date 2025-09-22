@@ -9,9 +9,9 @@ import HikingStats from './HikingStats';
 const Dashboard = () => {
   return (
     <>
-      <SpotifyStats />
-      <Breakline className='mb-8 mt-10' />
       <CodingActive />
+      <Breakline className='mb-8 mt-10' />
+      <SpotifyStats />
       {/* <HikingStats />
       <Breakline className='mb-8 mt-10' /> */}
       <Breakline className='mb-8 mt-10' />

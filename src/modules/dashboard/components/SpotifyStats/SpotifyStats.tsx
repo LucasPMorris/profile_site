@@ -26,23 +26,44 @@ const SpotifyStats = () => {
   const [startDate, setStartDate] = useState(() => { const d = new Date(); d.setDate(d.getDate() - 30); return d.toISOString().split('T')[0]; });
   const [endDate, setEndDate] = useState(() => { const d = new Date(); return d.toISOString().split('T')[0]; });
   const swrKey = `/api/spotify?start=${startDate}&end=${endDate}`;
-  const { data } = useSWR(swrKey, fetcher);
+  const { data, error } = useSWR(swrKey, fetcher);
   const [selectedArtistId, setSelectedArtistId] = useState<string | null>(null);
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('Fetched Spotify data:', {data});
     if (data?.topArtists?.length && !selectedArtistId) { setSelectedArtistId(data.topArtists[0].artistId); }
     if (data?.topTracks?.length && !selectedTrackId) { setSelectedTrackId(data.topTracks[0].trackId); }
   }, [data, selectedArtistId, selectedTrackId]);
 
-  if (!data) {
+  if (error) {
     return (
       <section className='flex flex-col gap-y-2'>
         <SectionHeading title='Spotify' icon={<SpotifyIcon className='mr-1' />} />
-        <SectionSubHeading><div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>Loading audio stats...</div></SectionSubHeading>
+        <SectionSubHeading>
+          <div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>
+            Failed to load Spotify stats. Please try again later.
+          </div>
+        </SectionSubHeading>
+      </section>
+    );
+  }
+  
+  if (!data || !Array.isArray(data.playFrequency)) {
+    return (
+      <section className='flex flex-col gap-y-2'>
+        <SectionHeading title='Spotify' icon={<SpotifyIcon className='mr-1' />} />
+        <SectionSubHeading>
+          <div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>
+            Loading audio stats...
+          </div>
+        </SectionSubHeading>
         <div className='grid grid-cols-5 gap-4 sm:grid-cols-5 md:grid-cols-5 mb-3'>
           {[...Array(5)].map((_, index) => (
-            <div key={index} className='flex flex-col col-span-1 h-full space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900 sm:col-span-1 animate-pulse'>
+            <div
+              key={index}
+              className='flex flex-col col-span-1 h-full space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900 sm:col-span-1 animate-pulse'
+            >
               <div className='h-4 bg-neutral-300 dark:bg-neutral-700 rounded w-3/4'></div>
               <div className='h-6 bg-neutral-300 dark:bg-neutral-700 rounded w-1/2'></div>
             </div>
@@ -51,24 +72,30 @@ const SpotifyStats = () => {
       </section>
     );
   }
-  
-  // Initialize hourly map with proper weekday handling
+
   const hourlyMap = new Map<string, number[]>();
 
   data.playFrequency?.forEach(({ date, hourly_plays }: HeatMapProps) => {
-    const weekday = format(new Date(date), 'EEEE'); // 'Monday', 'Tuesday', etc.
+    if (!Array.isArray(hourly_plays)) return; // Skip invalid entries
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime())) return; // Skip invalid dates
+    const weekday = format(parsedDate, 'EEEE');
     if (!hourlyMap.has(weekday)) hourlyMap.set(weekday, Array(24).fill(0));
     const bucket = hourlyMap.get(weekday)!;
     hourly_plays.forEach((count, hour) => { bucket[hour] += count; });
   });
 
-  const weekdayMap = new Map<string, {start: Date, counts: (number | null)[]}>();
+  const weekdayMap = new Map<string, { start: Date; counts: (number | null)[] }>();
   data.playFrequency.forEach(({ date, hourly_plays }: HeatMapProps) => {
-    const d = startOfDay(new Date(date));
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime()) || !Array.isArray(hourly_plays)) return;
+    const d = startOfDay(parsedDate);
     const weekStart = startOfWeek(d, { weekStartsOn: 0 });
     const label = `${format(weekStart, "MMM d ''yy")}`;
-    const weekday = d.getDay(); // 0 = Sun, 6 = Sat
-    const totalPlays = hourly_plays.reduce((a, b) => a + b, 0);
+    const weekday = d.getDay();
+    const totalPlays = hourly_plays
+      .filter((count) => typeof count === 'number')
+      .reduce((a, b) => a + b, 0);
 
     if (!weekdayMap.has(label)) { weekdayMap.set(label, { start: weekStart, counts: Array(7).fill(null) }); }
 

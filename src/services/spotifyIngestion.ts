@@ -125,7 +125,7 @@ export const optimizedAssignCommonAlbumUrls = async (): Promise<void> => {
 //     } else { console.log(`✅ Updated common_album_id for ${grouped.size} ISRCs`); }
 // };
 
-// export const aggregateDailyStats2 = async (targetDate: Date): Promise<void> => {
+// export const aggregateDailyStats = async (targetDate: Date): Promise<void> => {
 //   const dateStr = targetDate.toISOString().split('T')[0];
 //   const start = new Date(`${dateStr}T00:00:00.000Z`);
 //   const end = new Date(`${dateStr}T23:59:59.999Z`);
@@ -174,91 +174,91 @@ export const optimizedAssignCommonAlbumUrls = async (): Promise<void> => {
 //   console.log(`📦 Bucketed stats updated for ${dateStr} → Y:${year} M:${month} W:${week}`);  
 // };
 
-// export const aggregateDailyStats = async (targetDate: Date): Promise<void> => {
-//   const dateStr = targetDate.toISOString().split('T')[0];
-//   const start = new Date(`${dateStr}T00:00:00.000Z`);
-//   const end = new Date(`${dateStr}T23:59:59.999Z`);
-//   const weekday = start.toLocaleDateString('en-US', { weekday: 'short' });
+export const aggregateDailyStats = async (targetDate: Date): Promise<void> => {
+  const dateStr = targetDate.toISOString().split('T')[0];
+  const start = new Date(`${dateStr}T00:00:00.000Z`);
+  const end = new Date(`${dateStr}T23:59:59.999Z`);
+  const weekday = start.toLocaleDateString('en-US', { weekday: 'short' });
 
-//   // Delete existing daily play stats
-//   await prisma.spdailyplaystats.deleteMany({ where: { date: start } });
+  // Delete existing daily play stats
+  await prisma.spdailyplaystats.deleteMany({ where: { date: start } });
 
-//   // Fetch play history with track and artist info
-//   const plays = await prisma.spplayhistory.findMany({
-//     where: { played_at: { gte: start, lte: end } },
-//     include: { track: { include: { track_artists: true } } }
-//   });
+  // Fetch play history with track and artist info
+  const plays = await prisma.spplayhistory.findMany({
+    where: { played_at: { gte: start, lte: end } },
+    include: { track: { include: { track_artists: true } } }
+  });
 
-//   const hourlyPlays = Array(24).fill(0);
-//   const trackCounts: Record<string, number> = {};
-//   const artistCounts: Record<string, number> = {};
-//   const trackHourlyMap = new Map<string, number[]>();
-//   const artistHourlyMap = new Map<string, number[]>();
+  const hourlyPlays = Array(24).fill(0);
+  const trackCounts: Record<string, number> = {};
+  const artistCounts: Record<string, number> = {};
+  const trackHourlyMap = new Map<string, number[]>();
+  const artistHourlyMap = new Map<string, number[]>();
 
-//   for (const play of plays) {
-//     const hour = new Date(play.played_at).getUTCHours();
-//     hourlyPlays[hour]++;
+  for (const play of plays) {
+    const hour = new Date(play.played_at).getUTCHours();
+    hourlyPlays[hour]++;
 
-//     const trackId = play.track_id;
-//     trackCounts[trackId] = (trackCounts[trackId] ?? 0) + 1;
-//     if (!trackHourlyMap.has(trackId)) trackHourlyMap.set(trackId, Array(24).fill(0));
-//     trackHourlyMap.get(trackId)![hour]++;
+    const trackId = play.track_id;
+    trackCounts[trackId] = (trackCounts[trackId] ?? 0) + 1;
+    if (!trackHourlyMap.has(trackId)) trackHourlyMap.set(trackId, Array(24).fill(0));
+    trackHourlyMap.get(trackId)![hour]++;
 
-//     for (const artist of play.track.track_artists) {
-//       const artistId = artist.artist_id;
-//       artistCounts[artistId] = (artistCounts[artistId] ?? 0) + 1;
-//       if (!artistHourlyMap.has(artistId)) artistHourlyMap.set(artistId, Array(24).fill(0));
-//       artistHourlyMap.get(artistId)![hour]++;
-//     }
-//   }
-
-//   // Create overall daily play stats
-//   await prisma.spdailyplaystats.create({ data: { date: start, weekday, hourly_plays: hourlyPlays } });
-
-//   console.log(`✅ Overall stats created for ${dateStr}`);
-
-//   // Resolve buckets
-//   const year = start.getUTCFullYear();
-//   const month = start.getUTCMonth() + 1;
-//   const week = getISOWeek(start);
-
-//   const yearBucket = await prisma.yearbucket.findFirst({ where: { year } });
-//   const monthBucket = await prisma.monthbucket.findFirst({ where: { yearbucketid: yearBucket?.id, month } });
-//   const weekBucket = await prisma.weekbucket.findFirst({ where: { monthbucketid: monthBucket?.id, week } });
-
-//   const trackStats = Array.from(trackHourlyMap.entries()).map(([track_id, hourly_plays]) => ({ track_id, stat_date: start, count: hourly_plays.reduce((a, b) => a + b, 0), hourly_plays, bucket_scope: 'day' }) );
-  
-//   const artistStats = Array.from(artistHourlyMap.entries()).map(([artist_id, hourly_plays]) => ({ artist_id, stat_date: start, count: hourly_plays.reduce((a, b) => a + b, 0), hourly_plays, bucket_scope: 'day' }));
-
-//   await prisma.trackstat.createMany({ data: trackStats, skipDuplicates: true });
-//   await prisma.artiststat.createMany({ data: artistStats, skipDuplicates: true });
-
-//   console.log(`📦 Bucketed counts updated for ${dateStr} → Y:${year} M:${month} W:${week}`);
-// };
-
-export const aggregateDailyStats = async (startDate: string, endDate: string) => {
-  try {
-    // Use raw SQL for better performance on large datasets
-    const dailyStats = await prisma.$queryRaw`
-      SELECT 
-        DATE(played_at) as play_date,
-        COUNT(*) as play_count,
-        COUNT(DISTINCT track_id) as unique_tracks,
-        COUNT(DISTINCT CASE WHEN st.explicit = true THEN st.track_id END) as explicit_count
-      FROM spplayhistory sph
-      JOIN sptrack st ON sph.track_id = st.track_id
-      WHERE played_at >= ${new Date(startDate)}
-        AND played_at <= ${new Date(endDate)}
-      GROUP BY DATE(played_at)
-      ORDER BY play_date DESC
-    `;
-
-    return dailyStats;
-  } catch (error) {
-    console.error('Error aggregating daily stats:', error);
-    throw error;
+    for (const artist of play.track.track_artists) {
+      const artistId = artist.artist_id;
+      artistCounts[artistId] = (artistCounts[artistId] ?? 0) + 1;
+      if (!artistHourlyMap.has(artistId)) artistHourlyMap.set(artistId, Array(24).fill(0));
+      artistHourlyMap.get(artistId)![hour]++;
+    }
   }
+
+  // Create overall daily play stats
+  await prisma.spdailyplaystats.create({ data: { date: start, weekday, hourly_plays: hourlyPlays } });
+
+  console.log(`✅ Overall stats created for ${dateStr}`);
+
+  // Resolve buckets
+  const year = start.getUTCFullYear();
+  const month = start.getUTCMonth() + 1;
+  const week = getISOWeek(start);
+
+  const yearBucket = await prisma.yearbucket.findFirst({ where: { year } });
+  const monthBucket = await prisma.monthbucket.findFirst({ where: { yearbucketid: yearBucket?.id, month } });
+  const weekBucket = await prisma.weekbucket.findFirst({ where: { monthbucketid: monthBucket?.id, week } });
+
+  const trackStats = Array.from(trackHourlyMap.entries()).map(([track_id, hourly_plays]) => ({ track_id, stat_date: start, count: hourly_plays.reduce((a, b) => a + b, 0), hourly_plays, bucket_scope: 'day' }) );
+  
+  const artistStats = Array.from(artistHourlyMap.entries()).map(([artist_id, hourly_plays]) => ({ artist_id, stat_date: start, count: hourly_plays.reduce((a, b) => a + b, 0), hourly_plays, bucket_scope: 'day' }));
+
+  await prisma.trackstat.createMany({ data: trackStats, skipDuplicates: true });
+  await prisma.artiststat.createMany({ data: artistStats, skipDuplicates: true });
+
+  console.log(`📦 Bucketed counts updated for ${dateStr} → Y:${year} M:${month} W:${week}`);
 };
+
+// export const aggregateDailyStats = async (startDate: string, endDate: string) => {
+//   try {
+//     // Use raw SQL for better performance on large datasets
+//     const dailyStats = await prisma.$queryRaw`
+//       SELECT 
+//         DATE(played_at) as play_date,
+//         COUNT(*) as play_count,
+//         COUNT(DISTINCT track_id) as unique_tracks,
+//         COUNT(DISTINCT CASE WHEN st.explicit = true THEN st.track_id END) as explicit_count
+//       FROM spplayhistory sph
+//       JOIN sptrack st ON sph.track_id = st.track_id
+//       WHERE played_at >= ${new Date(startDate)}
+//         AND played_at <= ${new Date(endDate)}
+//       GROUP BY DATE(played_at)
+//       ORDER BY play_date DESC
+//     `;
+
+//     return dailyStats;
+//   } catch (error) {
+//     console.error('Error aggregating daily stats:', error);
+//     throw error;
+//   }
+// };
 
 // export const ingestSpotifyPlays = async ( manualIngestion: boolean = false, _manualData: RawRecentlyPlayedResponse = { status: 200, data: [] }): Promise<void> => {
 //   const response = manualIngestion ? _manualData : await getRecentlyPlayedFromSpotify();

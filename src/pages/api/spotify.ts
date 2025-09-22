@@ -35,16 +35,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) { return res.status(400).json({ error: 'Invalid date format' }); }
 
-    // Create cache key
-    const cacheKey = `spotify_stats_${start}_${end}`;
+    // // Create cache key
+    // const cacheKey = `spotify_stats_${start}_${end}`;
     
-    // Check cache first
-    const cached = cache.get(cacheKey);
-    if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
-      console.log(`Cache hit for ${cacheKey}`);
-      res.setHeader('X-Cache', 'HIT');
-      return res.status(200).json(cached.data);
-    }
+    // // Check cache first
+    // const cached = cache.get(cacheKey);
+    // if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
+    //   console.log(`Cache hit for ${cacheKey}`);
+    //   res.setHeader('X-Cache', 'HIT');
+    //   return res.status(200).json(cached.data);
+    // }
 
     // Set appropriate cache headers
     res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
@@ -56,17 +56,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const duration = Date.now() - startTime;
     console.log(`Spotify stats fetched in ${duration}ms`);
 
-    // Cache the result
-    cache.set(cacheKey, { data, timestamp: Date.now() });
+    // // Cache the result
+    // cache.set(cacheKey, { data, timestamp: Date.now() });
     
-    // Clean up old cache entries (basic cleanup)
-    if (cache.size > 100) {
-      const oldestKey = cache.keys().next().value;
-      if (oldestKey !== undefined) { cache.delete(oldestKey); }
-    }
+    // // Clean up old cache entries (basic cleanup)
+    // if (cache.size > 100) {
+    //   const oldestKey = cache.keys().next().value;
+    //   if (oldestKey !== undefined) { cache.delete(oldestKey); }
+    // }
 
-    res.setHeader('X-Response-Time', `${duration}ms`);
-    return res.status(200).json(data);
+    const unwrappedData = data.data;
+    return res.status(200).json(unwrappedData); // This little AI addition really messed me up!
     
   } catch (error) {
     console.error('Error in Spotify API:', error);
