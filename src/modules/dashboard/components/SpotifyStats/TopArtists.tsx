@@ -41,7 +41,7 @@ const TopArtists = ({ spotifyStats, selectedArtistId, onArtistSelect }: TopArtis
                       #{originalIndex + 1}
                     </span>
 
-                    {isSelected && ( <div className="absolute top-1 right-1 z-50"><div className="w-3 h-3 bg-green-500 rounded-full border border-white"></div></div> )}
+                    {isSelected && ( <div className="absolute top-1 right-1"><div className="w-3 h-3 bg-green-500 rounded-full border border-white"></div></div> )}
                     <div className='flex flex-col items-center'>
                       <div className='relative w-20 h-20'><Image src={artist.image ?? fallback} alt={artist.name} fill className='rounded-full object-cover' /></div>
                       <span className='text-sm font-medium text-center'>{artist.name}</span>
@@ -53,7 +53,7 @@ const TopArtists = ({ spotifyStats, selectedArtistId, onArtistSelect }: TopArtis
           </div>
 
           {/* Arrows */}
-          <div className='absolute -bottom-8 left-1/2 transform -translate-x-1/2 z-50 flex gap-3'>
+          <div className='absolute -bottom-8 left-1/2 transform -translate-x-1/2 z-10 flex gap-3'>
             <button onClick={handlePrev} className='relative w-24 h-10 flex items-center justify-center text-3xl bg-purple-700 text-neutral-300 rounded-md shadow overflow-hidden group hover:bg-purple-900 transition' > ← </button>
             <button onClick={handleNext} className='relative w-24 h-10 flex items-center justify-center text-3xl bg-purple-700 text-neutral-300 rounded-md shadow overflow-hidden group hover:bg-purple-900 transition' > → </button>
           </div>

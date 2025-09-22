@@ -105,6 +105,35 @@ export const getRecentlyPlayedFromSpotify = async (): Promise<RawRecentlyPlayedR
   }
 };
 
+
+export const getSpotifyStatsByDateRange2 = async ( startDate: Date, endDate: Date ): Promise<SpotifyDataResponseProps> => {
+  try {
+    // 1. Overall play frequency from spdailyplaystats
+    const dailyStats = await prisma.spdailyplaystats.findMany({ where: { date: { gte: startDate, lte: endDate } } });
+
+    const playFrequency = dailyStats.map((stat) => ({
+      date: stat.date.toISOString().split('T')[0],
+      weekday: stat.weekday,
+      hourly_plays: Array.isArray(stat.hourly_plays) && stat.hourly_plays.length === 24 ? stat.hourly_plays : Array(24).fill(0)
+    }));
+
+    // 2. Resolve bucket ranges
+    const [yearBuckets, monthBuckets, weekBuckets] = await Promise.all([
+      prisma.yearbucket.findMany({ where: { range_start: { lte: endDate }, range_end: { gte: startDate } } }),
+      prisma.monthbucket.findMany({ where: { range_start: { lte: endDate }, range_end: { gte: startDate } } }),
+      prisma.weekbucket.findMany({ where: { range_start: { lte: endDate }, range_end: { gte: startDate } } })
+    ]);
+
+    const yearBucketIds = yearBuckets.map(b => b.id);
+    const monthBucketIds = monthBuckets.map(b => b.id);
+    const weekBucketIds = weekBuckets.map(b => b.id);
+
+    const bucketLookup = {
+      year: Object.fromEntries(yearBuckets.map(b => [b.id, b.range_start])),
+      month: Object.fromEntries(monthBuckets.map(b => [b.id, b.range_start])),
+      week: Object.fromEntries(weekBuckets.map(b => [b.id, b.range_start]))
+    };
+=======
 function getTopItems(playCountMap: Map<string, number>, playStats: any[], type: 'track' | 'artist' | 'album') {
   const sortedEntries = Array.from(playCountMap.entries())
     .sort(([,a], [,b]) => b - a)

@@ -10,7 +10,7 @@ import { ArtistProps, TrackProps } from '@/common/types/spotify';
 import TopTracks from './TopTracks';
 import Overview from './Overview';
 import DateRangeSelector from '@/common/components/elements/DateRangeSelector';
-import { format, startOfDay, startOfWeek } from 'date-fns';
+import { daysInYear, format, startOfDay, startOfWeek } from 'date-fns';
 import Heatmap from './Heatmap';
 import clsx from 'clsx';
 import Card from '@/common/components/elements/Card';
@@ -55,7 +55,7 @@ const SpotifyStats = () => {
   // Initialize hourly map with proper weekday handling
   const hourlyMap = new Map<string, number[]>();
 
-  data.playFrequency.forEach(({ date, hourly_plays }: HeatMapProps) => {
+  data.playFrequency?.forEach(({ date, hourly_plays }: HeatMapProps) => {
     const weekday = format(new Date(date), 'EEEE'); // 'Monday', 'Tuesday', etc.
     if (!hourlyMap.has(weekday)) hourlyMap.set(weekday, Array(24).fill(0));
     const bucket = hourlyMap.get(weekday)!;

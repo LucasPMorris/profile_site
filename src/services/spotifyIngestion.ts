@@ -86,6 +86,14 @@ export const optimizedAssignCommonAlbumUrls = async (): Promise<void> => {
     // Batch update using transaction for better performance
     await prisma.$transaction( batchUpdates.map(update => prisma.sptrack.updateMany({ where: { isrc: update.isrc }, data: { common_album_id: update.commonAlbumId } }) ) );
 
+//   for (const track of tracks) {
+//     if (track.isrc) {
+//         if (!grouped.has(track.isrc)) grouped.set(track.isrc, []);
+//           grouped.get(track.isrc)!.push({...track, isrc: track.isrc ?? '', // Ensure isrc is a string
+//             duration: track.duration ?? 0, // Ensure duration is a number
+//         });
+//     }
+
     console.log(`✅ Updated common_album_id for ${batchUpdates.length} ISRCs in batch`);
   } catch (error) {
     console.error('Error in optimized common album assignment:', error);
