@@ -20,7 +20,7 @@ model projects {
   stacks      String
   is_show     Boolean  @default(true)
   updated_at  DateTime @default(now())
-  content     String?  @db.Text
+  content     String?
   is_featured Boolean  @default(false)
 }
 
@@ -33,33 +33,32 @@ model contentmeta {
 }
 
 model blogPost {
-  id               Int      @id @default(autoincrement())
+  id               Int          @id @default(autoincrement())
   date             DateTime
   modified         DateTime
-  slug             String   @unique
+  slug             String       @unique
   status           String
   link             String
   title            String
   contentHtml      String
   contentMarkdown  String
-  contentProtected Boolean  @default(false)
+  contentProtected Boolean      @default(false)
   excerptHtml      String
-  excerptProtected Boolean  @default(false)
+  excerptProtected Boolean      @default(false)
   authorId         Int
-  author           user     @relation(fields: [authorId], references: [user_id])
   featuredMediaId  Int?
-  featuredMedia    media?   @relation("FeaturedMedia", fields: [featuredMediaId], references: [id])
-  sticky           Boolean  @default(false)
+  sticky           Boolean      @default(false)
   template         String
   format           String
   footnotes        String
   featuredImageUrl String?
-  totalViewsCount  Int      @default(0)
-
-  categories  category[]   @relation("PostCategories")
-  tags        tag[]        @relation("PostTags")
-  attachments attachment[]
-  terms       term[]
+  totalViewsCount  Int          @default(0)
+  author           user         @relation(fields: [authorId], references: [user_id])
+  featuredMedia    media?       @relation("FeaturedMedia", fields: [featuredMediaId], references: [id])
+  categories       category[]   @relation("PostCategories")
+  tags             tag[]        @relation("PostTags")
+  attachments      attachment[]
+  terms            term[]
 }
 
 model user {
@@ -111,79 +110,69 @@ model term {
 }
 
 model spartist {
-  artist_id  String @id
-  name       String
-  artist_url String?
-  image_url  String?
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
-
-  // Relations  
+  artist_id     String          @id
+  name          String
+  image_url     String?
+  artist_url    String?
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @default(now())
   track_artists sptrackartist[]
   album_artists spalbumartist[]
-  artist_stats  artiststat[]   
+  artiststats   artiststat[]
 
-  // Performance Indexes
-  @@index([name], name: "idx_spartist_name")
+  @@index([name], map: "idx_spartist_name")
 }
 
 model spalbum {
-  album_id     String    @id
-  name         String
-  image_url    String?
-  release_date DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @default(now()) @updatedAt
+  album_id      String          @id
+  name          String
+  release_date  DateTime?
+  image_url     String?
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @default(now())
+  album_artists spalbumartist[]
+  tracks        sptrack[]       @relation("PrimaryAlbum")
+  common_tracks sptrack[]       @relation("CommonAlbum")
 
-  // Relations
-  tracks             sptrack[]           @relation
-  common_album_tracks sptrack[]         @relation("CommonAlbum")
-  album_artists      spalbumartist[]
-
-  // Performance Indexes
-  @@index([name], name: "idx_spalbum_name")
-  @@index([release_date], name: "idx_spalbum_release_date")
+  @@index([name], map: "idx_spalbum_name")
+  @@index([release_date], map: "idx_spalbum_release_date")
 }
 
 model spalbumartist {
   album_id  String
   artist_id String
 
-  // Relations
-  album     spalbum  @relation(fields: [album_id], references: [album_id])
-  artist    spartist @relation(fields: [artist_id], references: [artist_id])
+  album     spalbum  @relation(fields: [album_id], references: [album_id], onDelete: Cascade)
+  artist    spartist @relation(fields: [artist_id], references: [artist_id], onDelete: Cascade)
 
-  @@id([album_id, artist_id], name: "album_id_artist_id")
-  @@index([album_id, artist_id], name: "idx_spalbumartist_album_artist")
-  @@index([artist_id], name: "idx_spalbumartist_artist_id")
+  @@id([album_id, artist_id])
+  @@index([album_id, artist_id], map: "idx_spalbumartist_album_artist")
+  @@index([artist_id], map: "idx_spalbumartist_artist_id")
 }
 
 
 model sptrack {
-  track_id         String   @id
-  title            String
-  isrc             String?
-  album_id         String
-  common_album_id  String?
-  explicit         Boolean  @default(false)
-  song_url         String?
-  duration         Int?
-  release_date     DateTime?
-  created_at       DateTime @default(now())
-  updated_at       DateTime @default(now()) @updatedAt
+  track_id        String          @id
+  title           String
+  duration        Int?
+  song_url        String?
+  explicit        Boolean         @default(false)
+  release_date    DateTime?
+  album_id        String
+  isrc            String?
+  common_album_id String?
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @default(now())
+  album           spalbum         @relation("PrimaryAlbum", fields: [album_id], references: [album_id], onDelete: Cascade)
+  common_album    spalbum?        @relation("CommonAlbum", fields: [common_album_id], references: [album_id])
+  plays           spplayhistory[]
+  track_artists   sptrackartist[]
+  trackstats      trackstat[]
 
-  // Relations
-  album            spalbum           @relation(fields: [album_id], references: [album_id])
-  common_album     spalbum?          @relation("CommonAlbum", fields: [common_album_id], references: [album_id])
-  plays            spplayhistory[]
-  track_artists    sptrackartist[]
-  track_stats      trackstat[]
-
-  // Performance Indexes
-  @@index([isrc], name: "idx_sptrack_isrc")
-  @@index([common_album_id], name: "idx_sptrack_common_album_id") 
-  @@index([explicit], name: "idx_sptrack_explicit")
-  @@index([album_id], name: "idx_sptrack_album_id")
+  @@index([album_id], map: "idx_sptrack_album_id")
+  @@index([common_album_id], map: "idx_sptrack_common_album_id")
+  @@index([explicit], map: "idx_sptrack_explicit")
+  @@index([isrc], map: "idx_sptrack_isrc")
 }
 
 model sptrackartist {
@@ -218,8 +207,8 @@ model spplayhistory {
 }
 
 model spdailyplaystats {
-  id           Int       @id @default(autoincrement())
-  date         DateTime  @unique
+  id           Int      @id @default(autoincrement())
+  date         DateTime @unique
   weekday      String
   hourly_plays Json
 }
@@ -235,60 +224,55 @@ model yearbucket {
 }
 
 model monthbucket {
-  id           Int           @id @default(autoincrement())
-  month        Int           // 1–12
+  id           Int          @id @default(autoincrement())
+  month        Int
   range_start  DateTime
   range_end    DateTime
   yearbucketid Int
-  yearbucket   yearbucket    @relation(fields: [yearbucketid], references: [id])
+  yearbucket   yearbucket   @relation(fields: [yearbucketid], references: [id])
   weekbuckets  weekbucket[]
-  artiststats  artiststat[]  @relation("MonthArtistStats")
-  trackstats   trackstat[]   @relation("MonthTrackStats")
+  artiststats  artiststat[] @relation("MonthArtistStats")
+  trackstats   trackstat[]  @relation("MonthTrackStats")
 }
 
 model weekbucket {
-  id            Int           @id @default(autoincrement())
-  week          Int           // ISO week number
+  id            Int          @id @default(autoincrement())
+  week          Int
   range_start   DateTime
   range_end     DateTime
-
   monthbucketid Int
-  monthbucket   monthbucket   @relation(fields: [monthbucketid], references: [id])
-
-  daybuckets    daybucket[]   @relation("WeekToDayBuckets")
-
-  artiststats   artiststat[]  @relation("WeekArtistStats")
-  trackstats    trackstat[]   @relation("WeekTrackStats")
+  monthbucket   monthbucket  @relation(fields: [monthbucketid], references: [id])
+  daybuckets    daybucket[]  @relation("WeekToDayBuckets")
+  artiststats   artiststat[] @relation("WeekArtistStats")
+  trackstats    trackstat[]  @relation("WeekTrackStats")
 }
 
 model daybucket {
-  id           Int        @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   start_date   DateTime
-  bucket_scope String @default("day")
-
-  weekbucketid  Int?
-  weekbucket    weekbucket?   @relation("WeekToDayBuckets", fields: [weekbucketid], references: [id])
-
+  bucket_scope String       @default("day")
+  weekbucketid Int?
+  weekbucket   weekbucket?  @relation("WeekToDayBuckets", fields: [weekbucketid], references: [id])
   artiststats  artiststat[] @relation("DayArtistStats")
-  trackstats   trackstat[] @relation("DayTrackStats")
+  trackstats   trackstat[]  @relation("DayTrackStats")
 }
 
 model artiststat {
-  id            Int       @id @default(autoincrement())
+  id            Int          @id @default(autoincrement())
   artist_id     String
-  stat_date     DateTime
   count         Int
-  hourly_plays  Json?
-  bucket_scope  String  @default("day")
-  yearbucketid  Int?      
-  monthbucketid Int?      
+  yearbucketid  Int?
+  monthbucketid Int?
   weekbucketid  Int?
-  daybucketid   Int?      
-  artist        spartist  @relation(fields: [artist_id], references: [artist_id])
-  yearbucket    yearbucket?   @relation("YearArtistStats", fields: [yearbucketid], references: [id])
-  monthbucket   monthbucket?  @relation("MonthArtistStats", fields: [monthbucketid], references: [id])
-  weekbucket    weekbucket?   @relation("WeekArtistStats", fields: [weekbucketid], references: [id])
-  daybucket     daybucket? @relation("DayArtistStats", fields: [daybucketid], references: [id])
+  hourly_plays  Json?
+  stat_date     DateTime
+  daybucketid   Int?
+  bucket_scope  String       @default("day")
+  artist        spartist     @relation(fields: [artist_id], references: [artist_id])
+  yearbucket    yearbucket?  @relation("YearArtistStats", fields: [yearbucketid], references: [id])
+  monthbucket   monthbucket? @relation("MonthArtistStats", fields: [monthbucketid], references: [id])
+  weekbucket    weekbucket?  @relation("WeekArtistStats", fields: [weekbucketid], references: [id])
+  daybucket     daybucket?   @relation("DayArtistStats", fields: [daybucketid], references: [id])
 
   @@unique([artist_id, weekbucketid])
   @@unique([artist_id, monthbucketid])
@@ -297,24 +281,42 @@ model artiststat {
 }
 
 model trackstat {
-  id            Int       @id @default(autoincrement())
+  id            Int          @id @default(autoincrement())
   track_id      String
-  stat_date     DateTime
   count         Int
-  hourly_plays  Json?
-  bucket_scope  String  @default("day")
-  yearbucketid  Int?      
-  monthbucketid Int?      
+  yearbucketid  Int?
+  monthbucketid Int?
   weekbucketid  Int?
-  daybucketid   Int?      
-  track         sptrack   @relation(fields: [track_id], references: [track_id])
-  yearbucket    yearbucket?   @relation("YearTrackStats", fields: [yearbucketid], references: [id])
-  monthbucket   monthbucket?  @relation("MonthTrackStats", fields: [monthbucketid], references: [id])
-  weekbucket    weekbucket?   @relation("WeekTrackStats", fields: [weekbucketid], references: [id])
-  daybucket     daybucket?    @relation("DayTrackStats", fields: [daybucketid], references: [id])  
+  hourly_plays  Json?
+  stat_date     DateTime
+  daybucketid   Int?
+  bucket_scope  String       @default("day")
+  track         sptrack      @relation(fields: [track_id], references: [track_id])
+  yearbucket    yearbucket?  @relation("YearTrackStats", fields: [yearbucketid], references: [id])
+  monthbucket   monthbucket? @relation("MonthTrackStats", fields: [monthbucketid], references: [id])
+  weekbucket    weekbucket?  @relation("WeekTrackStats", fields: [weekbucketid], references: [id])
+  daybucket     daybucket?   @relation("DayTrackStats", fields: [daybucketid], references: [id])
 
   @@unique([track_id, weekbucketid])
   @@unique([track_id, monthbucketid])
   @@unique([track_id, yearbucketid])
-  @@unique([track_id, stat_date])  
+  @@unique([track_id, stat_date])
+}
+
+model PostCategories {
+  A Int
+  B Int
+
+  @@id([A, B], map: "_PostCategories_AB_pkey")
+  @@index([B], map: "_PostCategories_B_index")
+  @@map("_PostCategories")
+}
+
+model PostTags {
+  A Int
+  B Int
+
+  @@id([A, B], map: "_PostTags_AB_pkey")
+  @@index([B], map: "_PostTags_B_index")
+  @@map("_PostTags")
 }
