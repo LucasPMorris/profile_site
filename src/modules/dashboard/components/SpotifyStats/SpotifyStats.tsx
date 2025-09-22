@@ -10,7 +10,7 @@ import { ArtistProps, TrackProps } from '@/common/types/spotify';
 import TopTracks from './TopTracks';
 import Overview from './Overview';
 import DateRangeSelector from '@/common/components/elements/DateRangeSelector';
-import { daysInYear, format, startOfDay, startOfWeek } from 'date-fns';
+import { daysInYear, format, getISOWeek, getYear, startOfDay, startOfWeek } from 'date-fns';
 import Heatmap from './Heatmap';
 import clsx from 'clsx';
 import Card from '@/common/components/elements/Card';
@@ -31,7 +31,7 @@ const SpotifyStats = () => {
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('Fetched Spotify data:', {data});
+    console.log('Fetched Spotify data:', data?.data);
     if (data?.topArtists?.length && !selectedArtistId) { setSelectedArtistId(data.topArtists[0].artistId); }
     if (data?.topTracks?.length && !selectedTrackId) { setSelectedTrackId(data.topTracks[0].trackId); }
   }, [data, selectedArtistId, selectedTrackId]);
@@ -73,16 +73,27 @@ const SpotifyStats = () => {
     );
   }
 
-  const hourlyMap = new Map<string, number[]>();
+  const hourlyMap = new Map<string, Map<string, number[]>>();
 
   data.playFrequency?.forEach(({ date, hourly_plays }: HeatMapProps) => {
-    if (!Array.isArray(hourly_plays)) return; // Skip invalid entries
+    if (!Array.isArray(hourly_plays)) return;
     const parsedDate = new Date(date);
-    if (isNaN(parsedDate.getTime())) return; // Skip invalid dates
+    if (isNaN(parsedDate.getTime())) return;
+
+    const year = getYear(parsedDate);
+    const week = getISOWeek(parsedDate);
     const weekday = format(parsedDate, 'EEEE');
-    if (!hourlyMap.has(weekday)) hourlyMap.set(weekday, Array(24).fill(0));
-    const bucket = hourlyMap.get(weekday)!;
-    hourly_plays.forEach((count, hour) => { bucket[hour] += count; });
+    const weekKey = `${year}-W${week}`;
+
+    if (!hourlyMap.has(weekKey)) hourlyMap.set(weekKey, new Map());
+    const weekMap = hourlyMap.get(weekKey)!;
+
+    if (!weekMap.has(weekday)) weekMap.set(weekday, Array(24).fill(0));
+    const bucket = weekMap.get(weekday)!;
+
+    hourly_plays.forEach((count, hour) => {
+      bucket[hour] += count;
+    });
   });
 
   const weekdayMap = new Map<string, { start: Date; counts: (number | null)[] }>();
@@ -126,24 +137,37 @@ const SpotifyStats = () => {
 
   // Artist-specific heatmap data (only if we have artists)
   const selectedArtistPlays: HeatMapProps[] = data.artistHeatmaps.filter((p: HeatMapProps) => p.artistId === selectedArtistId);
-  const artistHourlyMap = new Map<string, number[]>();
+  const artistHourlyMap = new Map<string, Map<string, number[]>>();
   const artistWeekdayMap = new Map<string, { start: Date; counts: (number | null)[] }>();
   const artistMonthlyMap = new Map<string, (number | null)[]>();
 
   const selectedTrackPlays: HeatMapProps[] = data.trackHeatMaps.filter((p: HeatMapProps) => p.trackId === selectedTrackId);
-  const trackHourlyMap = new Map<string, number[]>();
+  const trackHourlyMap = new Map<string, Map<string, number[]>>();
   const trackWeekdayMap = new Map<string, { start: Date; counts: (number | null)[] }>();
   const trackMonthlyMap = new Map<string, (number | null)[]>();
 
-  selectedArtistPlays.forEach(({ date, weekday, hourly_plays }: HeatMapProps) => {
+  selectedArtistPlays.forEach(({ date, weekday, hourly_plays, artistId }: HeatMapProps) => {
+    if (!Array.isArray(hourly_plays)) return;
+
+    const d = startOfDay(new Date(date));
+    if (isNaN(d.getTime())) return;
+
     const totalPlays = hourly_plays.reduce((a, b) => a + b, 0);
 
-    // Hourly
-    if (!artistHourlyMap.has(weekday)) { artistHourlyMap.set(weekday, Array(24).fill(0)); }
-    hourly_plays.forEach((count, hour) => { artistHourlyMap.get(weekday)![hour] += count; });
+    // Hourly (week-aware)
+    const year = d.getFullYear();
+    const week = getISOWeek(d);
+    const weekKey = `${year}-W${week}`;
+
+    if (!artistHourlyMap.has(weekKey)) { artistHourlyMap.set(weekKey, new Map()); }
+    const weekMap = artistHourlyMap.get(weekKey)!;
+
+    if (!weekMap.has(weekday)) { weekMap.set(weekday, Array(24).fill(0)); }
+    const bucket = weekMap.get(weekday)!;
+
+    hourly_plays.forEach((count, hour) => { bucket[hour] += count; });
 
     // Weekly
-    const d = startOfDay(new Date(date));
     const weekStart = startOfWeek(d, { weekStartsOn: 0 });
     const label = `${format(weekStart, "MMM d ''yy")}`;
     const dayIndex = d.getDay();
@@ -152,21 +176,34 @@ const SpotifyStats = () => {
     artistWeekdayMap.get(label)!.counts[dayIndex] = (artistWeekdayMap.get(label)!.counts[dayIndex] ?? 0) + totalPlays;
 
     // Monthly
-    const year = d.getFullYear().toString();
+    const yearLabel = year.toString();
     const monthIndex = d.getMonth();
-    if (!artistMonthlyMap.has(year)) { artistMonthlyMap.set(year, Array(12).fill(null)); }
-    artistMonthlyMap.get(year)![monthIndex] = (artistMonthlyMap.get(year)![monthIndex] ?? 0) + totalPlays;
-  });
 
-  selectedTrackPlays.forEach(({ date, weekday, hourly_plays }: HeatMapProps) => {
+    if (!artistMonthlyMap.has(yearLabel)) { artistMonthlyMap.set(yearLabel, Array(12).fill(null)); }
+    artistMonthlyMap.get(yearLabel)![monthIndex] = (artistMonthlyMap.get(yearLabel)![monthIndex] ?? 0) + totalPlays; });
+
+  selectedTrackPlays.forEach(({ date, weekday, hourly_plays, trackId }: HeatMapProps) => {
+    if (!Array.isArray(hourly_plays)) return;
+
+    const d = startOfDay(new Date(date));
+    if (isNaN(d.getTime())) return;
+
     const totalPlays = hourly_plays.reduce((a, b) => a + b, 0);
 
-    // Hourly
-    if (!trackHourlyMap.has(weekday)) { trackHourlyMap.set(weekday, Array(24).fill(0)); }
-    hourly_plays.forEach((count, hour) => { trackHourlyMap.get(weekday)![hour] += count; });
+    // Hourly (week-aware)
+    const year = d.getFullYear();
+    const week = getISOWeek(d);
+    const weekKey = `${year}-W${week}`;
+
+    if (!trackHourlyMap.has(weekKey)) { trackHourlyMap.set(weekKey, new Map()); }
+    const weekMap = trackHourlyMap.get(weekKey)!;
+
+    if (!weekMap.has(weekday)) { weekMap.set(weekday, Array(24).fill(0)); }
+    const bucket = weekMap.get(weekday)!;
+
+    hourly_plays.forEach((count, hour) => { bucket[hour] += count; });
 
     // Weekly
-    const d = startOfDay(new Date(date));
     const weekStart = startOfWeek(d, { weekStartsOn: 0 });
     const label = `${format(weekStart, "MMM d ''yy")}`;
     const dayIndex = d.getDay();
@@ -175,10 +212,11 @@ const SpotifyStats = () => {
     trackWeekdayMap.get(label)!.counts[dayIndex] = (trackWeekdayMap.get(label)!.counts[dayIndex] ?? 0) + totalPlays;
 
     // Monthly
-    const year = d.getFullYear().toString();
+    const yearLabel = year.toString();
     const monthIndex = d.getMonth();
-    if (!trackMonthlyMap.has(year)) { trackMonthlyMap.set(year, Array(12).fill(null)); }
-    trackMonthlyMap.get(year)![monthIndex] = (trackMonthlyMap.get(year)![monthIndex] ?? 0) + totalPlays;
+
+    if (!trackMonthlyMap.has(yearLabel)) { trackMonthlyMap.set(yearLabel, Array(12).fill(null)); }
+    trackMonthlyMap.get(yearLabel)![monthIndex] = (trackMonthlyMap.get(yearLabel)![monthIndex] ?? 0) + totalPlays;
   });
 
   const totalDays = startDate && endDate ? Math.max(1, Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24))) : 1;

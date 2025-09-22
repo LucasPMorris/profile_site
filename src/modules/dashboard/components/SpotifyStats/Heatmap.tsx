@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React, { useId, useState } from 'react';
 import Card from '@/common/components/elements/Card';
 import { HeatmapDisplayProps } from '@/common/types/spotify';
-import { addDays, format } from 'date-fns';
+import { addDays, endOfWeek, format, setISOWeek, startOfWeek } from 'date-fns';
 import { motion } from 'framer-motion';
 
 const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapDisplayProps) => {
@@ -11,7 +11,8 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
   const pageSize = 10;
   const uniqueId = useId();
   
-  const maxHourlyCount = Math.max(...Array.from(hourlyMap.values()).flat());
+
+  const maxHourlyCount = Math.max(...Array.from(hourlyMap.entries()).flatMap(([_, weekMap]) => Array.from(weekMap.entries()).flatMap(([_, hourArray]) => hourArray)));
   const maxDailyCount = Math.max(...Array.from(weekdayMap.values()).flatMap(({ counts }) => counts.filter((count): count is number => count !== null)));
   const maxMonthlyCount = Math.max(...Array.from(monthlyMap.values()).flat().filter((count): count is number => count !== null));
 
@@ -42,7 +43,27 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
 
   const totalPages = Math.ceil(sortedWeeks.length / pageSize);
   const paginatedWeeks = sortedWeeks.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
+  const weekKeys = Array.from(hourlyMap.keys()).sort();
+  const [weekIndex, setWeekIndex] = useState(0);
+  const currentWeekKey = weekKeys[weekIndex];
+
+  const safeWeekKey = currentWeekKey ?? '';
+  const [yearStr, weekStr] = safeWeekKey.split('-W');
+  const year = parseInt(yearStr);
+  const week = parseInt(weekStr);
+
+  const currentWeekMap = hourlyMap.get(currentWeekKey) ?? new Map();
+  const currentYear = new Date().getFullYear();
+
+  let formattedWeekRange = '';
+  if (!isNaN(year) && !isNaN(week)) {
+    const baseDate = setISOWeek(new Date(`${year}-01-04`), week); // Jan 4 is always in week 1
+    const currentWeekStart = startOfWeek(baseDate, { weekStartsOn: 0 });
+    const currentWeekEnd = endOfWeek(baseDate, { weekStartsOn: 0 });
   
+    const formattedWeekRange = `${format(currentWeekStart, 'EEE M/d')} – ${format(currentWeekEnd, 'EEE M/d')}`;
+  }
+
   return (
     <motion.div layout initial={{ opacity: 0.8, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} 
         transition={{ type: 'tween', ease: 'easeOut', duration: 0.4 }} className='col-span-6 h-full'>
@@ -60,28 +81,42 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
         </div>
         <div className='flex justify-center'>
           {resolution === 'Hourly' && (
-            <div className='grid grid-cols-[29px_repeat(24,1fr)] gap-[2px]'>
-              <div></div>
-              {[...Array(24)].map((_, hour) => (
-                <div key={`hour-${hour}`} className='text-[12px] text-neutral-500 text-center'>
-                  {hour === 0 ? '12a' : hour < 12 ? `${hour}a` : hour === 12 ? '12p' : `${hour - 12}p`}
-                </div>
-              ))}
-              {sortedWeekdays.map(weekday => {
-                const hourly_plays = hourlyMap.get(weekday)!;
-                return (
-                  <React.Fragment key={weekday}>
-                    <div className='text-[12px] text-neutral-500 text-right pr-1'>{weekday.substring(0, 3)}</div>
-                    {hourly_plays.map((count, hour) => (
-                      <div
-                        key={`${weekday}-${hour}`}
-                        className={clsx('h-5 w-5 rounded-sm cursor-default', getIntensityClass(count))}
-                        title={`${weekday} ${hour}:00 : ${count} plays`}
-                      />
-                    ))}
-                  </React.Fragment>
-                );
-              })}
+            <div className='space-y-2'>
+              {/* Arrow Controls */}
+              <div className='flex items-center justify-between gap-4 mt-2'>
+                <button disabled={weekIndex === 0} onClick={() => setWeekIndex(i => Math.max(i - 1, 0))} className='px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 disabled:opacity-50'> ← Prev </button>
+                <div className='px-3 py-1 text-sm rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-medium'>{formattedWeekRange}</div>
+                <button disabled={weekIndex === weekKeys.length - 1} onClick={() => setWeekIndex(i => Math.min(i + 1, weekKeys.length - 1))} className='px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 disabled:opacity-50'> Next → </button>
+              </div>
+
+              {/* Hourly Grid */}
+              <div className='grid grid-cols-[29px_repeat(24,1fr)] gap-[2px]'>
+                <div></div>
+                {[...Array(24)].map((_, hour) => (
+                  <div key={`hour-${hour}`} className='text-[12px] text-neutral-500 text-center'>
+                    {hour === 0 ? '12a' : hour < 12 ? `${hour}a` : hour === 12 ? '12p' : `${hour - 12}p`}
+                  </div>
+                ))}
+
+                {['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map(weekday => {
+                  const hourly_plays = hourlyMap.get(weekKeys[weekIndex])?.get(weekday) ?? Array(24).fill(0);
+
+                  return (
+                    <React.Fragment key={weekday}>
+                      <div className='text-[12px] text-neutral-500 text-right pr-1'>
+                        {weekday.substring(0, 3)}
+                      </div>
+                      {hourly_plays.map((count, hour) => (
+                        <div
+                          key={`${weekday}-${hour}`}
+                          className={clsx('h-5 w-5 rounded-sm cursor-default', getIntensityClass(count))}
+                          title={`${weekday} ${hour}:00 : ${count} plays`}
+                        />
+                      ))}
+                    </React.Fragment>
+                  );
+                })}
+              </div>
             </div>
           )}
           {resolution === 'Daily' && (

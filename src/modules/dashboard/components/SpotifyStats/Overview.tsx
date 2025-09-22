@@ -4,7 +4,7 @@ import Heatmap from './Heatmap';
 
 interface OverviewProps {
   spotifyStats: any[];
-  hourlyMap: Map<string, number[]>;
+  hourlyMap: Map<string, Map<string, number[]>>;
   sortedWeekdays: string[];
   weekdayMap: Map<string, {start: Date, counts: (number | null)[]}>;
   monthlyMap: Map<string, (number | null)[]>;
@@ -13,14 +13,16 @@ interface OverviewProps {
 
 const Overview = ({ spotifyStats, hourlyMap, sortedWeekdays, weekdayMap, monthlyMap, maxPlays }: OverviewProps) => {
   const peakHour = Array.from(hourlyMap.values()).reduce((acc, dayPlays) => { 
-      dayPlays.forEach((plays, hour) => { acc[hour] = (acc[hour] || 0) + plays; });
+      Array.from(dayPlays.entries()).forEach(([hour, plays]) => { acc[Number(hour)] = (acc[Number(hour)] || 0) + plays; });
       return acc;
     }, Array(24).fill(0)).reduce((maxHour, plays, hour, arr) => plays > arr[maxHour] ? hour : maxHour, 0
     );
   
   const formatHour = (hour: number) => hour === 0 ? '12am' : hour < 12 ? `${hour}am` : hour === 12 ? '12pm' : `${hour - 12}pm`;
 
-  const totalHourlyPlays = Array.from(hourlyMap.values()).flat().reduce((a, b) => a + b, 0);
+  const totalHourlyPlays = Array.from(hourlyMap.values())
+    .flatMap(dayMap => Array.from(dayMap.values()).flat())
+    .reduce((a, b) => a + b, 0);
 
   return (
     <>
