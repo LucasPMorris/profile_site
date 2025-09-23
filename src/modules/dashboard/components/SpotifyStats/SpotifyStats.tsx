@@ -51,7 +51,7 @@ const SpotifyStats = () => {
     );
   }
   
-  if  (tempWork) {
+  if (tempWork) {
     return (
       <section className='flex flex-col gap-y-2'>
         <SectionHeading title='Spotify' icon={<SpotifyIcon className='mr-1' />} />
