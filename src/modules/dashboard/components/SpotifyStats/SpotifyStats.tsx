@@ -30,6 +30,7 @@ const SpotifyStats = () => {
   const data = response?.data;
   const [selectedArtistId, setSelectedArtistId] = useState<string | null>(null);
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
+  const tempWork = true;
 
   useEffect(() => {
     console.log('Fetched Spotify data:', data);
@@ -50,6 +51,20 @@ const SpotifyStats = () => {
     );
   }
   
+  if  (tempWork) {
+    return (
+      <section className='flex flex-col gap-y-2'>
+        <SectionHeading title='Spotify' icon={<SpotifyIcon className='mr-1' />} />
+        <SectionSubHeading>
+          <div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>
+            This feature is currently undergoing amazing transformations that will blow your mind! 🚀🎶
+            It may also be broken, non-performant, look funny, or contain bad data.
+          </div>
+        </SectionSubHeading>
+      </section>      
+    )
+  }
+
   if (!data || !Array.isArray(data.playFrequency)) {
     return (
       <section className='flex flex-col gap-y-2'>
