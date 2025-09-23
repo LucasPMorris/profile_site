@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import clsx from 'clsx';
+import useIsMobile from '@/common/hooks/useIsMobile';
 import { useEffect, useState } from 'react';
 const fallback = '/spotify-icon.svg';
 
@@ -7,6 +8,19 @@ interface TopTracksProps { spotifyStats: any[]; selectedTrackId: string | null; 
 
 const TopTracks = ({ spotifyStats, selectedTrackId, onTrackSelect }: TopTracksProps) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const isMobile = useIsMobile();
+  const [showArrows, setShowArrows] = useState(true);
+  
+  useEffect(() => {
+    if (!isMobile) return;
+    const handleScroll = () => {
+      // Fade out arrows after scrolling 80px (adjust as needed)
+      setShowArrows(window.scrollY < 80);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isMobile]);  
+  
   const tracks = spotifyStats[2].data;
   
   const fallback = '/spotify-icon.svg';
@@ -14,7 +28,7 @@ const TopTracks = ({ spotifyStats, selectedTrackId, onTrackSelect }: TopTracksPr
   const handleNextTrack = () => { setSelectedIndex((prev) => (prev + 1) % tracks.length); };
 
   useEffect(() => {
-    onTrackSelect(tracks[selectedIndex].trackId);
+    if(tracks && tracks.length > 0) onTrackSelect(tracks[selectedIndex].trackId);
   }, [selectedIndex]);
 
   return (
@@ -51,9 +65,9 @@ const TopTracks = ({ spotifyStats, selectedTrackId, onTrackSelect }: TopTracksPr
             })}
           </ul>
         </div>
-        <div className='absolute -bottom-8 left-1/2 transform -translate-x-1/2 z-1 flex gap-3'>
-          <button onClick={handlePrevTrack} className='relative w-24 h-10 flex items-center justify-center text-3xl bg-blue-700 text-neutral-300 rounded-md shadow overflow-hidden group hover:bg-blue-900 transition'> ← </button>
-          <button onClick={handleNextTrack} className='relative w-24 h-10 flex items-center justify-center text-3xl bg-blue-700 text-neutral-300 rounded-md shadow overflow-hidden group hover:bg-blue-900 transition' > → </button>
+        <div className={'absolute -bottom-8 left-1/2 transform -translate-x-1/2 z-1 flex gap-3' + (isMobile ? ' pointer-events-none' : '')} style={{ opacity: showArrows ? 1 : 0 }}>
+          <button onClick={handlePrevTrack} className='relative w-24 h-10 flex items-center justify-center text-3xl bg-blue-700 text-neutral-300 rounded-md shadow overflow-hidden group hover:bg-blue-900 transition pointer-events-auto'> ← </button>
+          <button onClick={handleNextTrack} className='relative w-24 h-10 flex items-center justify-center text-3xl bg-blue-700 text-neutral-300 rounded-md shadow overflow-hidden group hover:bg-blue-900 transition pointer-events-auto' > → </button>
         </div>
       </div>
     </div>

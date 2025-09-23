@@ -32,10 +32,10 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
       default: 'bg-neutral-200';
     }
     if (ratio === 0) return 'bg-neutral-200';
-    if (ratio < 0.2) return 'bg-rose-200';
-    if (ratio < 0.4) return 'bg-rose-400';
-    if (ratio < 0.6) return 'bg-rose-500';
-    if (ratio < 0.8) return 'bg-rose-700';
+    if (ratio < 0.2) return 'bg-rose-400';
+    if (ratio < 0.4) return 'bg-rose-600';
+    if (ratio < 0.6) return 'bg-rose-700';
+    if (ratio < 0.8) return 'bg-rose-800';
     return 'bg-rose-900';
   };
 
@@ -65,8 +65,7 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
   }
 
   return (
-    <motion.div layout initial={{ opacity: 0.8, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} 
-        transition={{ type: 'tween', ease: 'easeOut', duration: 0.4 }} className='col-span-6 h-full'>
+    <motion.div layout initial={{ opacity: 0.8, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'tween', ease: 'easeOut', duration: 0.4 }} className='col-span-6 h-full'>
       <Card className='col-span-6 h-full rounded-xl border border-neutral-400 bg-neutral-100 p-3 pb-2 dark:border-neutral-900 mb-4'>
         <div className='flex items-center justify-between mb-1'>
           <div className='text-sm dark:text-neutral-400'>Listening Times</div>
@@ -93,25 +92,16 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
               <div className='grid grid-cols-[29px_repeat(24,1fr)] gap-[2px]'>
                 <div></div>
                 {[...Array(24)].map((_, hour) => (
-                  <div key={`hour-${hour}`} className='text-[12px] text-neutral-500 text-center'>
-                    {hour === 0 ? '12a' : hour < 12 ? `${hour}a` : hour === 12 ? '12p' : `${hour - 12}p`}
-                  </div>
+                  <div key={`hour-${hour}`} className='text-[12px] text-neutral-500 text-center'>{hour === 0 ? '12a' : hour < 12 ? `${hour}a` : hour === 12 ? '12p' : `${hour - 12}p`}</div>
                 ))}
 
                 {['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map(weekday => {
                   const hourly_plays = hourlyMap.get(weekKeys[weekIndex])?.get(weekday) ?? Array(24).fill(0);
-
                   return (
                     <React.Fragment key={weekday}>
-                      <div className='text-[12px] text-neutral-500 text-right pr-1'>
-                        {weekday.substring(0, 3)}
-                      </div>
+                      <div className='text-[12px] text-neutral-500 text-right pr-1'>{weekday.substring(0, 3)}</div>
                       {hourly_plays.map((count, hour) => (
-                        <div
-                          key={`${weekday}-${hour}`}
-                          className={clsx('h-5 w-5 rounded-sm cursor-default', getIntensityClass(count))}
-                          title={`${weekday} ${hour}:00 : ${count} plays`}
-                        />
+                        <div key={`${weekday}-${hour}`} className={clsx('h-5 w-5 rounded-sm cursor-default', getIntensityClass(count))} title={`${weekday} ${hour}:00 : ${count} plays`} />
                       ))}
                     </React.Fragment>
                   );

@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
+import { usePlaygroundContext } from '../context/PlaygroundContext';
 import { LuPlay as PlayIcon, LuTrash2 as ClearIcon } from 'react-icons/lu';
 import { ImperativePanelHandle, Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
@@ -95,6 +96,12 @@ const CodePlayground = ({ id = undefined, mode = 'javascript',
 }: CodePlaygroundProps) => {
   const editorRef = useRef<ImperativePanelHandle>(null);
   const isMobile = useIsMobile();
+  const playgroundCtx = usePlaygroundContext();
+
+  useEffect(() => {
+    playgroundCtx?.setPlaygroundOpen(true);
+    return () => playgroundCtx?.setPlaygroundOpen(false);
+  }, []);
 
   const panelDirection = isMobile ? 'vertical' : 'horizontal';
 

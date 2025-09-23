@@ -9,10 +9,12 @@ import 'tailwindcss/tailwind.css';
 import 'aos/dist/aos.css';
 import '@/common/styles/globals.css';
 
+
 import CommandPalette from '@/common/components/elements/CommandPalette';
 import Layout from '@/common/components/layouts';
 import { CommandPaletteProvider } from '@/common/context/CommandPaletteContext';
 import { firaCode, jakartaSans, onestSans, soraSans } from '@/common/styles/fonts';
+import PlaygroundRootProvider from '@/modules/playground/context/PlaygroundRootProvider';
 
 import defaultSEOConfig from '../../next-seo.config';
 
@@ -39,15 +41,17 @@ const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
         `}
       </style>
       <DefaultSeo {...defaultSEOConfig} />
-        <ThemeProvider attribute='class' defaultTheme='dark'>
-          <CommandPaletteProvider>
+      <ThemeProvider attribute='class' defaultTheme='dark'>
+        <CommandPaletteProvider>
+          <PlaygroundRootProvider>
             <Layout>
               <CommandPalette />
               <ProgressBar />
               <Component {...pageProps} />
             </Layout>
-          </CommandPaletteProvider>
-        </ThemeProvider>
+          </PlaygroundRootProvider>
+        </CommandPaletteProvider>
+      </ThemeProvider>
     </>
   );
 };

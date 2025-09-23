@@ -22,7 +22,6 @@
 
 #Old or Cleanup Folder
 /.archivedStuff
-/tools
 
 # misc
 .DS_Store
@@ -30,6 +29,7 @@
 
 # special Luke files
 /tools
+/tools/*
 
 # debug
 npm-debug.log*

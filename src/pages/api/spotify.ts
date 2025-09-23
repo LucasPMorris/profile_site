@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSpotifyStatsByDateRange } from '@/services/spotify';
 import { SpotifyDataProps } from '@/common/types/spotify';
+import ConsoleOutput from '@/modules/playground/components/ConsoleOutput';
 
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_DURATION = 5 * 60 * 1000;
@@ -40,9 +41,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const data = await getSpotifyStatsByDateRange(new Date(start as string), new Date(end as string));
     const duration = Date.now() - startTime;
     console.log(`Spotify stats fetched in ${duration}ms`);
-
-    const unwrappedData = data.data;
-    return res.status(200).json(unwrappedData); // This little AI addition really messed me up!
+    // console.log('Data:', data);
+    // const unwrappedData = data.data;            // This little AI addition really messed me up!
+    return res.status(200).json(data);
     
   } catch (error) {
     console.error('Error in Spotify API:', error);

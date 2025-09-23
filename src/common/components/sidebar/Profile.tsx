@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { MenuContext } from '@/common/context/MenuContext';
 import useIsMobile from '@/common/hooks/useIsMobile';
+import { usePlaygroundContext } from '@/modules/playground/context/PlaygroundContext';
 
 import MobileMenu from './MobileMenu';
 import MobileMenuButton from './MobileMenuButton';
@@ -15,6 +16,7 @@ interface ProfileProps { isScrolled?: boolean; }
 
 const Profile = ({ isScrolled = false }: ProfileProps) => {
   const isMobile = useIsMobile();
+  const playgroundCtx = usePlaygroundContext?.() ?? { playgroundOpen: false };
 
   const getImageSize = () => {
     var size = isMobile ? 40 : 80;
@@ -37,7 +39,9 @@ const Profile = ({ isScrolled = false }: ProfileProps) => {
     <MenuContext.Provider value={{ hideNavbar }}>
       <div className={clsx('fixed z-20 w-full bg-light p-5 shadow-sm dark:border-b dark:border-neutral-800 dark:bg-neutral-800 sm:shadow-none lg:relative lg:border-none lg:!bg-transparent lg:p-0', expandMenu && 'pb-0' ) }>
         <div className='flex items-start justify-between lg:flex-col lg:space-y-4'>
-          <ProfileHeader expandMenu={expandMenu} imageSize={getImageSize()} />
+          {!(isMobile && playgroundCtx.playgroundOpen) && (
+            <ProfileHeader expandMenu={expandMenu} imageSize={getImageSize()} />
+          )}
 
           {isMobile && (
             <div className={clsx('mt-2 flex items-center gap-5 lg:hidden', expandMenu && 'h-[120px] flex-col-reverse !items-end justify-between pb-1')}>

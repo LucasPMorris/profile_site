@@ -26,12 +26,13 @@ const SpotifyStats = () => {
   const [startDate, setStartDate] = useState(() => { const d = new Date(); d.setDate(d.getDate() - 30); return d.toISOString().split('T')[0]; });
   const [endDate, setEndDate] = useState(() => { const d = new Date(); return d.toISOString().split('T')[0]; });
   const swrKey = `/api/spotify?start=${startDate}&end=${endDate}`;
-  const { data, error } = useSWR(swrKey, fetcher);
+  const { data: response, error } = useSWR(swrKey, fetcher);
+  const data = response?.data;
   const [selectedArtistId, setSelectedArtistId] = useState<string | null>(null);
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('Fetched Spotify data:', data?.data);
+    console.log('Fetched Spotify data:', data);
     if (data?.topArtists?.length && !selectedArtistId) { setSelectedArtistId(data.topArtists[0].artistId); }
     if (data?.topTracks?.length && !selectedTrackId) { setSelectedTrackId(data.topTracks[0].trackId); }
   }, [data, selectedArtistId, selectedTrackId]);
@@ -288,7 +289,7 @@ const SpotifyStats = () => {
       )}
       
       {/* Show message if no artists at all */}
-      {(!data.topArtists || data.topArtists.length === 0) && ( <div className='p-4 text-center text-neutral-500 bg-neutral-100 rounded-lg'> No top artists data available. Check your Spotify data ingestion. </div> )}
+      {(!data.topArtists || data.topArtists.length === 0) && ( <div className='p-4 text-center text-neutral-500 bg-neutral-100 rounded-lg'> Top Artists data is currently not avaibl. </div> )}
 
       {/* Top Track Section */}
       <TopTracks spotifyStats={spotifyStats} selectedTrackId={selectedTrackId} onTrackSelect={setSelectedTrackId} />
@@ -315,7 +316,7 @@ const SpotifyStats = () => {
       )}
 
       {/* Show message if no tracks at all */}
-      {(!data.topTracks || data.topTracks.length === 0) && ( <div className='p-4 text-center text-neutral-500 bg-neutral-100 rounded-lg'> No top track data available for time frame selected. </div> )}
+      {(!data.topTracks || data.topTracks.length === 0) && ( <div className='p-4 text-center text-neutral-500 bg-neutral-100 rounded-lg'> Top track data available at this time. </div> )}
     </section>
   );
 };

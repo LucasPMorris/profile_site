@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import prisma from '../common/libs/prisma.ts';
 import { getArtistsByIds, getRecentlyPlayedFromSpotify } from './spotify.ts'; // your wrapper for the API call
+import { Prisma } from '@prisma/client';
 import { RawRecentlyPlayedResponse } from '../common/types/spotify.ts';
 import { getISOWeek } from 'date-fns';
 
@@ -447,108 +448,117 @@ async function updateArtistImages(artistIds: string[]) {
 
   await Promise.all(updates);
 }
-// export const updateBucketedStats = async (): Promise<void> => {
-//   const startDate = new Date('2017-07-23'); // First Sunday before first play
-//   const endDate = new Date(); // Today
+export const updateBucketedStats = async (): Promise<void> => {
+  const logPath = path.join(process.cwd(), 'ingestion.log');
+  const logStream = fs.createWriteStream(logPath, { flags: 'a' });
 
-//   let current = new Date(startDate);
+  function log(message: string) {
+    const timestamp = new Date().toISOString();
+    logStream.write(`[${timestamp}] ${message}\n`);
+    console.log(message); // still echo to stdout
+  }
 
-//   while (current <= endDate) {
-//     const year = current.getUTCFullYear();
-//     const month = current.getUTCMonth() + 1;
+  const startDate = new Date('2017-07-23'); // First Sunday before first play
+  const endDate = new Date(); // Today
 
-//     const monthStart = new Date(Date.UTC(year, month - 1, 1));
-//     const monthEnd = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+  let current = new Date(startDate);
 
-//     console.log(`📆 Processing ${year}-${month.toString().padStart(2, '0')}`);
+  while (current <= endDate) {
+    const year = current.getUTCFullYear();
+    const month = current.getUTCMonth() + 1;
 
-//     const plays = await prisma.spplayhistory.findMany({
-//       where: { played_at: { gte: monthStart, lte: monthEnd } },
-//       include: { track: { include: { track_artists: true } } }
-//     });
+    const monthStart = new Date(Date.UTC(year, month - 1, 1));
+    const monthEnd = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
 
-//     if (plays.length === 0) {
-//       console.log(`🟡 No plays found for ${year}-${month}, skipping.`);
-//       await sleep(10000);
-//       current.setUTCMonth(current.getUTCMonth() + 1);
-//       continue;
-//     }
+    log(`📆 Processing ${year}-${month.toString().padStart(2, '0')}`);
 
-//     const buckets = {
-//       year: new Map(),
-//       month: new Map(),
-//       week: new Map()
-//     };
+    const plays = await prisma.spplayhistory.findMany({
+      where: { played_at: { gte: monthStart, lte: monthEnd } },
+      include: { track: { include: { track_artists: true } } }
+    });
 
-//     for (const play of plays) {
-//       const date = new Date(play.played_at);
-//       const y = date.getUTCFullYear();
-//       const m = date.getUTCMonth() + 1;
-//       const w = getISOWeek(date);
+    if (plays.length === 0) {
+      log(`🟡 No plays found for ${year}-${month}, skipping.`);
+      await sleep(10000);
+      current.setUTCMonth(current.getUTCMonth() + 1);
+      continue;
+    }
 
-//       const yearKey = `${y}`;
-//       const monthKey = `${y}-${m}`;
-//       const weekKey = `${y}-W${w}`;
+    const buckets = {
+      year: new Map(),
+      month: new Map(),
+      week: new Map()
+    };
 
-//       const trackId = play.track_id;
-//       const artistIds = play.track.track_artists.map(a => a.artist_id);
+    for (const play of plays) {
+      const date = new Date(play.played_at);
+      const y = date.getUTCFullYear();
+      const m = date.getUTCMonth() + 1;
+      const w = getISOWeek(date);
 
-//       for (const scope of ['year', 'month', 'week'] as const) {
-//         const key = scope === 'year' ? yearKey : scope === 'month' ? monthKey : weekKey;
-//         const bucket = buckets[scope];
-//         if (!bucket.has(key)) {
-//           bucket.set(key, { tracks: new Map(), artists: new Map() });
-//         }
+      const yearKey = `${y}`;
+      const monthKey = `${y}-${m}`;
+      const weekKey = `${y}-W${w}`;
 
-//         const stats = bucket.get(key)!;
-//         stats.tracks.set(trackId, (stats.tracks.get(trackId) ?? 0) + 1);
-//         for (const artistId of artistIds) {
-//           stats.artists.set(artistId, (stats.artists.get(artistId) ?? 0) + 1);
-//         }
-//       }
-//     }
+      const trackId = play.track_id;
+      const artistIds = play.track.track_artists.map(a => a.artist_id);
 
-//     for (const scope of ['year', 'month', 'week'] as const) {
-//       const bucketMap = buckets[scope];
-//       for (const [key, { tracks, artists }] of bucketMap.entries()) {
-//         const [y, mOrW] = key.includes('W') ? key.split('-W') : key.split('-');
-//         const yInt = parseInt(y);
-//         const mInt = scope === 'month' || scope === 'week' ? parseInt(mOrW) : undefined;
-//         const wInt = scope === 'week' ? parseInt(mOrW) : undefined;
+      for (const scope of ['year', 'month', 'week'] as const) {
+        const key = scope === 'year' ? yearKey : scope === 'month' ? monthKey : weekKey;
+        const bucket = buckets[scope];
+        if (!bucket.has(key)) {
+          bucket.set(key, { tracks: new Map(), artists: new Map() });
+        }
 
-//         const yearBucket = await prisma.yearbucket.findFirst({ where: { year: yInt } });
-//         const monthBucket = scope !== 'year'
-//           ? await prisma.monthbucket.findFirst({ where: { yearbucketid: yearBucket?.id, month: mInt } })
-//           : undefined;
-//         const weekBucket = scope === 'week'
-//           ? await prisma.weekbucket.findFirst({ where: { monthbucketid: monthBucket?.id, week: wInt } })
-//           : undefined;
+        const stats = bucket.get(key)!;
+        stats.tracks.set(trackId, (stats.tracks.get(trackId) ?? 0) + 1);
+        for (const artistId of artistIds) {
+          stats.artists.set(artistId, (stats.artists.get(artistId) ?? 0) + 1);
+        }
+      }
+    }
 
-//         const trackChunks: Prisma.trackstatCreateManyInput[][] =  chunk(Array.from(tracks.entries() as Iterable<[string, number]>).map(([track_id, count]: [string, number]) => (
-//           { track_id, count, bucket_scope: scope, yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id } )), 200 );
+    for (const scope of ['year', 'month', 'week'] as const) {
+      const bucketMap = buckets[scope];
+      for (const [key, { tracks, artists }] of bucketMap.entries()) {
+        const [y, mOrW] = key.includes('W') ? key.split('-W') : key.split('-');
+        const yInt = parseInt(y);
+        const mInt = scope === 'month' || scope === 'week' ? parseInt(mOrW) : undefined;
+        const wInt = scope === 'week' ? parseInt(mOrW) : undefined;
 
-//         const artistChunks: Prisma.artiststatCreateManyInput[][] =  chunk(Array.from(artists.entries() as Iterable<[string, number]>).map(([artist_id, count]: [string, number]) => (
-//             { artist_id, count, bucket_scope: scope, yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id } )), 200 );
+        const yearBucket = await prisma.yearbucket.findFirst({ where: { year: yInt } });
+        const monthBucket = scope !== 'year'
+          ? await prisma.monthbucket.findFirst({ where: { yearbucketid: yearBucket?.id, month: mInt } })
+          : undefined;
+        const weekBucket = scope === 'week'
+          ? await prisma.weekbucket.findFirst({ where: { monthbucketid: monthBucket?.id, week: wInt } })
+          : undefined;
 
-//         for (let i = 0; i < trackChunks.length; i++) {
-//           await prisma.trackstat.createMany({ data: trackChunks[i], skipDuplicates: true });
-//           console.log(`✅ ${key} track chunk ${i + 1} of ${trackChunks.length} inserted`);
-//         }
+        const trackChunks: Prisma.trackstatCreateManyInput[][] =  chunk(Array.from(tracks.entries() as Iterable<[string, number]>).map(([track_id, count]: [string, number]) => (
+          { track_id, count, bucket_scope: scope, yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id, stat_date: new Date() } )), 200 );
 
-//         for (let i = 0; i < artistChunks.length; i++) {
-//           await prisma.artiststat.createMany({ data: artistChunks[i], skipDuplicates: true });
-//           console.log(`✅ ${key} artist chunk ${i + 1} of ${artistChunks.length} inserted`);
-//         }
-//       }
-//     }
+        const artistChunks: Prisma.artiststatCreateManyInput[][] =  chunk(Array.from(artists.entries() as Iterable<[string, number]>).map(([artist_id, count]: [string, number]) => (
+            { artist_id, count, bucket_scope: scope, yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id, stat_date: new Date() } )), 200 );
 
-//     await sleep(10000);
-//     console.log(`🎧 Found ${plays.length} plays for ${year}-${month}`);
-//     current.setUTCMonth(current.getUTCMonth() + 1);
-//   }
+        for (let i = 0; i < trackChunks.length; i++) {
+          await prisma.trackstat.createMany({ data: trackChunks[i], skipDuplicates: true });
+          log(`✅ ${key} track chunk ${i + 1} of ${trackChunks.length} inserted`);
+        }
 
-//   console.log('🎉 Bucketed stats update complete');
-// };
+        for (let i = 0; i < artistChunks.length; i++) {
+          await prisma.artiststat.createMany({ data: artistChunks[i], skipDuplicates: true });
+          log(`✅ ${key} artist chunk ${i + 1} of ${artistChunks.length} inserted`);
+        }
+      }
+    }
+
+    await sleep(10000);
+    log(`🎧 Found ${plays.length} plays for ${year}-${month}`);
+    current.setUTCMonth(current.getUTCMonth() + 1);
+  }
+
+  log('🎉 Bucketed stats update complete');
+};
 
 // export const backFillNoPlayDays = async (): Promise<void> => {
 //   const firstPlay = await prisma.spplayhistory.findFirst({ orderBy: { played_at: 'asc' }, select: { played_at: true } });
@@ -610,6 +620,6 @@ async function updateArtistImages(artistIds: string[]) {
 //   }
 // };
 
-// function sleep(ms: number) {
-//   return new Promise(resolve => setTimeout(resolve, ms));
-// }
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
