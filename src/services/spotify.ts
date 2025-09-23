@@ -106,7 +106,7 @@ export const getRecentlyPlayedFromSpotify = async (): Promise<RawRecentlyPlayedR
 };
 
 type Bucket = { id: number; range_start: Date; range_end: Date };
-type BucketSelection = { year: number[]; month: number[]; week: number[]; day: Date[]; };
+type BucketSelection = { year: number[]; month: number[]; day: Date[]; };
 
 /**
  * Returns the minimal set of bucket IDs to cover the date range.
@@ -116,10 +116,9 @@ function selectMinimalBuckets(
   endDate: Date,
   yearBuckets: Bucket[],
   monthBuckets: Bucket[],
-  weekBuckets: Bucket[],
   dayBuckets: { id: number; start_date: Date }[]
 ) {
-  const selected: { year: number[]; month: number[]; week: number[]; day: (number | Date)[] } = { year: [], month: [], week: [], day: [] };
+  const selected: { year: number[]; month: number[]; day: (number | Date)[] } = { year: [], month: [], day: [] };
 
   // 1. Build set of all dates to cover
   const dateSet = new Set<string>();
@@ -156,15 +155,7 @@ function selectMinimalBuckets(
       dates.forEach(date => dateSet.delete(date));
     }
   }
-  // 4. Try week buckets
-  for (const b of weekBuckets) {
-    const dates = getDatesInRange(b.range_start, b.range_end);
-    if (dates.every(date => dateSet.has(date))) {
-      selected.week.push(b.id);
-      dates.forEach(date => dateSet.delete(date));
-    }
-  }
-  // 5. Remaining days
+  // 4. Remaining days
   for (const b of dayBuckets) {
     const date = b.start_date.toISOString().slice(0, 10);
     if (dateSet.has(date)) {
@@ -184,11 +175,10 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
 
 
     // Fetch all required data in parallel to reduce latency
-    const [dailyStats, yearBuckets, monthBuckets, weekBuckets] = await Promise.all([
+    const [dailyStats, yearBuckets, monthBuckets] = await Promise.all([
       prisma.spdailyplaystats.findMany({ where: { date: { gte: startDate, lte: endDate } } }),
       prisma.yearbucket.findMany({ where: { range_start: { lte: endDate }, range_end: { gte: startDate } } }),
-      prisma.monthbucket.findMany({ where: { range_start: { lte: endDate }, range_end: { gte: startDate } } }),
-      prisma.weekbucket.findMany({ where: { range_start: { lte: endDate }, range_end: { gte: startDate } } })
+      prisma.monthbucket.findMany({ where: { range_start: { lte: endDate }, range_end: { gte: startDate } } })
     ]);
 
     console.log(`${new Date().toISOString()}: getSpotifyStatsByDateRange ||||| DATA FETCHED |||| Dates: `, startDate, endDate, ' Time Ellapsed:', new Date().getTime() - new Date(startTime).getTime(), 'ms');
@@ -208,8 +198,7 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
 
     const bucketLookup = {
       year: Object.fromEntries(yearBuckets.map(b => [b.id, b.range_start])),
-      month: Object.fromEntries(monthBuckets.map(b => [b.id, b.range_start])),
-      week: Object.fromEntries(weekBuckets.map(b => [b.id, b.range_start]))
+      month: Object.fromEntries(monthBuckets.map(b => [b.id, b.range_start]))
     };
 
     const coveredDates = new Set<string>();
@@ -223,9 +212,8 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
         }
       }
     };
-    addCoveredDates(yearBuckets);
-    addCoveredDates(monthBuckets);
-    addCoveredDates(weekBuckets);
+  addCoveredDates(yearBuckets);
+  addCoveredDates(monthBuckets);
 
     const edgeDays: Date[] = [];
     let d = new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate()));
@@ -244,12 +232,11 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
     //
     ////// ------------ PERFROMANCE NOTES ------------ //////
 
-    const bucketsToFetch = selectMinimalBuckets( startDate, endDate, yearBuckets, monthBuckets, weekBuckets, edgeDays.map((date, index) => ({ id: index, start_date: date })) );
+  const bucketsToFetch = selectMinimalBuckets( startDate, endDate, yearBuckets, monthBuckets, edgeDays.map((date, index) => ({ id: index, start_date: date })) );
 
     const bucketQueries = [
       ...bucketsToFetch.year.map((id) => ({ bucket_scope: 'year', yearbucketid: id })),
       ...bucketsToFetch.month.map((id) => ({ bucket_scope: 'month', monthbucketid: id })),
-      ...bucketsToFetch.week.map((id) => ({ bucket_scope: 'week', weekbucketid: id })),
       ...bucketsToFetch.day.map((date) => ({ bucket_scope: 'day', stat_date: date instanceof Date ? date.toISOString() : new Date(date).toISOString() }))
     ];
 
@@ -293,7 +280,6 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
     const resolveBucketDate = (stat: any): Date | null => {
       if (stat.bucket_scope === 'year') return bucketLookup.year[stat.yearbucketid ?? -1];
       if (stat.bucket_scope === 'month') return bucketLookup.month[stat.monthbucketid ?? -1];
-      if (stat.bucket_scope === 'week') return bucketLookup.week[stat.weekbucketid ?? -1];
       if (stat.bucket_scope === 'day') return stat.stat_date ?? null;
       return null;
     };

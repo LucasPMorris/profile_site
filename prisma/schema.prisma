@@ -141,7 +141,6 @@ model spalbum {
 model spalbumartist {
   album_id  String
   artist_id String
-
   album     spalbum  @relation(fields: [album_id], references: [album_id], onDelete: Cascade)
   artist    spartist @relation(fields: [artist_id], references: [artist_id], onDelete: Cascade)
 
@@ -149,7 +148,6 @@ model spalbumartist {
   @@index([album_id, artist_id], map: "idx_spalbumartist_album_artist")
   @@index([artist_id], map: "idx_spalbumartist_artist_id")
 }
-
 
 model sptrack {
   track_id        String          @id
@@ -178,32 +176,24 @@ model sptrack {
 model sptrackartist {
   track_id  String
   artist_id String
-
-  // Relations
   track     sptrack  @relation(fields: [track_id], references: [track_id])
   artist    spartist @relation(fields: [artist_id], references: [artist_id])
 
   @@id([track_id, artist_id], name: "track_id_artist_id")
-  @@index([track_id, artist_id], name: "idx_sptrackartist_track_artist")
-  @@index([artist_id], name: "idx_sptrackartist_artist_id")
+  @@index([track_id, artist_id], map: "idx_sptrackartist_track_artist")
+  @@index([artist_id], map: "idx_sptrackartist_artist_id")
 }
 
 model spplayhistory {
-  id         Int      @id @default(autoincrement())
   track_id   String
   played_at  DateTime
   created_at DateTime @default(now())
-
-  // Relations
+  id         Int      @id @default(autoincrement())
   track      sptrack  @relation(fields: [track_id], references: [track_id])
 
-  // Composite unique constraint
   @@unique([track_id, played_at], name: "track_id_played_at")
-  
-  // Performance Indexes  
-  @@index([played_at(sort: Desc), track_id], name: "idx_spplayhistory_played_at_track_id")
-  @@index([played_at], name: "idx_spplayhistory_played_at")
-  @@index([track_id], name: "idx_spplayhistory_track_id")
+  @@index([played_at(sort: Desc), track_id], map: "idx_spplayhistory_played_at_track_id")
+  @@index([played_at], map: "idx_spplayhistory_played_at")
 }
 
 model spdailyplaystats {
@@ -221,6 +211,8 @@ model yearbucket {
   monthbuckets monthbucket[]
   artiststats  artiststat[]  @relation("YearArtistStats")
   trackstats   trackstat[]   @relation("YearTrackStats")
+
+  @@index([year], map: "idx_yearbucket_year")
 }
 
 model monthbucket {
@@ -229,32 +221,29 @@ model monthbucket {
   range_start  DateTime
   range_end    DateTime
   yearbucketid Int
+  daybuckets   daybucket[]
   yearbucket   yearbucket   @relation(fields: [yearbucketid], references: [id])
-  weekbuckets  weekbucket[]
   artiststats  artiststat[] @relation("MonthArtistStats")
   trackstats   trackstat[]  @relation("MonthTrackStats")
-}
 
-model weekbucket {
-  id            Int          @id @default(autoincrement())
-  week          Int
-  range_start   DateTime
-  range_end     DateTime
-  monthbucketid Int
-  monthbucket   monthbucket  @relation(fields: [monthbucketid], references: [id])
-  daybuckets    daybucket[]  @relation("WeekToDayBuckets")
-  artiststats   artiststat[] @relation("WeekArtistStats")
-  trackstats    trackstat[]  @relation("WeekTrackStats")
+  @@index([range_end], map: "idx_monthbucket_range_end")
+  @@index([range_start], map: "idx_monthbucket_range_start")
+  @@index([yearbucketid], map: "idx_monthbucket_yearbucketid")
 }
 
 model daybucket {
-  id           Int          @id @default(autoincrement())
-  start_date   DateTime
-  bucket_scope String       @default("day")
-  weekbucketid Int?
-  weekbucket   weekbucket?  @relation("WeekToDayBuckets", fields: [weekbucketid], references: [id])
-  artiststats  artiststat[] @relation("DayArtistStats")
-  trackstats   trackstat[]  @relation("DayTrackStats")
+  id            Int          @id @default(autoincrement())
+  start_date    DateTime
+  bucket_scope  String       @default("day")
+  monthbucketid Int
+  monthbucket   monthbucket  @relation(fields: [monthbucketid], references: [id])
+  artiststats   artiststat[] @relation("DayArtistStats")
+  trackstats    trackstat[]  @relation("DayTrackStats")
+
+  @@index([monthbucketid])
+  @@index([start_date])
+  @@index([monthbucketid], map: "idx_daybucket_monthbucketid")
+  @@index([start_date], map: "idx_daybucket_start_date")
 }
 
 model artiststat {
@@ -263,7 +252,6 @@ model artiststat {
   count         Int
   yearbucketid  Int?
   monthbucketid Int?
-  weekbucketid  Int?
   hourly_plays  Json?
   stat_date     DateTime
   daybucketid   Int?
@@ -271,13 +259,19 @@ model artiststat {
   artist        spartist     @relation(fields: [artist_id], references: [artist_id])
   yearbucket    yearbucket?  @relation("YearArtistStats", fields: [yearbucketid], references: [id])
   monthbucket   monthbucket? @relation("MonthArtistStats", fields: [monthbucketid], references: [id])
-  weekbucket    weekbucket?  @relation("WeekArtistStats", fields: [weekbucketid], references: [id])
   daybucket     daybucket?   @relation("DayArtistStats", fields: [daybucketid], references: [id])
 
-  @@unique([artist_id, weekbucketid])
   @@unique([artist_id, monthbucketid])
   @@unique([artist_id, yearbucketid])
   @@unique([artist_id, stat_date])
+  @@index([artist_id, stat_date])
+  @@index([monthbucketid])
+  @@index([yearbucketid])
+  @@index([daybucketid])
+  @@index([artist_id, stat_date], map: "idx_artiststat_artist_id_stat_date")
+  @@index([daybucketid], map: "idx_artiststat_daybucketid")
+  @@index([monthbucketid], map: "idx_artiststat_monthbucketid")
+  @@index([yearbucketid], map: "idx_artiststat_yearbucketid")
 }
 
 model trackstat {
@@ -286,7 +280,6 @@ model trackstat {
   count         Int
   yearbucketid  Int?
   monthbucketid Int?
-  weekbucketid  Int?
   hourly_plays  Json?
   stat_date     DateTime
   daybucketid   Int?
@@ -294,13 +287,19 @@ model trackstat {
   track         sptrack      @relation(fields: [track_id], references: [track_id])
   yearbucket    yearbucket?  @relation("YearTrackStats", fields: [yearbucketid], references: [id])
   monthbucket   monthbucket? @relation("MonthTrackStats", fields: [monthbucketid], references: [id])
-  weekbucket    weekbucket?  @relation("WeekTrackStats", fields: [weekbucketid], references: [id])
   daybucket     daybucket?   @relation("DayTrackStats", fields: [daybucketid], references: [id])
 
-  @@unique([track_id, weekbucketid])
   @@unique([track_id, monthbucketid])
   @@unique([track_id, yearbucketid])
   @@unique([track_id, stat_date])
+  @@index([track_id, stat_date])
+  @@index([monthbucketid])
+  @@index([yearbucketid])
+  @@index([daybucketid])
+  @@index([daybucketid], map: "idx_trackstat_daybucketid")
+  @@index([monthbucketid], map: "idx_trackstat_monthbucketid")
+  @@index([track_id, stat_date], map: "idx_trackstat_track_id_stat_date")
+  @@index([yearbucketid], map: "idx_trackstat_yearbucketid")
 }
 
 model PostCategories {
