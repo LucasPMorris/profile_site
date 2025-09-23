@@ -7,8 +7,6 @@ import { PAIR_DEVICES } from '../../src/common/constant/devices';
 import { HeatmapFrequencies, SpotifyDataResponseProps, AccessTokenResponseProps, DeviceDataProps, DeviceResponseProps, NowPlayingResponseProps, SongProps, RawRecentlyPlayedResponse } from '../../src/common/types/spotify';
 import prisma from '../../src/common/libs/prisma';
 import { format } from 'date-fns';
-import { write } from 'fs';
-import { writeOutJSONToFile } from 'tools/localHelperFiles';
 
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
@@ -260,9 +258,7 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
       prisma.trackstat.findMany({ where: { OR: bucketQueries }, include: { track: { include: { album: true, common_album: true, track_artists: { include: { artist: true } } } } } })
     ]);
     console.log('artistStats:', artistStats.length, artistStats[0]);
-    writeOutJSONToFile(artistStats, 'artistStats.json');
-    writeOutJSONToFile(trackStats, 'trackStats.json');
-    writeOutJSONToFile(bucketQueries, 'bucketQueries.json');
+    
     // const [artistStats, trackStats] = await Promise.all([
     //   prisma.artiststat.findMany({
     //     where: { OR: [
