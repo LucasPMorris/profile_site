@@ -298,17 +298,7 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
     const normalizedArtistStats = artistStats.map(stat => ({ ...stat, bucket_date: resolveBucketDate(stat) }));
     const normalizedTrackStats = trackStats.map(stat => ({ ...stat, bucket_date: resolveBucketDate(stat) }));
 
-    // Log type and value of bucket_date for first few normalized stats (uncomment for debugging)
-    // for (let i = 0; i < Math.min(3, normalizedArtistStats.length); i++) {
-    //   const stat = normalizedArtistStats[i];
-    //   console.log(`DEBUG normalizedArtistStats[${i}].bucket_date:`, stat.bucket_date, typeof stat.bucket_date, stat);
-    // }
-    // for (let i = 0; i < Math.min(3, normalizedTrackStats.length); i++) {
-    //   const stat = normalizedTrackStats[i];
-    //   console.log(`DEBUG normalizedTrackStats[${i}].bucket_date:`, stat.bucket_date, typeof stat.bucket_date, stat);
-    // }
-
-  const filteredArtistStats = normalizedArtistStats.filter(stat => {
+    const filteredArtistStats = normalizedArtistStats.filter(stat => {
       if (!stat.bucket_date) return false;
       // For year/month buckets, include if bucket range overlaps requested range
       if (stat.bucket_scope === 'year' && stat.yearbucketid) {
@@ -324,7 +314,7 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
       return date >= startDate && date <= endDate;
     });
 
-  const filteredTrackStats = normalizedTrackStats.filter(stat => {
+    const filteredTrackStats = normalizedTrackStats.filter(stat => {
       if (!stat.bucket_date) return false;
       if (stat.bucket_scope === 'year' && stat.yearbucketid) {
         const bucket = yearBuckets.find(b => b.id === stat.yearbucketid);

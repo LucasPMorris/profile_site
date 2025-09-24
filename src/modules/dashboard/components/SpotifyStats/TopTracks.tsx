@@ -16,7 +16,7 @@ const TopTracks = ({ spotifyStats, selectedTrackId, onTrackSelect }: TopTracksPr
     if (!isMobile) return;
     const handleScroll = () => {
       // Fade out arrows after scrolling 80px (adjust as needed)
-      setShowArrows(window.scrollY < 80);
+      setShowArrows(window.scrollY < 1600);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);

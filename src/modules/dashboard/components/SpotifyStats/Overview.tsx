@@ -12,11 +12,16 @@ interface OverviewProps {
 }
 
 const Overview = ({ spotifyStats, hourlyMap, sortedWeekdays, weekdayMap, monthlyMap, maxPlays }: OverviewProps) => {
-  const peakHour = Array.from(hourlyMap.values()).reduce((acc, dayPlays) => { 
-      Array.from(dayPlays.entries()).forEach(([hour, plays]) => { acc[Number(hour)] = (acc[Number(hour)] || 0) + plays; });
-      return acc;
-    }, Array(24).fill(0)).reduce((maxHour, plays, hour, arr) => plays > arr[maxHour] ? hour : maxHour, 0
-    );
+  // Correct peak hour calculation: sum by hour across all days
+  const hourTotals = Array(24).fill(0);
+  for (const weekMap of hourlyMap.values()) {
+    for (const hourArr of weekMap.values()) {
+      hourArr.forEach((plays, hour) => {
+        hourTotals[hour] += plays;
+      });
+    }
+  }
+  const peakHour = hourTotals.reduce((maxHour, plays, hour, arr) => plays > arr[maxHour] ? hour : maxHour, 0);
 
   const formatHour = (hour: number) => hour === 0 ? '12am' : hour < 12 ? `${hour}am` : hour === 12 ? '12pm' : `${hour - 12}pm`;
 
@@ -80,8 +85,11 @@ const Overview = ({ spotifyStats, hourlyMap, sortedWeekdays, weekdayMap, monthly
           </Card>
           <Card className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900'>
             <span className='text-xs font-medium text-neutral-500 dark:text-neutral-400 tracking-wide uppercase'>Top Day</span>
-            <span className='text-lg font-semibold text-neutral-800 dark:text-neutral-100'>
-              {mostActiveDay ? `${formatDateLabel(mostActiveDay)} ${mostActiveDayPlays} Plays` : '-'}
+            <span className='text-m font-semibold text-neutral-800 dark:text-neutral-100'>
+              {mostActiveDay ? `${formatDateLabel(mostActiveDay)} ${mostActiveDay.toLocaleDateString(undefined, { year: '2-digit' })}'` : '-'}
+            </span>
+            <span className='text-m font-semibold text-neutral-800 dark:text-neutral-100'>
+              {mostActiveDayPlays}
             </span>
           </Card>
         </div>

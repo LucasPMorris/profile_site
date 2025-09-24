@@ -10,11 +10,9 @@ import { ArtistProps, TrackProps } from '@/common/types/spotify';
 import TopTracks from './TopTracks';
 import Overview from './Overview';
 import DateRangeSelector from '@/common/components/elements/DateRangeSelector';
-import { daysInYear, format, getISOWeek, getYear, startOfDay, startOfWeek } from 'date-fns';
+import { format, getISOWeek, getYear, startOfDay, startOfWeek } from 'date-fns';
 import Heatmap from './Heatmap';
-import clsx from 'clsx';
 import Card from '@/common/components/elements/Card';
-import { formatDynamicAPIAccesses } from 'next/dist/server/app-render/dynamic-rendering';
 
 const fallback = '/spotify-icon.svg';
 
@@ -23,14 +21,32 @@ interface SpotifyStatGroup { title: string; styles: { bg: string }; data: Spotif
 interface HeatMapProps { date: string; weekday: string; hourly_plays: number[]; artistId?: string; trackId?: string; }
 
 const SpotifyStats = () => {
-  const [startDate, setStartDate] = useState(() => { const d = new Date(); d.setDate(d.getDate() - 30); return d.toISOString().split('T')[0]; });
-  const [endDate, setEndDate] = useState(() => { const d = new Date(); return d.toISOString().split('T')[0]; });
-  const swrKey = `/api/spotify?start=${startDate}&end=${endDate}`;
+  // Support initial dates from query params
+  function getQueryParam(name: string): string | null {
+    if (typeof window === 'undefined') return null;
+    const params = new URLSearchParams(window.location.search);
+    return params.get(name);
+  }
+  const todayIso: string = new Date().toISOString().split('T')[0];
+  // Initial values for start/end
+  const [startDate, setStartDate] = useState<string>(() => {
+    const param = getQueryParam('start');
+    if (param) return param;
+    const d = new Date();
+    d.setDate(d.getDate() - 30);
+    return d.toISOString().split('T')[0];
+  });
+  const [endDate, setEndDate] = useState<string>(() => getQueryParam('end') || todayIso);
+  const swrKey: string = `/api/spotify?start=${startDate}&end=${endDate}`;
   const { data: response, error } = useSWR(swrKey, fetcher);
   const data = response?.data;
+  // Find earliest record date from playFrequency after fetch
+  const earliestDate: string | undefined = data?.playFrequency?.length
+    ? data.playFrequency.map((p: { date: string }) => p.date).sort()[0]
+    : undefined;
   const [selectedArtistId, setSelectedArtistId] = useState<string | null>(null);
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
-  const tempWork = true;
+  //const tempWork = true;
 
   useEffect(() => {
     if (data?.topArtists?.length && !selectedArtistId) { setSelectedArtistId(data.topArtists[0].artistId); }
@@ -269,7 +285,7 @@ const SpotifyStats = () => {
   return (
     <section className='flex flex-col gap-y-4 relative'>
       <SectionHeading title='Spotify' icon={<SpotifyIcon className='mr-1' />} />
-      <DateRangeSelector startDate={startDate} endDate={endDate} setStartDate={setStartDate} setEndDate={setEndDate} />
+      <DateRangeSelector startDate={startDate} endDate={endDate} setStartDate={setStartDate} setEndDate={setEndDate} minDate={'2017-07-23'} maxDate={todayIso} />
       <SectionSubHeading><div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>My personal history represented through music!</div></SectionSubHeading>
       
       {/* Main Overview and Heatmap */}
