@@ -221,20 +221,34 @@ export const aggregateDailyStats = async (targetDate: Date): Promise<void> => {
   // Resolve buckets
   const year = start.getUTCFullYear();
   const month = start.getUTCMonth() + 1;
-  const week = getISOWeek(start);
+  // weekbucket removed, only year/month/day
 
   const yearBucket = await prisma.yearbucket.findFirst({ where: { year } });
   const monthBucket = await prisma.monthbucket.findFirst({ where: { yearbucketid: yearBucket?.id, month } });
-  const weekBucket = await prisma.weekbucket.findFirst({ where: { monthbucketid: monthBucket?.id, week } });
 
-  const trackStats = Array.from(trackHourlyMap.entries()).map(([track_id, hourly_plays]) => ({ track_id, stat_date: start, count: hourly_plays.reduce((a, b) => a + b, 0), hourly_plays, bucket_scope: 'day' }) );
-  
-  const artistStats = Array.from(artistHourlyMap.entries()).map(([artist_id, hourly_plays]) => ({ artist_id, stat_date: start, count: hourly_plays.reduce((a, b) => a + b, 0), hourly_plays, bucket_scope: 'day' }));
+  // Ensure monthbucketid and stat_date are set for day scope stats
+  const trackStats = Array.from(trackHourlyMap.entries()).map(([track_id, hourly_plays]) => ({
+    track_id,
+    stat_date: start,
+    count: hourly_plays.reduce((a, b) => a + b, 0),
+    hourly_plays,
+    bucket_scope: 'day',
+    monthbucketid: monthBucket?.id ?? null
+  }));
+
+  const artistStats = Array.from(artistHourlyMap.entries()).map(([artist_id, hourly_plays]) => ({
+    artist_id,
+    stat_date: start,
+    count: hourly_plays.reduce((a, b) => a + b, 0),
+    hourly_plays,
+    bucket_scope: 'day',
+    monthbucketid: monthBucket?.id ?? null
+  }));
 
   await prisma.trackstat.createMany({ data: trackStats, skipDuplicates: true });
   await prisma.artiststat.createMany({ data: artistStats, skipDuplicates: true });
 
-  console.log(`📦 Bucketed counts updated for ${dateStr} → Y:${year} M:${month} W:${week}`);
+  console.log(`📦 Bucketed counts updated for ${dateStr} → Y:${year} M:${month}`);
 };
 
 // export const aggregateDailyStats = async (startDate: string, endDate: string) => {
@@ -530,15 +544,20 @@ export const updateBucketedStats = async (): Promise<void> => {
         const monthBucket = scope !== 'year'
           ? await prisma.monthbucket.findFirst({ where: { yearbucketid: yearBucket?.id, month: mInt } })
           : undefined;
+        // This existed before 
+        // const weekBucket = scope === 'week'  
+        //   ? await prisma.weekbucket.findFirst({ where: { monthbucketid: monthBucket?.id, week: wInt } })
+        //   : undefined;
+
         const weekBucket = scope === 'week'
-          ? await prisma.weekbucket.findFirst({ where: { monthbucketid: monthBucket?.id, week: wInt } })
+          ? null // Replace with appropriate logic or remove if not needed
           : undefined;
 
         const trackChunks: Prisma.trackstatCreateManyInput[][] =  chunk(Array.from(tracks.entries() as Iterable<[string, number]>).map(([track_id, count]: [string, number]) => (
-          { track_id, count, bucket_scope: scope, yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id, stat_date: new Date() } )), 200 );
+          { track_id, count, bucket_scope: scope, yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, stat_date: new Date() } )), 200 );
 
         const artistChunks: Prisma.artiststatCreateManyInput[][] =  chunk(Array.from(artists.entries() as Iterable<[string, number]>).map(([artist_id, count]: [string, number]) => (
-            { artist_id, count, bucket_scope: scope, yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id, stat_date: new Date() } )), 200 );
+            { artist_id, count, bucket_scope: scope, yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, stat_date: new Date() } )), 200 );
 
         for (let i = 0; i < trackChunks.length; i++) {
           await prisma.trackstat.createMany({ data: trackChunks[i], skipDuplicates: true });

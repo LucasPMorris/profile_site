@@ -17,12 +17,59 @@ const Overview = ({ spotifyStats, hourlyMap, sortedWeekdays, weekdayMap, monthly
       return acc;
     }, Array(24).fill(0)).reduce((maxHour, plays, hour, arr) => plays > arr[maxHour] ? hour : maxHour, 0
     );
-  
+
   const formatHour = (hour: number) => hour === 0 ? '12am' : hour < 12 ? `${hour}am` : hour === 12 ? '12pm' : `${hour - 12}pm`;
 
   const totalHourlyPlays = Array.from(hourlyMap.values())
     .flatMap(dayMap => Array.from(dayMap.values()).flat())
     .reduce((a, b) => a + b, 0);
+
+  // Find the most active day by iterating through all days in weekdayMap
+  let mostActiveDay: Date | null = null;
+  let mostActiveDayPlays = 0;
+  
+  console.log('weekdayMap size:', weekdayMap.size);
+  
+  // Get the first week's data to determine how many days per week we have
+  const firstWeek = Array.from(weekdayMap.values())[0];
+  const daysPerWeek = firstWeek ? firstWeek.counts.length : 7; // fallback to 7 days
+  
+  console.log('daysPerWeek:', daysPerWeek);
+  
+  for (let dayOfWeek = 0; dayOfWeek < daysPerWeek; dayOfWeek++) {
+    for (const weekData of weekdayMap.values()) {
+      console.log(`Day ${dayOfWeek}, week start:`, weekData.start, 'counts:', weekData.counts);
+      if (weekData.counts[dayOfWeek] != null && weekData.counts[dayOfWeek]! > 0) {
+        const plays = weekData.counts[dayOfWeek]!; // Non-null assertion since we checked above
+        console.log(`Found ${plays} plays for day ${dayOfWeek}`);
+        if (plays > mostActiveDayPlays) {
+          mostActiveDayPlays = plays;
+          // Calculate the actual date for this day
+          const date = new Date(weekData.start);
+          date.setDate(date.getDate() + dayOfWeek);
+          mostActiveDay = date;
+        }
+      }
+    }
+  }
+
+  // Find the most active day (actual date with highest total plays)
+  // let mostActiveDay = null;
+  // let mostActiveDayPlays = 0;
+  // for (const dayMap of hourlyMap.values()) {
+  //   for (const [dateStr, playsArr] of dayMap.entries()) {
+  //     const totalPlays = Array.isArray(playsArr) ? playsArr.reduce((a, b) => a + b, 0) : 0;
+  //     if (totalPlays > mostActiveDayPlays) {
+  //       mostActiveDayPlays = totalPlays;
+  //       mostActiveDay = dateStr;
+  //     }
+  //   }
+  // }
+  // Format date for user-friendly display (e.g., 'Mon, Sep 22')
+  function formatDateLabel(date: Date) {
+    if (isNaN(date.getTime())) return 'Invalid Date'; // fallback if invalid
+    return date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  }
 
   return (
     <>
@@ -49,8 +96,10 @@ const Overview = ({ spotifyStats, hourlyMap, sortedWeekdays, weekdayMap, monthly
             </span>
           </Card>
           <Card className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900'>
-            <span className='text-xs font-medium text-neutral-500 dark:text-neutral-400 tracking-wide uppercase'>Avg/Hour</span>
-            <span className='text-lg font-semibold text-neutral-800 dark:text-neutral-100'>{(totalHourlyPlays / 24).toFixed(1)}</span>
+            <span className='text-xs font-medium text-neutral-500 dark:text-neutral-400 tracking-wide uppercase'>Top Day</span>
+            <span className='text-lg font-semibold text-neutral-800 dark:text-neutral-100'>
+              {mostActiveDay ? `${formatDateLabel(mostActiveDay)} ${mostActiveDayPlays} Plays` : '-'}
+            </span>
           </Card>
         </div>
       </div>

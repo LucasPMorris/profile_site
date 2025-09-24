@@ -31,7 +31,7 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
         break;
       default: 'bg-neutral-200';
     }
-    if (ratio === 0) return 'bg-neutral-200';
+    if (ratio === 0) return 'bg-neutral-300';
     if (ratio < 0.2) return 'bg-rose-400';
     if (ratio < 0.4) return 'bg-rose-600';
     if (ratio < 0.6) return 'bg-rose-700';
@@ -60,8 +60,7 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
     const baseDate = setISOWeek(new Date(`${year}-01-04`), week); // Jan 4 is always in week 1
     const currentWeekStart = startOfWeek(baseDate, { weekStartsOn: 0 });
     const currentWeekEnd = endOfWeek(baseDate, { weekStartsOn: 0 });
-  
-    const formattedWeekRange = `${format(currentWeekStart, 'EEE M/d')} – ${format(currentWeekEnd, 'EEE M/d')}`;
+    formattedWeekRange = `${format(currentWeekStart, 'EEE M/d')} – ${format(currentWeekEnd, 'EEE M/d')}`;
   }
 
   return (
@@ -81,13 +80,6 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
         <div className='flex justify-center'>
           {resolution === 'Hourly' && (
             <div className='space-y-2'>
-              {/* Arrow Controls */}
-              <div className='flex items-center justify-between gap-4 mt-2'>
-                <button disabled={weekIndex === 0} onClick={() => setWeekIndex(i => Math.max(i - 1, 0))} className='px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 disabled:opacity-50'> ← Prev </button>
-                <div className='px-3 py-1 text-sm rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-medium'>{formattedWeekRange}</div>
-                <button disabled={weekIndex === weekKeys.length - 1} onClick={() => setWeekIndex(i => Math.min(i + 1, weekKeys.length - 1))} className='px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 disabled:opacity-50'> Next → </button>
-              </div>
-
               {/* Hourly Grid */}
               <div className='grid grid-cols-[29px_repeat(24,1fr)] gap-[2px]'>
                 <div></div>
@@ -95,6 +87,7 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
                   <div key={`hour-${hour}`} className='text-[12px] text-neutral-500 text-center'>{hour === 0 ? '12a' : hour < 12 ? `${hour}a` : hour === 12 ? '12p' : `${hour - 12}p`}</div>
                 ))}
 
+                {/* Render each weekday row */}
                 {['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map(weekday => {
                   const hourly_plays = hourlyMap.get(weekKeys[weekIndex])?.get(weekday) ?? Array(24).fill(0);
                   return (
@@ -107,6 +100,20 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
                   );
                 })}
               </div>
+
+              {/* Arrow Controls - now below heatmap */}
+              <div className='flex items-center justify-center gap-4 mt-4 pt-3'>
+                <button disabled={weekIndex === 0} onClick={() => setWeekIndex(i => Math.max(i - 1, 0))} className='flex px-4 py-2 w-24 h-10 items-center justify-center rounded-lg text-3xl
+                  bg-gradient-to-tr from-purple-400 to-purple-700 text-neutral-300 shadow-md hover:opacity-85 hover:scale-105 active:scale-95 transition-colors disabled:opacity-50'>
+                  ← 
+                </button>
+                <div className='px-4 py-2 text-neutral-800 dark:text-neutral-300'>
+                  {formattedWeekRange}
+                </div>
+                <button disabled={weekIndex === weekKeys.length - 1} onClick={() => setWeekIndex(i => Math.min(i + 1, weekKeys.length - 1))} className='flex px-4 py-2 w-24 h-10 items-center justify-center rounded-lg text-3xl
+                  bg-gradient-to-tr from-purple-400 to-purple-700 text-neutral-300 shadow-md hover:opacity-85 hover:scale-105 active:scale-95 transition-colors disabled:opacity-50'>
+                   → </button>
+              </div>
             </div>
           )}
           {resolution === 'Daily' && (
@@ -115,7 +122,6 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
               {['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'].map(day => (
                 <div key={day} className='text-[12px] text-neutral-500 text-center'>{day}</div>
               ))}
-
               {paginatedWeeks.map(([label, { start, counts }]) => (
                 <React.Fragment key={label}>
                   <div className='text-[12px] text-neutral-500 text-right pr-1'>{label}</div>
@@ -130,8 +136,10 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
 
               {totalPages > 1 && (
                 <div className='col-span-8 flex justify-end gap-2 mt-2'>
-                  <button className='px-2 py-1 text-sm border rounded disabled:opacity-50' onClick={() => setPageIndex(i => Math.max(i - 1, 0))} disabled={pageIndex === 0}>Prev</button>
-                  <button className='px-2 py-1 text-sm border rounded disabled:opacity-50' onClick={() => setPageIndex(i => Math.min(i + 1, totalPages - 1))} disabled={pageIndex >= totalPages - 1}>Next</button>
+                  <button className='flex px-4 py-2 w-24 h-10 items-center justify-center rounded-lg text-3xl
+                  bg-gradient-to-tr from-purple-400 to-purple-700 text-neutral-300 shadow-md hover:opacity-85 hover:scale-105 active:scale-95 transition-colors disabled:opacity-50' onClick={() => setPageIndex(i => Math.max(i - 1, 0))} disabled={pageIndex === 0}>←</button>
+                  <button className='flex px-4 py-2 w-24 h-10 items-center justify-center rounded-lg text-3xl
+                  bg-gradient-to-tr from-purple-400 to-purple-700 text-neutral-300 shadow-md hover:opacity-85 hover:scale-105 active:scale-95 transition-colors disabled:opacity-50' onClick={() => setPageIndex(i => Math.min(i + 1, totalPages - 1))} disabled={pageIndex >= totalPages - 1}>→</button>
                 </div>
               )}
             </div>

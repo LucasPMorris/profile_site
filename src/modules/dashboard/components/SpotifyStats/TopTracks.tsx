@@ -2,6 +2,7 @@ import Image from 'next/image';
 import clsx from 'clsx';
 import useIsMobile from '@/common/hooks/useIsMobile';
 import { useEffect, useState } from 'react';
+import { FaPlayCircle } from 'react-icons/fa';
 const fallback = '/spotify-icon.svg';
 
 interface TopTracksProps { spotifyStats: any[]; selectedTrackId: string | null; onTrackSelect: (trackId: string) => void; }
@@ -32,7 +33,7 @@ const TopTracks = ({ spotifyStats, selectedTrackId, onTrackSelect }: TopTracksPr
   }, [selectedIndex]);
 
   return (
-  <div className='bg-gradient-to-r from-blue-400 to-purple-600 relative flex flex-1 flex-col gap-2 rounded-lg p-[3px] mb-6'>
+  <div className='bg-gradient-to-r from-amber-400 to-rose-600 relative flex flex-1 flex-col gap-2 rounded-lg p-[3px] mb-6'>
     <div className='h-full w-full rounded-lg bg-neutral-50 p-2 pb-3 dark:bg-dark'>
       <p className='relative -top-5 inline-block px-2 rounded bg-neutral-50 dark:bg-dark'>Top Tracks</p>
       <div className='relative'>
@@ -59,15 +60,29 @@ const TopTracks = ({ spotifyStats, selectedTrackId, onTrackSelect }: TopTracksPr
                   <div className='flex flex-col items-center'>
                     <div className='relative w-20 h-20'><Image src={track.image ?? fallback} alt={track.title} fill className='rounded-full object-cover' /></div>
                     <span className='text-sm font-medium text-center'>{track.title}</span>
+                    {/* Spotify link with play icon, absolutely positioned */}
+                    {track.trackId && (
+                      <a
+                      href={`https://open.spotify.com/track/${track.trackId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="absolute top-2 right-2 flex items-center gap-1 text-green-600 hover:text-green-700 font-semibold"
+                      style={{ zIndex: 50 }}
+                      title="Listen on Spotify"
+                      >
+                      <FaPlayCircle size={32} />
+                      <span className="sr-only">Listen on Spotify</span>
+                      </a>
+                    )}
                   </div>
                 </li>
               );
             })}
           </ul>
         </div>
-        <div className={'absolute -bottom-8 left-1/2 transform -translate-x-1/2 z-1 flex gap-3' + (isMobile ? ' pointer-events-none' : '')} style={{ opacity: showArrows ? 1 : 0 }}>
-          <button onClick={handlePrevTrack} className='relative w-24 h-10 flex items-center justify-center text-3xl bg-blue-700 text-neutral-300 rounded-md shadow overflow-hidden group hover:bg-blue-900 transition pointer-events-auto'> ← </button>
-          <button onClick={handleNextTrack} className='relative w-24 h-10 flex items-center justify-center text-3xl bg-blue-700 text-neutral-300 rounded-md shadow overflow-hidden group hover:bg-blue-900 transition pointer-events-auto' > → </button>
+        <div className={clsx('absolute -bottom-8 left-1/2 transform -translate-x-1/2 z-1 flex gap-3', { 'pointer-events-none': isMobile, 'opacity-0': !showArrows, 'opacity-100': showArrows })} style={{ transition: 'opacity 0.3s ease' }}>
+          <button onClick={handlePrevTrack} className='relative w-24 h-10 flex items-center justify-center text-3xl bg-gradient-to-tr from-amber-400 to-rose-600 text-neutral-300 rounded-lg shadow overflow-hidden group hover:bg-blue-900 transition pointer-events-auto hover:opacity-85 hover:scale-105 active:scale-95'> ← </button>
+          <button onClick={handleNextTrack} className='relative w-24 h-10 flex items-center justify-center text-3xl bg-gradient-to-tr from-amber-400 to-rose-600 text-neutral-300 rounded-lg shadow overflow-hidden group hover:bg-blue-900 transition pointer-events-auto hover:opacity-85 hover:scale-105 active:scale-95' > → </button>
         </div>
       </div>
     </div>

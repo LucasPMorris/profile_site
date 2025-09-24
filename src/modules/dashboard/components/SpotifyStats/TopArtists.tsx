@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { FaPlayCircle } from 'react-icons/fa';
 import useIsMobile from '@/common/hooks/useIsMobile';
 import Image from 'next/image';
 import clsx from 'clsx';
@@ -58,6 +59,20 @@ const TopArtists = ({ spotifyStats, selectedArtistId, onArtistSelect }: TopArtis
                     <div className='flex flex-col items-center'>
                       <div className='relative w-20 h-20'><Image src={artist.image ?? fallback} alt={artist.name} fill className='rounded-full object-cover' /></div>
                       <span className='text-sm font-medium text-center'>{artist.name}</span>
+                      {/* Spotify link with green arrow icon, absolutely positioned */}
+                      {artist.artist_url && (
+                        <a
+                          href={artist.artist_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="absolute top-2 right-2 flex items-center gap-1 text-green-600 hover:text-green-700 font-semibold"
+                          style={{ zIndex: 50 }}
+                          title="Listen on Spotify"
+                        >
+                          <FaPlayCircle size={32} />
+                          <span className="sr-only">Listen on Spotify</span>
+                        </a>
+                      )}
                     </div>
                   </li>
                 );
@@ -67,8 +82,9 @@ const TopArtists = ({ spotifyStats, selectedArtistId, onArtistSelect }: TopArtis
 
           {/* Arrows */}
           <div className={'absolute -bottom-8 left-1/2 transform -translate-x-1/2 z-10 flex gap-3 transition-opacity duration-500' + (isMobile ? ' pointer-events-none' : '')} style={{ opacity: showArrows ? 1 : 0 }}>
-            <button onClick={handlePrev} className='relative w-24 h-10 flex items-center justify-center text-3xl bg-purple-700 text-neutral-300 rounded-md shadow overflow-hidden group hover:bg-purple-900 transition pointer-events-auto' > ← </button>
-            <button onClick={handleNext} className='relative w-24 h-10 flex items-center justify-center text-3xl bg-purple-700 text-neutral-300 rounded-md shadow overflow-hidden group hover:bg-purple-900 transition pointer-events-auto'> → </button>
+            <button onClick={handlePrev} 
+              className='relative w-24 h-10 flex items-center justify-center text-3xl bg-gradient-to-tr from-blue-400 to-purple-600 text-neutral-300 rounded-lg shadow overflow-hidden group transition pointer-events-auto hover:opacity-85 hover:scale-105 active:scale-95'> ← </button>
+            <button onClick={handleNext} className='relative w-24 h-10 flex items-center justify-center text-3xl bg-gradient-to-tr from-blue-400 to-purple-600 text-neutral-300 rounded-lg shadow overflow-hidden group transition pointer-events-auto hover:opacity-85 hover:scale-105 active:scale-95'> → </button>
           </div>
         </div>
 
