@@ -28,20 +28,16 @@ const Overview = ({ spotifyStats, hourlyMap, sortedWeekdays, weekdayMap, monthly
   let mostActiveDay: Date | null = null;
   let mostActiveDayPlays = 0;
   
-  console.log('weekdayMap size:', weekdayMap.size);
   
   // Get the first week's data to determine how many days per week we have
   const firstWeek = Array.from(weekdayMap.values())[0];
   const daysPerWeek = firstWeek ? firstWeek.counts.length : 7; // fallback to 7 days
   
-  console.log('daysPerWeek:', daysPerWeek);
   
   for (let dayOfWeek = 0; dayOfWeek < daysPerWeek; dayOfWeek++) {
     for (const weekData of weekdayMap.values()) {
-      console.log(`Day ${dayOfWeek}, week start:`, weekData.start, 'counts:', weekData.counts);
       if (weekData.counts[dayOfWeek] != null && weekData.counts[dayOfWeek]! > 0) {
         const plays = weekData.counts[dayOfWeek]!; // Non-null assertion since we checked above
-        console.log(`Found ${plays} plays for day ${dayOfWeek}`);
         if (plays > mostActiveDayPlays) {
           mostActiveDayPlays = plays;
           // Calculate the actual date for this day
@@ -53,19 +49,6 @@ const Overview = ({ spotifyStats, hourlyMap, sortedWeekdays, weekdayMap, monthly
     }
   }
 
-  // Find the most active day (actual date with highest total plays)
-  // let mostActiveDay = null;
-  // let mostActiveDayPlays = 0;
-  // for (const dayMap of hourlyMap.values()) {
-  //   for (const [dateStr, playsArr] of dayMap.entries()) {
-  //     const totalPlays = Array.isArray(playsArr) ? playsArr.reduce((a, b) => a + b, 0) : 0;
-  //     if (totalPlays > mostActiveDayPlays) {
-  //       mostActiveDayPlays = totalPlays;
-  //       mostActiveDay = dateStr;
-  //     }
-  //   }
-  // }
-  // Format date for user-friendly display (e.g., 'Mon, Sep 22')
   function formatDateLabel(date: Date) {
     if (isNaN(date.getTime())) return 'Invalid Date'; // fallback if invalid
     return date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });

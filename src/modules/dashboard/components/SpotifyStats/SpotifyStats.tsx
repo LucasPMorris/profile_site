@@ -33,7 +33,6 @@ const SpotifyStats = () => {
   const tempWork = true;
 
   useEffect(() => {
-    console.log('Fetched Spotify data:', data);
     if (data?.topArtists?.length && !selectedArtistId) { setSelectedArtistId(data.topArtists[0].artistId); }
     if (data?.topTracks?.length && !selectedTrackId) { setSelectedTrackId(data.topTracks[0].trackId); }
   }, [data, selectedArtistId, selectedTrackId]);
