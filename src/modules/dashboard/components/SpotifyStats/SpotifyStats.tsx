@@ -284,8 +284,12 @@ const SpotifyStats = () => {
 
   return (
     <section className='flex flex-col gap-y-4 relative'>
-      <SectionHeading title='Spotify' icon={<SpotifyIcon className='mr-1' />} />
-      <DateRangeSelector startDate={startDate} endDate={endDate} setStartDate={setStartDate} setEndDate={setEndDate} minDate={'2017-07-23'} maxDate={todayIso} />
+      <div className='flex flex-col gap-y-2'>
+        <SectionHeading title='Spotify' icon={<SpotifyIcon className='mr-1' />} />
+        <div className='flex justify-start'>
+          <DateRangeSelector startDate={startDate} endDate={endDate} setStartDate={setStartDate} setEndDate={setEndDate} minDate={'2017-07-23'} maxDate={todayIso} />
+        </div>
+      </div>
       <SectionSubHeading><div className='text-neutral-800 dark:text-neutral-400 md:flex-row md:items-center'>My personal history represented through music!</div></SectionSubHeading>
       
       {/* Main Overview and Heatmap */}
@@ -294,31 +298,31 @@ const SpotifyStats = () => {
       {/* Top Artist Section */}
       <TopArtists spotifyStats={spotifyStats} selectedArtistId={selectedArtistId} onArtistSelect={setSelectedArtistId} />
       {data.topArtists?.length > 0 && (
-        <>        
-            {selectedArtistId && selectedArtistPlays.length > 0 && (
-              <div className='grid grid-cols-1 md:grid-cols-5 gap-4 mb-4'>
-                {/* Left-Side Artist Stats */}
-                <div className='md:col-span-1 flex flex-col gap-4'>
-                  <div className='col-span-1'><h3 className='text-md font-semibold'>
-                  <a href={data.topArtists.find((a: any) => a.artistId === selectedArtistId)?.artist_url} target="_blank" rel="noopener noreferrer" className="text-green-600 underline">
-                    {data.topArtists.find((a: any) => a.artistId === selectedArtistId)?.name}
-                  </a> Listening History</h3></div>
-                  <Card className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900'>
-                    <span className='text-xs font-medium text-neutral-500 dark:text-neutral-400 tracking-wide uppercase'>First Played</span>
-                    <span className='text-lg font-semibold text-neutral-800 dark:text-neutral-100'>{format(firstPlayed, 'MMM,  yyyy')}</span>
-                  </Card>
-                  <Card className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900'>
-                    <span className='text-xs font-medium text-neutral-500 dark:text-neutral-400 tracking-wide uppercase'>Total Plays</span>
-                    <span className='text-lg font-semibold text-neutral-800 dark:text-neutral-100'>{totalPlays}</span>
-                  </Card>
-                </div>
-                <div className='md:col-span-4 flex flex-col gap-2'>  
-                  <Heatmap hourlyMap={artistHourlyMap}  sortedWeekdays={weekdayOrder.filter(day => artistHourlyMap.has(day))}  weekdayMap={artistWeekdayMap}  monthlyMap={artistMonthlyMap}  maxPlays={maxPlays} />
-                </div>
-              </div>
-            )}
-            {selectedArtistId && selectedArtistPlays.length === 0 && ( <div className='p-4 text-center text-neutral-500 bg-neutral-100 rounded-lg'> No top artist data available for the time frame selected.</div>)}    
-        </>
+      <>        
+        {selectedArtistId && selectedArtistPlays.length > 0 && (
+          <div className='grid grid-cols-1 md:grid-cols-5 gap-4 mb-4'>
+          {/* Left-Side Artist Stats */}
+          <div className='md:col-span-1 flex flex-col gap-4'>
+            <div className='col-span-1'><h3 className='text-md font-semibold'>
+            <a href={data.topArtists.find((a: any) => a.artistId === selectedArtistId)?.artist_url} target="_blank" rel="noopener noreferrer" className="text-green-600 underline">
+            {data.topArtists.find((a: any) => a.artistId === selectedArtistId)?.name}
+            </a> Listening History</h3></div>
+            <Card className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900'>
+            <span className='text-xs font-medium text-neutral-500 dark:text-neutral-400 tracking-wide uppercase'>First Played</span>
+            <span className='text-lg font-semibold text-neutral-800 dark:text-neutral-100'>{format(firstPlayed, 'MMM,  yyyy')}</span>
+            </Card>
+            <Card className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900'>
+            <span className='text-xs font-medium text-neutral-500 dark:text-neutral-400 tracking-wide uppercase'>Total Plays</span>
+            <span className='text-lg font-semibold text-neutral-800 dark:text-neutral-100'>{totalPlays}</span>
+            </Card>
+          </div>
+          <div className='md:col-span-4 flex flex-col gap-2'>  
+            <Heatmap hourlyMap={artistHourlyMap}  sortedWeekdays={weekdayOrder.filter(day => artistHourlyMap.has(day))}  weekdayMap={artistWeekdayMap}  monthlyMap={artistMonthlyMap}  maxPlays={maxPlays} />
+          </div>
+          </div>
+        )}
+        {selectedArtistId && selectedArtistPlays.length === 0 && ( <div className='p-4 text-center text-neutral-500 bg-neutral-100 rounded-lg'> No top artist data available for the time frame selected.</div>)}    
+      </>
       )}
       
       {/* Show message if no artists at all */}
@@ -327,27 +331,27 @@ const SpotifyStats = () => {
       {/* Top Track Section */}
       <TopTracks spotifyStats={spotifyStats} selectedTrackId={selectedTrackId} onTrackSelect={setSelectedTrackId} />
       {data.topTracks?.length > 0 && (
-        <div className='grid grid-cols-1 md:grid-cols-5 gap-4 mb-4'>
-          {/* Left Column: Track Stats */}
-          <div className='md:col-span-1 flex flex-col gap-4'>
-            <h3 className='text-lg font-semibold'><a href={"https://open.spotify.com/track/" + data.topTracks.find((t: any) => t.trackId === selectedTrackId)?.trackId} target="_blank" rel="noopener noreferrer" className="text-green-600 underline">
-                    {data.topTracks.find((t: any) => t.trackId === selectedTrackId)?.title}
-                  </a> Listening History</h3>
+      <div className='grid grid-cols-1 md:grid-cols-5 gap-4 mb-4'>
+        {/* Left Column: Track Stats */}
+        <div className='md:col-span-1 flex flex-col gap-4'>
+        <h3 className='text-lg font-semibold'><a href={"https://open.spotify.com/track/" + data.topTracks.find((t: any) => t.trackId === selectedTrackId)?.trackId} target="_blank" rel="noopener noreferrer" className="text-green-600 underline">
+            {data.topTracks.find((t: any) => t.trackId === selectedTrackId)?.title}
+            </a> Listening History</h3>
 
-            <Card className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900'>
-              <span className='text-xs font-medium text-neutral-500 dark:text-neutral-400 tracking-wide uppercase'>Total Plays</span>
-              <span className='text-lg font-semibold text-neutral-800 dark:text-neutral-100'>{totalTrackPlays}</span>
-            </Card>
+        <Card className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900'>
+          <span className='text-xs font-medium text-neutral-500 dark:text-neutral-400 tracking-wide uppercase'>Total Plays</span>
+          <span className='text-lg font-semibold text-neutral-800 dark:text-neutral-100'>{totalTrackPlays}</span>
+        </Card>
 
-            <Card className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900'>
-              <span className='text-xs font-medium text-neutral-500 dark:text-neutral-400 tracking-wide uppercase'>Active Days</span>
-              <span className='text-lg font-semibold text-neutral-800 dark:text-neutral-100'>{activeDays}</span>
-            </Card>
-          </div>
-
-          {/* Right Column: Heatmap */}
-          <div className='md:col-span-4 flex flex-col gap-2'><Heatmap hourlyMap={trackHourlyMap} sortedWeekdays={weekdayOrder.filter(day => trackHourlyMap.has(day))} weekdayMap={trackWeekdayMap} monthlyMap={trackMonthlyMap} maxPlays={maxPlays} /></div>
+        <Card className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900'>
+          <span className='text-xs font-medium text-neutral-500 dark:text-neutral-400 tracking-wide uppercase'>Active Days</span>
+          <span className='text-lg font-semibold text-neutral-800 dark:text-neutral-100'>{activeDays}</span>
+        </Card>
         </div>
+
+        {/* Right Column: Heatmap */}
+        <div className='md:col-span-4 flex flex-col gap-2'><Heatmap hourlyMap={trackHourlyMap} sortedWeekdays={weekdayOrder.filter(day => trackHourlyMap.has(day))} weekdayMap={trackWeekdayMap} monthlyMap={trackMonthlyMap} maxPlays={maxPlays} /></div>
+      </div>
       )}
 
       {/* Show message if no tracks at all */}
