@@ -23,7 +23,7 @@ const DashboardPage: NextPage<DashboardPageProps> = ({ fallback }) => {
   return (
     <SWRConfig value={{ fallback }}>
       <NextSeo title={`${PAGE_TITLE} - Lucas Morris`} description={PAGE_DESCRIPTION} 
-        openGraph={{ images: [{url: '/images/dashboard_1200x628.png', width: 1200, height: 628, alt: 'Spotify Dashboard Preview' } ] }}
+        openGraph={{ images: [{url: '/images/dashboard_1200x628.webp', width: 1200, height: 628, alt: 'Spotify Dashboard Preview' } ] }}
       />
       <Container data-aos='fade-up'>
         <Toaster position='top-center' />
