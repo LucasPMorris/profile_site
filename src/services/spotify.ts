@@ -176,7 +176,6 @@ function selectMinimalBuckets(
 export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date): Promise<SpotifyDataResponseProps> => {
   try {
     const startTime = Date.now();
-    console.log(`${new Date().toISOString()}: getSpotifyStatsByDateRange START - Dates:`, startDate.toISOString(), endDate.toISOString());
 
     // Use raw SQL for much faster bucket-aware stats aggregation
     const [dailyStats, topArtistsRaw, topTracksRaw] = await Promise.all([
@@ -350,8 +349,6 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
         trackId: stat.track_id
       }));
     }
-
-    console.log(`Query completed in ${Date.now() - startTime}ms`);
 
     console.log(`Query completed in ${Date.now() - startTime}ms`);
 

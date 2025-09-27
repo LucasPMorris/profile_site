@@ -4,7 +4,7 @@ const CallOut = ({ header, children }: { header: string; children: React.ReactNo
     <div className="text-teal-500 text-2xl">💡</div>
     <div>
       <h4 className="font-semibold text-lg mb-2 text-teal-800 dark:text-teal-200">{header}</h4>
-      <p className="text-teal-700 dark:text-teal-300">{children}</p>
+      <span className="text-teal-700 dark:text-teal-300">{children}</span>
     </div>
     </div>
   </div>

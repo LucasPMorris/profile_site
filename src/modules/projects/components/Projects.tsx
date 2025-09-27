@@ -24,7 +24,7 @@ const Projects = ({ projects, loadMore, hasMore }: ProjectsComponentProps) => {
   };
 
   // TODO: Remove CurrentState and use EmptyState component after Projects have been added.
-  if (filteredProjects.length === 0) { return <CurrentState />; }
+  { return <CurrentState />; }
   // if (filteredProjects.length === 0) { return <EmptyState message='No projects available yet. Check back soon!' />; }
 
   return (

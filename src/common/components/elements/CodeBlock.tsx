@@ -71,8 +71,6 @@ const CodeBlock = ({ className = '', children, inline, header, canCollapse, ...p
     }
   }, [isCopied]);
 
-  console.log(header);
-
   return (
     <>
       {!inline ? (
