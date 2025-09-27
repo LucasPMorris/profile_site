@@ -3,26 +3,15 @@ import prisma from '@/common/libs/prisma';
 import { marked } from 'marked';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const id = Number(req.query.id);
   const { type } = req.query;
 
-  if (req.method === 'DELETE') {
+  if (req.method === 'POST') {
     if (type === 'project') {
-      await prisma.projects.delete({ where: { id } });
-    } else {
-      await prisma.blogPost.delete({ where: { id } });
-    }
-    return res.status(204).end();
-  }
-
-  if (req.method === 'PUT') {
-    if (type === 'project') {
-      // Update project
+      // Create project
       const { title, slug, description, image, stacks, link_demo, link_github, content, is_featured } = req.body;
 
       try {
-        const updatedProject = await prisma.projects.update({
-          where: { id },
+        const newProject = await prisma.projects.create({
           data: {
             title,
             slug: slug || title.toLowerCase().replace(/\s+/g, '-'),
@@ -33,42 +22,53 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             link_github: link_github || null,
             content: content || null,
             is_featured: is_featured || false,
+            is_show: true,
             updated_at: new Date()
           }
         });
 
-        return res.status(200).json({ project: updatedProject });
+        return res.status(201).json({ project: newProject });
       } catch (error) {
-        console.error('Error updating project:', error);
-        return res.status(500).json({ error: 'Failed to update project' });
+        console.error('Error creating project:', error);
+        return res.status(500).json({ error: 'Failed to create project' });
       }
     } else {
-      // Update blog post
-      const { title, slug, contentMarkdown, featuredImageUrl, sticky, tags, excerpt } = req.body;
+      // Create blog post (existing logic)
+      const { title, slug, contentMarkdown, excerptHtml, featuredImageUrl, sticky, tags, excerpt } = req.body;
       const contentHtml = await marked(contentMarkdown || '');
 
       try {
-        const updatedPost = await prisma.blogPost.update({
-          where: { id },
+        const newPost = await prisma.blogPost.create({
           data: {
             title,
             slug: slug || title.toLowerCase().replace(/\s+/g, '-'),
             contentMarkdown,
-            contentHtml,
+            contentHtml: contentHtml || '',
+            excerptHtml: excerpt || excerptHtml || '',
+            date: new Date(),
             modified: new Date(),
+            status: 'publish',
+            authorId: 1,
+            link: '',
+            template: '',
+            format: '',
+            footnotes: '',
             featuredImageUrl: featuredImageUrl || '',
+            contentProtected: false,
+            excerptProtected: false,
             sticky: sticky || false,
-            excerptHtml: excerpt || ''
-          },
+            featuredMediaId: 0,
+            totalViewsCount: 0,
+          }
         });
 
-        return res.status(200).json({ post: updatedPost });
+        return res.status(201).json({ post: newPost });
       } catch (error) {
-        console.error('Error updating blog post:', error);
-        return res.status(500).json({ error: 'Failed to update blog post' });
+        console.error('Error creating blog post:', error);
+        return res.status(500).json({ error: 'Failed to create blog post' });
       }
     }
   }
 
-  res.status(405).json({ error: 'Method not allowed' });
+  return res.status(405).json({ error: 'Method not allowed' });
 }

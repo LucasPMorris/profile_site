@@ -87,93 +87,12 @@ export const optimizedAssignCommonAlbumUrls = async (): Promise<void> => {
     // Batch update using transaction for better performance
     await prisma.$transaction( batchUpdates.map(update => prisma.sptrack.updateMany({ where: { isrc: update.isrc }, data: { common_album_id: update.commonAlbumId } }) ) );
 
-//   for (const track of tracks) {
-//     if (track.isrc) {
-//         if (!grouped.has(track.isrc)) grouped.set(track.isrc, []);
-//           grouped.get(track.isrc)!.push({...track, isrc: track.isrc ?? '', // Ensure isrc is a string
-//             duration: track.duration ?? 0, // Ensure duration is a number
-//         });
-//     }
-
     console.log(`✅ Updated common_album_id for ${batchUpdates.length} ISRCs in batch`);
   } catch (error) {
     console.error('Error in optimized common album assignment:', error);
     throw error;
   }
 };
-
-// const assignCommonAlbumUrls = async (dryRun = false): Promise<void> => {
-//   const tracks = await prisma.sptrack.findMany({ include: { album: { select: { album_id: true, name: true, image_url: true } }, plays: { select: { track_id: true, played_at: true } }} });
-
-//   const grouped = new Map<string, TrackVariantForSelection[]>();
-
-//   for (const track of tracks) {
-//     if (!grouped.has(track.isrc)) grouped.set(track.isrc, []);
-//     grouped.get(track.isrc)!.push(track);
-//   }
-
-//   const updates: { isrc: string; common_album_id: string }[] = [];
-
-//   for (const [isrc, variants] of grouped.entries()) {
-//     const selected = selectBestAlbumVariant(variants);
-//     updates.push({ isrc, common_album_id: selected.album.album_id });
-//     if (!dryRun) { await prisma.sptrack.updateMany({ where: { isrc }, data: { common_album_id: selected.album.album_id } }); }
-//   }
-
-//     if (dryRun) {
-//       writeFileForTest('commonAlbumAssignments.json', updates);
-//       console.log(`📝 Dry-run complete. Wrote ${updates.length} ISRC assignments to file.`);
-//     } else { console.log(`✅ Updated common_album_id for ${grouped.size} ISRCs`); }
-// };
-
-// export const aggregateDailyStats = async (targetDate: Date): Promise<void> => {
-//   const dateStr = targetDate.toISOString().split('T')[0];
-//   const start = new Date(`${dateStr}T00:00:00.000Z`);
-//   const end = new Date(`${dateStr}T23:59:59.999Z`);
-
-//   // Delete existing stats and update
-//   await prisma.spdailyplaystats.deleteMany({ where: { date: start } });
-
-//   // Run your aggregation logic here
-//   const plays = await prisma.spplayhistory.findMany({ where: { played_at: { gte: start, lte: end } }, include: { track: { include: { track_artists: true } } } });
-  
-//   const hourlyPlays = Array(24).fill(0);
-//   const trackCounts: Record<string, number> = {};
-//   const artistCounts: Record<string, number> = {};
-
-//   for (const play of plays) {
-//     const hour = new Date(play.played_at).getUTCHours();
-//     hourlyPlays[hour]++;
-
-//     const trackId = play.track_id;
-//     trackCounts[trackId] = (trackCounts[trackId] ?? 0) + 1;
-
-//     for (const artist of play.track.track_artists) { artistCounts[artist.artist_id] = (artistCounts[artist.artist_id] ?? 0) + 1; }
-//   }
-
-//   const topTracks = Object.entries(trackCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([track_id, count]) => ({ track_id, count }));
-//   const topArtists = Object.entries(artistCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([artist_id, count]) => ({ artist_id, count }));
-
-//   await prisma.spdailyplaystats.create({ data: { date: start, weekday: start.toLocaleDateString('en-US', { weekday: 'short' }), hourly_plays: hourlyPlays, top_tracks: { create: topTracks }, top_artists: { create: topArtists } } });
-
-//   console.log(`✅ Stats created for ${dateStr}`);
-
-//   const year = start.getUTCFullYear();
-//   const month = start.getUTCMonth() + 1;
-//   const week = getISOWeek(start);
-
-//   const yearBucket = await prisma.yearbucket.findFirst({ where: { year } });
-//   const monthBucket = await prisma.monthbucket.findFirst({ where: { yearbucketid: yearBucket?.id, month } });
-//   const weekBucket = await prisma.weekbucket.findFirst({ where: { monthbucketid: monthBucket?.id, week } });
-
-//   const trackStats = Object.entries(trackCounts).map(([track_id, count]) => ({ track_id, count, bucket_scope: 'day', yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id }));
-//   const artistStats = Object.entries(artistCounts).map(([artist_id, count]) => ({ artist_id, count, bucket_scope: 'day', yearbucketid: yearBucket?.id, monthbucketid: monthBucket?.id, weekbucketid: weekBucket?.id }));
-
-//   await prisma.trackstat.createMany({ data: trackStats, skipDuplicates: true });
-//   await prisma.artiststat.createMany({ data: artistStats, skipDuplicates: true });
-
-//   console.log(`📦 Bucketed stats updated for ${dateStr} → Y:${year} M:${month} W:${week}`);  
-// };
 
 export const aggregateDailyStats = async (targetDate: Date): Promise<void> => {
   const dateStr = targetDate.toISOString().split('T')[0];
@@ -381,7 +300,20 @@ export const ingestSpotifyPlays = async (): Promise<void> => {
     optimizedAssignCommonAlbumUrls()
   ]);
 
-  console.log(`✅ Ingested ${items.length} plays successfully`);
+  // Aggregate daily stats for the unique dates in the ingested plays
+  const uniqueDates = new Set<string>();
+  for (const item of items as any[]) {
+    const playDate = new Date(item.played_at);
+    const dateStr = playDate.toISOString().split('T')[0];
+    uniqueDates.add(dateStr);
+  }
+
+  for (const dateStr of uniqueDates) {
+    const targetDate = new Date(`${dateStr}T00:00:00.000Z`);
+    await aggregateDailyStats(targetDate);
+  }
+
+  console.log(`✅ Ingested ${items.length} plays and updated stats for ${uniqueDates.size} unique dates`);
 };
 
 async function updateArtistImages(artistIds: string[]) {

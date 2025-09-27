@@ -71,34 +71,43 @@ const CodeBlock = ({ className = '', children, inline, header, canCollapse, ...p
     }
   }, [isCopied]);
 
+  console.log(header);
+
   return (
     <>
       {!inline ? (
         <div className='relative rounded-lg bg-[rgb(43,43,43)] border border-neutral-700'>
-          <div className='flex flex-row justify-between border-b-2 border-cyan-800 dark:border-cyan-200'>
-            <div className='pl-6 py-3 font-sans text-lg font-medium text-cyan-800 dark:text-cyan-200'>{header}</div>
-            <div className='relative flex justify-end gap-2 p-2'>
-              <button type='button' aria-label='Copy to Clipboard' onClick={() => handleCopy(rawCode)} className='p-2 rounded border border-neutral-700 hover:bg-neutral-800' >
+          <div className={header ? 'flex flex-row justify-between border-b-2 border-cyan-800 dark:border-cyan-200' : ''}>
+            {header && <div className='pl-6 py-3 font-sans text-lg font-medium text-cyan-800 dark:text-cyan-200'>{header}</div>}
+            {header &&
+              <div className='relative flex justify-end gap-2 p-2'>
+                <button type='button' aria-label='Copy to Clipboard' onClick={() => handleCopy(rawCode)} className='p-2 rounded border border-neutral-700 hover:bg-neutral-800' >
+                  {!isCopied ? ( <CopyIcon size={18} className='text-neutral-400' /> ) : ( <CheckIcon size={18} className='text-green-500' /> )}
+                </button>
+                {canCollapse && (
+                  <button type='button' onClick={() => setCollapsed(!collapsed)} className='p-2 rounded border border-neutral-700 hover:bg-neutral-800' >
+                    {collapsed ? ( <BiSolidChevronDown size={18} className='text-neutral-400' /> ) : ( <BiSolidChevronUp size={18} className='text-neutral-400' /> )}
+                  </button>
+                )}
+              </div>
+            }
+          </div>
+          <div className={`${collapsed ? 'hidden' : 'block'} relative`}>
+            {!header && (
+              <button type='button' aria-label='Copy to Clipboard' onClick={() => handleCopy(rawCode)} className='absolute top-2 right-2 p-2 rounded border border-neutral-700 hover:bg-neutral-800 z-10' >
                 {!isCopied ? ( <CopyIcon size={18} className='text-neutral-400' /> ) : ( <CheckIcon size={18} className='text-green-500' /> )}
-              </button>
-              {canCollapse && (
-              <button type='button' onClick={() => setCollapsed(!collapsed)} className='p-2 rounded border border-neutral-700 hover:bg-neutral-800' >
-                {collapsed ? ( <BiSolidChevronDown size={18} className='text-neutral-400' /> ) : ( <BiSolidChevronUp size={18} className='text-neutral-400' /> )}
-              </button>
-              )}
-            </div>
+              </button>                  
+            )}
+            { match && className === 'language-json'
+              ? ( <ReactJson src={JSON.parse(String(children).replace(/\n$/, ''))} collapsed={1} name={false} enableClipboard={false} displayDataTypes={false} displayObjectSize={false} theme='monokai' style={{ backgroundColor: 'transparent', fontSize: '14px', padding: '20px', borderRadius: '8px' }} /> )
+              : ( 
+                <SyntaxHighlighter
+                  {...props} style={themeColor} showLineNumbers={true} customStyle={{ padding: '15px', fontSize: '14px', borderRadius: '8px', paddingRight: '50px' }} PreTag='div' language={match ? match[1] : 'javascript'} wrapLongLines>              
+                {String(children).replace(/\n$/, '')}
+              </SyntaxHighlighter> )
+            }
           </div>
-            <div className={`${collapsed ? 'hidden' : 'block'} mt-2`}>
-              { match && className === 'language-json'
-                ? ( <ReactJson src={JSON.parse(String(children).replace(/\n$/, ''))} collapsed={1} name={false} enableClipboard={false} displayDataTypes={false} displayObjectSize={false} theme='monokai' style={{ backgroundColor: 'transparent', fontSize: '14px', padding: '20px', borderRadius: '8px' }} /> )
-                : ( 
-                  <SyntaxHighlighter
-                    {...props} style={themeColor} showLineNumbers={true} customStyle={{ padding: '20px', fontSize: '14px', borderRadius: '8px', paddingRight: '50px' }} PreTag='div' language={match ? match[1] : 'javascript'} wrapLongLines>              
-                  {String(children).replace(/\n$/, '')}
-                </SyntaxHighlighter> )
-              }
-            </div>
-          </div>
+        </div>
       ) : (
         <code className='rounded-md bg-neutral-200 px-2 py-1 text-[14px] font-light text-sky-600 dark:bg-neutral-700 dark:text-sky-300'>
           {children}
@@ -111,64 +120,3 @@ const CodeBlock = ({ className = '', children, inline, header, canCollapse, ...p
 const LoadingPlaceholder = () => <div className='mb-12 mt-12 h-36 w-full' />;
 
 export default dynamic(() => Promise.resolve(CodeBlock), { ssr: false, loading: LoadingPlaceholder });
-
-////////////////////////////////////////////////////////////////////
-
-//   return (
-//     <>
-//       {!inline ? (
-//         <div className='relative mb-6 border rounded-lg bg-neutral-900'>
-//           {/* Collapse toggle */}
-//           <div className='flex justify-between items-center px-4 py-2 bg-neutral-800 border-b border-neutral-700'>
-//             <span className='text-sm font-mono text-neutral-300'>{language}</span>
-//             <div className='flex gap-2'>
-//               <button type='button' aria-label='Copy to Clipboard' onClick={() => handleCopy(rawCode)} className='p-1 rounded border border-neutral-700 hover:bg-neutral-800' >
-//                 {!isCopied 
-//                   ? ( <CopyIcon size={18} className='text-neutral-400' /> )
-//                   : ( <CheckIcon size={18} className='text-green-500' />
-//                 )}
-//               </button>
-//               <button onClick={() => setCollapsed(!collapsed)} className='text-xs px-2 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700' >
-//                 {collapsed ? ( <BiChevronDown size={18} className='text-neutral-400' /> ) : ( <BiChevronUp size={18} className='text-neutral-400' /> )}
-//               </button>
-//             </div>
-//           </div>
-
-//           {/* Collapsed view */}
-//           {!collapsed && (
-//             <div className='p-4'>
-//               {regions ? (
-//                 regions.map(({ title, content }, i) => {
-//                   const [open, setOpen] = useState(true);
-//                   return (
-//                     <div key={i} className='mb-4'>
-//                       <button onClick={() => setOpen(!open)} className='mb-2 text-xs px-2 py-1 rounded bg-neutral-700 text-white hover:bg-neutral-600' >
-//                         {open ? `Hide ${title}` : `Show ${title}`}
-//                       </button>
-//                       {open && ( <SyntaxHighlighter {...props} style={themeColor} language={language} customStyle={{ padding: '16px', fontSize: '14px', borderRadius: '6px' }} >{content.join('\n')}</SyntaxHighlighter>)}
-//                     </div>
-//                   );
-//                 })
-//               ) : (
-//                 <SyntaxHighlighter {...props} style={themeColor} language={language} customStyle={{ padding: '20px', fontSize: '14px', borderRadius: '8px' }}>
-//                   {rawCode}
-//                 </SyntaxHighlighter>
-//               )}
-//             </div>
-//           )}
-//         </div>
-//       ) : (
-//         <code className='rounded-md bg-neutral-200 px-2 py-1 text-[14px] font-light text-sky-600 dark:bg-neutral-700 dark:text-sky-300'>
-//           {children}
-//         </code>
-//       )}
-//     </>
-//   );
-// };
-
-// const LoadingPlaceholder = () => <div className='mb-12 mt-12 h-36 w-full' />;
-
-// export default dynamic(() => Promise.resolve(CodeBlock), {
-//   ssr: false,
-//   loading: LoadingPlaceholder,
-// });

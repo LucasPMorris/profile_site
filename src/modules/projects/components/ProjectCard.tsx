@@ -9,7 +9,8 @@ import { STACKS } from '@/common/constant/stacks';
 import { ProjectItemProps } from '@/common/types/projects';
 
 const ProjectCard = ({ title, slug, description, image, stacks, is_featured }: ProjectItemProps) => {
-  const stacksArray = JSON.parse(stacks);
+  // Simple split - no JSON parsing needed!
+  const stacksArray = stacks ? stacks.split(',').map(s => s.trim()) : [];
 
   return (
     <Link href={`/projects/${slug}`}>
@@ -21,7 +22,7 @@ const ProjectCard = ({ title, slug, description, image, stacks, is_featured }: P
           </div>
         )}
         <div className='relative'>
-          <Image src={image} width={400} height={200} alt={title} className='h-48 rounded-t-xl object-cover object-left' />
+          <Image src={image || '/placeholder.jpg'} width={400} height={200} alt={title} className='h-48 rounded-t-xl object-cover object-left' />
           <div className='absolute left-0 top-0 flex h-full w-full items-center justify-center gap-1 rounded-t-xl bg-black text-sm font-medium text-white opacity-0 transition-opacity duration-300 group-hover:opacity-80'>
             <span>View Project</span>
             <ViewIcon size={20} />
@@ -37,7 +38,11 @@ const ProjectCard = ({ title, slug, description, image, stacks, is_featured }: P
             {description}
           </p>
           <div className='flex flex-wrap items-center gap-3 pt-2'>
-            {stacksArray?.map((stack: string, index: number) => (<div key={index}><Tooltip title={stack}>{STACKS[stack]}</Tooltip></div>))}
+            {stacksArray.map((stack: string, index: number) => (
+              <div key={index}>
+                <Tooltip title={stack}>{STACKS[stack] || `Missing: ${stack}`}</Tooltip>
+              </div>
+            ))}
           </div>
         </div>
       </Card>

@@ -19,6 +19,20 @@ const Table = ({ children }: TableProps) => (
 interface ExtendedComponents extends Components { TestItOut?: React.ComponentType<any>; }
 
 const MDXComponent = ({ children }: MarkdownRendererProps) => {
+  // Remove frontmatter if it exists (content between --- lines)
+  let processedContent = children;
+  const frontmatterRegex = /^---\r?\n[\s\S]*?\r?\n---\r?\n/;
+  if (frontmatterRegex.test(children)) {
+    processedContent = children.replace(frontmatterRegex, '').trim();
+  }
+  
+  // Normalize line endings and ensure proper code block separation
+  processedContent = processedContent
+    .replace(/\r\n/g, '\n') // Convert Windows line endings
+    .replace(/\r/g, '\n')   // Convert old Mac line endings
+    .replace(/```\n\n```/g, '```\n\n\n```') // Ensure triple newlines between code blocks
+    .trim();
+
   const decodeCode = (code: string, mode: string = 'javascript') => {
     if (!code) return code;
 
@@ -63,41 +77,69 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
       rehypePlugins={[rehypeRaw]}
       components={{
         a: (props: React.HTMLProps<HTMLAnchorElement>) => ( <a className='cursor-pointer text-teal-500 hover:text-teal-400 hover:underline' {...props} /> ),
-        p: (props: React.HTMLProps<HTMLDivElement>) => <div {...props} />,
-        h1: (props: React.HTMLProps<HTMLHeadingElement>) => ( <h1 className='text-3xl font-semibold dark:text-neutral-300' {...props} /> ),
-        h2: (props: React.HTMLProps<HTMLHeadingElement>) => ( <h2 className='text-2xl font-medium dark:text-neutral-300' {...props} /> ),
-        h3: (props: React.HTMLProps<HTMLHeadingElement>) => ( <h3 className='pt-4 text-[18px] font-medium leading-snug dark:text-neutral-300' {...props} /> ),
+        p: (props: React.HTMLProps<HTMLParagraphElement>) => <p className="mb-4" {...props} />,
+        h1: (props: React.HTMLProps<HTMLHeadingElement>) => {
+          const text = typeof props.children === 'string' ? props.children : '';
+          const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+          return <h1 id={id} className='text-3xl font-semibold dark:text-neutral-300 mb-6 mt-8' {...props} />;
+        },
+        h2: (props: React.HTMLProps<HTMLHeadingElement>) => {
+          const text = typeof props.children === 'string' ? props.children : '';
+          const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+          return <h2 id={id} className='text-2xl font-medium dark:text-neutral-300 mb-4 mt-8' {...props} />;
+        },
+        h3: (props: React.HTMLProps<HTMLHeadingElement>) => {
+          const text = typeof props.children === 'string' ? props.children : '';
+          const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+          return <h3 id={id} className='pt-4 text-[18px] font-medium leading-snug dark:text-neutral-300 mb-4 mt-6' {...props} />;
+        },
         ul: (props: React.HTMLProps<HTMLUListElement>) => ( <ul className='list-disc space-y-3 pb-2 pl-10' {...props} /> ),
         code: ({ className, children }: { className?: string; children: ReactNode }) => {
           const isBlock = !!className || String(children).includes('\n');
           var header;
           var canCollapse = false;
           var codeContent = String(children);
-          const headerLine = codeContent.split('\n')[0];
-          if (headerLine.startsWith('##')) {
-            codeContent = codeContent.split('\n').slice(1).join('\n');
-            header = headerLine.replace(/^#+\s*/, '');
+          
+          // Process special directives in order: header, canCollapse, language
+          const lines = codeContent.split('\n');
+          let lineIndex = 0;
+          
+          // Check for header (##Header)
+          if (lines[lineIndex]?.startsWith('##')) {
+            header = lines[lineIndex].replace(/^#+\s*/, '');
+            lineIndex++;
           }
-          const canCollapseLine = codeContent.split('\n')[0];
-          if (canCollapseLine.startsWith('#canCollapse')) {
+          
+          // Check for canCollapse (#canCollapse)
+          if (lines[lineIndex]?.startsWith('#canCollapse')) {
             canCollapse = true;
-            codeContent = codeContent.split('\n').slice(1).join('\n');
+            lineIndex++;
           }
-          const languageLine = codeContent.split('\n')[0];
-          if (languageLine.startsWith('#language-')) {
-            const lang = languageLine.replace('#language-', 'language-').trim();
+          
+          // Check for language (#language-xxx)
+          if (lines[lineIndex]?.startsWith('#language-')) {
+            const lang = lines[lineIndex].replace('#language-', 'language-').trim();
             if (lang && !className) { className = `${lang}`; }
-            codeContent = codeContent.split('\n').slice(1).join('\n');
+            lineIndex++;
           }
+          
+          // Remove processed lines from content
+          codeContent = lines.slice(lineIndex).join('\n');
+          
           return isBlock
             ? (<CodeBlock className={className} header={header || undefined} canCollapse={canCollapse}>{codeContent}</CodeBlock>)
             : (<code className='rounded bg-neutral-400/70 px-1 py-0.5 font-mono text-sm dark:bg-neutral-800'>{children}</code>); },
         hr: () => ( <hr className='my-6 border-t-1 border-neutral-700' /> ),
-        blockquote: (props: React.HTMLProps<HTMLQuoteElement>) => ( <blockquote className='rounded-br-2xl border-l-[5px] border-neutral-700 border-l-cyan-500 bg-neutral-200 py-3 pl-6 text-lg font-medium text-cyan-800 dark:bg-neutral-800 dark:text-cyan-200' {...props} /> ),
+        blockquote: (props: React.HTMLProps<HTMLQuoteElement>) => ( <blockquote className='rounded-br-2xl rounded-tr-2xl items-center border-l-[5px] border-neutral-700 border-l-cyan-500 bg-neutral-200 py-2 pl-6 text-lg font-medium text-cyan-800 dark:bg-neutral-800 dark:text-cyan-200' {...props} /> ),
         table: (props: React.HTMLProps<HTMLTableElement>) => <Table {...props} />,
         th: (props: React.HTMLProps<HTMLTableCellElement>) => ( <th className='border px-3 py-1 text-left dark:border-neutral-600'>{props.children}</th> ),
         td: (props: React.HTMLProps<HTMLTableCellElement>) => ( <td className='border px-3 py-1 dark:border-neutral-600'>{props.children}</td> ),
         img: ({ src = '', alt = '', width, height, className, style }: React.ImgHTMLAttributes<HTMLImageElement>) => {
+          // Don't render if src is empty
+          if (!src || (typeof src === 'string' && src.trim() === '')) {
+            return null;
+          }
+
           // Optional: fallback dimensions or styling
           const fallbackWidth = width ? parseInt(width as string) : 800;
           const fallbackHeight = height ? parseInt(height as string) : 600;
@@ -167,7 +209,7 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
         },
       } as ExtendedComponents}
     >
-      {children}
+      {processedContent}
     </ReactMarkdown>
   );
 };

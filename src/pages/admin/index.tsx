@@ -13,10 +13,19 @@ import { BsTrash as DeleteIcon, BsPencilSquare as EditIcon, BsPlusSquare as NewI
 export async function getServerSideProps() {
   const posts = await prisma.blogPost.findMany({ orderBy: { date: 'desc' }, include: { categories: true, tags: true } });
   const mappedPosts = posts.map(mapPrismaPostToBlogItem);
-  return { props: { posts: mappedPosts } };
+  
+  const projects = await prisma.projects.findMany({ orderBy: { updated_at: 'desc' } });
+  
+  // Serialize dates to strings
+  const serializedProjects = projects.map(project => ({
+    ...project,
+    updated_at: project.updated_at.toISOString()
+  }));
+  
+  return { props: { posts: mappedPosts, projects: serializedProjects } };
 }
 
-export default function AdminDashboard({ posts }: { posts: BlogItemProps[] }) {
+export default function AdminDashboard({ posts, projects }: { posts: BlogItemProps[]; projects: any[] }) {
   const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]);
   
   const router = useRouter();
@@ -32,40 +41,78 @@ export default function AdminDashboard({ posts }: { posts: BlogItemProps[] }) {
   };
 
   return (
-      <div className="p-8 space-y-6 text-sm text-neutral-600 dark:text-neutral-400">
-        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-        <Link href="/admin/create" className="text-blue-600 underline">Create New Post</Link>
-        <button onClick={handleLogout} className="text-sm text-red-600 underline">Logout</button>
-      <ul className="space-y-4">
-        {posts.map((post) => (
-          <li key={post.id}
-            className="w-full rounded-xl shadow-sm transition-all duration-300 border border-neutral-400 dark:border-neutral-800 bg-white/60 dark:bg-white/5 p-6 space-y-2">
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
-              <div>
-                <h2 className="font-semibold text-neutral-800 dark:text-neutral-100">{post.title.rendered}</h2>
-                <p className="text-sm text-neutral-500 dark:text-neutral-500">{post.date}</p>
-              </div>
-              <div className="flex gap-4">
-                <Link href={`/admin/edit/${post.id}`} className="text-indigo-600 dark:text-indigo-300 hover:underline"><EditIcon size={24}/></Link>
-                <Link href={`/admin/delete/${post.id}`} className="text-red-600 dark:text-red-400 hover:underline"><DeleteIcon size={24}/></Link>
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
-      <div>
+    <div className="p-8 space-y-8 text-sm text-neutral-600 dark:text-neutral-400">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+          <button onClick={handleLogout} className="text-sm text-red-600 underline">Logout</button>
+        </div>
+        
+        {/* Blog Posts Section */}
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Blog Posts</h2>
+            <Link href="/admin/create?type=blog" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+              <NewIcon className="inline mr-2" />Create New Post
+            </Link>
+          </div>
+          <ul className="space-y-4">
+            {posts.map((post) => (
+              <li key={post.id}
+                className="w-full rounded-xl shadow-sm transition-all duration-300 border border-neutral-400 dark:border-neutral-800 bg-white/60 dark:bg-white/5 p-6 space-y-2">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+                  <div>
+                    <h3 className="font-semibold text-neutral-800 dark:text-neutral-100">{post.title.rendered}</h3>
+                    <p className="text-sm text-neutral-500 dark:text-neutral-500">{post.date}</p>
+                  </div>
+                  <div className="flex gap-4">
+                    <Link href={`/admin/edit/${post.id}?type=blog`} className="text-indigo-600 dark:text-indigo-300 hover:underline"><EditIcon size={24}/></Link>
+                    <Link href={`/admin/delete/${post.id}?type=blog`} className="text-red-600 dark:text-red-400 hover:underline"><DeleteIcon size={24}/></Link>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Projects Section */}
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Projects</h2>
+            <Link href="/admin/create?type=project" className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+              <NewIcon className="inline mr-2" />Create New Project
+            </Link>
+          </div>
+          <ul className="space-y-4">
+            {projects.map((project) => (
+              <li key={project.id}
+                className="w-full rounded-xl shadow-sm transition-all duration-300 border border-neutral-400 dark:border-neutral-800 bg-white/60 dark:bg-white/5 p-6 space-y-2">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+                  <div>
+                    <h3 className="font-semibold text-neutral-800 dark:text-neutral-100">{project.title}</h3>
+                    <p className="text-sm text-neutral-500 dark:text-neutral-500">Updated: {new Date(project.updated_at).toLocaleDateString()}</p>
+                    <p className="text-sm text-neutral-400">{project.description}</p>
+                  </div>
+                  <div className="flex gap-4">
+                    <Link href={`/admin/edit/${project.id}?type=project`} className="text-indigo-600 dark:text-indigo-300 hover:underline"><EditIcon size={24}/></Link>
+                    <Link href={`/admin/delete/${project.id}?type=project`} className="text-red-600 dark:text-red-400 hover:underline"><DeleteIcon size={24}/></Link>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+        
+        {/* Image Upload Section */}
         <div className="rounded-xl shadow-sm transition-all duration-300 border border-neutral-400 dark:border-neutral-800 bg-white/60 dark:bg-white/5 p-4 space-y-2">
           <h2 className="text-lg font-semibold text-neutral-700 dark:text-neutral-100">Available Images</h2>
           <ImageBrowser />
-            <div className='relative py-2 pt-4 inline-block'>
-              <input type="file" placeholder="" id="uploadImage" accept="image/*" onChange={handleFileChange} className='hidden'/>
-              <label htmlFor="uploadImage" className="cursor-pointer px-4 py-2 rounded-lg hover:bg-[rgba(146,146,188)] border border-neutral-400 dark:border-neutral-700 bg-[rgba(106,106,128)] text-white font-medium transition-colors duration-200">
-                <UploadIcon className="inline-block mr-2 text-white" />Upload Image
-              </label>
-            </div>
-            {/* <input type="file" placeholder="" accept="image/*" onChange={handleFileChange} className='rgba(106, 106, 128, 1)'/> */}
+          <div className='relative py-2 pt-4 inline-block'>
+            <input type="file" placeholder="" id="uploadImage" accept="image/*" onChange={handleFileChange} className='hidden'/>
+            <label htmlFor="uploadImage" className="cursor-pointer px-4 py-2 rounded-lg hover:bg-[rgba(146,146,188)] border border-neutral-400 dark:border-neutral-700 bg-[rgba(106,106,128)] text-white font-medium transition-colors duration-200 flex items-center gap-2">
+              <UploadIcon />Upload Image
+            </label>
+          </div>
         </div>        
-      </div>      
-    </div>
+      </div>
   );
 }

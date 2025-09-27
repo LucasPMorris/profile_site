@@ -61,14 +61,7 @@ const TopArtists = ({ spotifyStats, selectedArtistId, onArtistSelect }: TopArtis
                       <span className='text-sm font-medium text-center'>{artist.name}</span>
                       {/* Spotify link with green arrow icon, absolutely positioned */}
                       {artist.artist_url && (
-                        <a
-                          href={artist.artist_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="absolute top-2 right-2 flex items-center gap-1 text-green-600 hover:text-green-700 font-semibold"
-                          style={{ zIndex: 50 }}
-                          title="Listen on Spotify"
-                        >
+                        <a href={artist.artist_url} target="_blank" rel="noopener noreferrer" className="absolute top-2 right-2 flex items-center gap-1 text-green-600 hover:text-green-700 font-semibold" style={{ zIndex: 50 }} title="Listen on Spotify" >
                           <FaPlayCircle size={32} />
                           <span className="sr-only">Listen on Spotify</span>
                         </a>

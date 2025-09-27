@@ -4,6 +4,8 @@ import { SiJavascript, SiCss3, SiHtml5, SiMarkdown } from 'react-icons/si';
 
 import ModalWrapper from '@/common/components/elements/ModalWrapper';
 import CodePlayground, { PlaygroundMode } from '@/modules/playground/components/CodePlayground';
+import Card from '@/common/components/elements/Card';
+import cn from '@/common/libs/cn';
 
 interface TestItOutProps { title: string; description: string; snippetId: string; code: string; html: string, mode?: PlaygroundMode; }
 
@@ -135,14 +137,15 @@ const TestItOut = ({ title, description, snippetId, code, html, mode = 'javascri
 
   return (
     <>
-      <div className="my-6 rounded-lg border border-neutral-300 bg-neutral-50 p-4 dark:border-neutral-700 dark:bg-neutral-800">
-        <div className="mb-3 flex items-center justify-between">
-          <h4 className="font-medium text-neutral-800 dark:text-neutral-200">{title}</h4>
-          <button onClick={handleOpen} className="flex items-center gap-2 rounded-md bg-blue-500 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-600">{getIcon()}Test It Out</button>
+      <Card className={cn('border border-neutral-400 px-5 py-4 dark:border-neutral-900')}>
+      {/* <div className="my-6 rounded-lg border border-neutral-300 bg-neutral-50 p-4 dark:border-neutral-700 dark:bg-neutral-800"> */}
+        <div className="flex items-center justify-left gap-4">
+          {/* <h4 className="font-medium text-neutral-800 dark:text-neutral-200">{title}</h4> */}
+            <button onClick={handleOpen} className="flex items-center gap-2 rounded-md bg-blue-500 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-600 flex-shrink-0">{getIcon()}Test It Out</button>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">{description}</p>
         </div>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">{description}</p>
-      </div>
-
+      {/* </div> */}
+      </Card>
       <ModalWrapper isOpen={isOpen} onClose={handleClose}>
         <div className="h-[80vh] w-full">
           <CodePlayground {...getPlaygroundProps()} />

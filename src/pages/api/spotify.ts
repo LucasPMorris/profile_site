@@ -41,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const data = await getSpotifyStatsByDateRange(new Date(start as string), new Date(end as string));
     const duration = Date.now() - startTime;
     console.log(`Spotify stats fetched in ${duration}ms`);
-    // console.log('Data:', data);
+
     // const unwrappedData = data.data;            // This little AI addition really messed me up!
     return res.status(200).json(data);
     

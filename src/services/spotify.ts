@@ -175,330 +175,213 @@ function selectMinimalBuckets(
 
 export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date): Promise<SpotifyDataResponseProps> => {
   try {
-    ////// ------------ PERFROMANCE NOTES ------------ //////
-    let startTime = new Date().toISOString();
-    console.log(`${new Date().toISOString()}: getSpotifyStatsByDateRange ||||| START |||| Dates: `, startDate, endDate);
+    const startTime = Date.now();
+    console.log(`${new Date().toISOString()}: getSpotifyStatsByDateRange START - Dates:`, startDate.toISOString(), endDate.toISOString());
 
-
-    // Fetch all required data in parallel to reduce latency
-    const [dailyStats, yearBuckets, monthBuckets] = await Promise.all([
-      prisma.spdailyplaystats.findMany({ where: { date: { gte: startDate, lte: endDate } } }),
-      prisma.yearbucket.findMany({ where: { range_start: { lte: endDate }, range_end: { gte: startDate } } }),
-      prisma.monthbucket.findMany({ where: { range_start: { lte: endDate }, range_end: { gte: startDate } } })
+    // Use raw SQL for much faster bucket-aware stats aggregation
+    const [dailyStats, topArtistsRaw, topTracksRaw] = await Promise.all([
+      prisma.spdailyplaystats.findMany({ 
+        where: { date: { gte: startDate, lte: endDate } },
+        select: { date: true, weekday: true, hourly_plays: true }
+      }),
+      
+      // Raw SQL for top artists - much faster than Prisma OR queries
+      prisma.$queryRaw`
+        SELECT 
+          a.artist_id,
+          a.name,
+          a.image_url,
+          a.artist_url,
+          COALESCE(SUM(ast.count), 0) as total_count
+        FROM spartist a
+        INNER JOIN artiststat ast ON a.artist_id = ast.artist_id
+        WHERE ast.stat_date >= ${startDate} AND ast.stat_date <= ${endDate}
+        GROUP BY a.artist_id, a.name, a.image_url, a.artist_url
+        ORDER BY total_count DESC
+        LIMIT 10
+      `,
+      
+      // Raw SQL for top tracks - much faster than Prisma OR queries  
+      prisma.$queryRaw`
+        SELECT 
+          t.track_id,
+          t.title,
+          t.isrc,
+          t.song_url,
+          t.explicit,
+          t.release_date,
+          t.album_id,
+          a.name as album_name,
+          a.image_url as album_image,
+          a.release_date as album_release_date,
+          ca.album_id as common_album_id,
+          ca.name as common_album_name,
+          ca.image_url as common_album_image,
+          ca.release_date as common_album_release_date,
+          STRING_AGG(ar.name, ', ' ORDER BY ar.name) as artists,
+          COALESCE(SUM(ts.count), 0) as total_count
+        FROM sptrack t
+        INNER JOIN trackstat ts ON t.track_id = ts.track_id
+        LEFT JOIN spalbum a ON t.album_id = a.album_id
+        LEFT JOIN spalbum ca ON t.common_album_id = ca.album_id
+        LEFT JOIN sptrackartist ta ON t.track_id = ta.track_id
+        LEFT JOIN spartist ar ON ta.artist_id = ar.artist_id
+        WHERE ts.stat_date >= ${startDate} AND ts.stat_date <= ${endDate}
+        GROUP BY t.track_id, t.title, t.isrc, t.song_url, t.explicit, t.release_date, t.album_id, 
+                 a.name, a.image_url, a.release_date, ca.album_id, ca.name, ca.image_url, ca.release_date
+        ORDER BY total_count DESC
+        LIMIT 10
+      `
     ]);
 
-    console.log(`${new Date().toISOString()}: getSpotifyStatsByDateRange ||||| DATA FETCHED |||| Dates: `, startDate, endDate, ' Time Ellapsed:', new Date().getTime() - new Date(startTime).getTime(), 'ms');
-    ////// ------------ PERFROMANCE NOTES ------------ //////
-    //
-    //   First Run - 646ms
-    //  Second Run - 777ms
-    //   Third Run - 680ms
-    //
-    ////// ------------ PERFROMANCE NOTES ------------ //////
+    console.log(`Raw query completed in ${Date.now() - startTime}ms`);
  
+    // Process the results from raw SQL queries
     const playFrequency = dailyStats.map((stat) => ({
       date: stat.date.toISOString().substring(0, 10),
       weekday: stat.weekday,
       hourly_plays: Array.isArray(stat.hourly_plays) ? stat.hourly_plays : Array(24).fill(0)
     }));
 
-    const bucketLookup = {
-      year: Object.fromEntries(yearBuckets.map(b => [b.id, b.range_start])),
-      month: Object.fromEntries(monthBuckets.map(b => [b.id, b.range_start]))
-    };
+    // Format top artists from raw SQL results
+    const topArtists = (topArtistsRaw as any[]).map(row => ({
+      artistId: row.artist_id,
+      name: row.name || '',
+      image: row.image_url || 'images/spotify-icon.svg',
+      artist_url: row.artist_url || '',
+      count: Number(row.total_count)
+    }));
 
-    const coveredDates = new Set<string>();
-    const toUtcMidnight = (dt: Date) => new Date(Date.UTC(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate()));
-    const rs = toUtcMidnight(startDate);
-    const re = toUtcMidnight(endDate);
-    const isFullyContained = (b: { range_start: Date; range_end: Date }) => {
-      const bs = toUtcMidnight(b.range_start);
-      const be = toUtcMidnight(b.range_end);
-      return bs >= rs && be <= re;
-    };
-    const addCoveredDates = (buckets: { range_start: Date; range_end: Date }[]) => {
-      for (const b of buckets) {
-        // Only consider buckets fully contained within the requested range
-        const bs = toUtcMidnight(b.range_start);
-        const be = toUtcMidnight(b.range_end);
-        if (!(bs >= rs && be <= re)) continue;
-        let d = new Date(bs);
-        while (d <= be) {
-          coveredDates.add(d.toISOString().split('T')[0]);
-          d.setUTCDate(d.getUTCDate() + 1);
-        }
-      }
-    };
-    const fullYearBuckets = yearBuckets.filter(isFullyContained);
-    const fullMonthBuckets = monthBuckets.filter(isFullyContained);
-    addCoveredDates(fullYearBuckets);
-    addCoveredDates(fullMonthBuckets);
+    // Format top tracks from raw SQL results  
+    const topTracks = (topTracksRaw as any[]).map(row => ({
+      trackId: row.track_id,
+      isrc: row.isrc || '',
+      album: {
+        albumId: row.album_id || '',
+        name: row.album_name || '',
+        release_date: row.album_release_date || new Date(),
+        image: row.album_image || 'images/spotify-icon.svg'
+      },
+      common_album: {
+        albumId: row.common_album_id || row.album_id || '',
+        name: row.common_album_name || row.album_name || '',
+        image: row.common_album_image || row.album_image || 'images/spotify-icon.svg',
+        release_date: row.common_album_release_date || row.album_release_date || new Date()
+      },
+      artists: row.artists || '',
+      songUrl: row.song_url || '',
+      title: row.title || '',
+      release_date: row.release_date || new Date(),
+      explicit: Boolean(row.explicit),
+      count: Number(row.total_count)
+    }));
 
-    const edgeDays: Date[] = [];
-    let d = new Date(rs);
-    while (d <= re) {
-      const key = d.toISOString().split('T')[0];
-      if (!coveredDates.has(key)) edgeDays.push(new Date(d));
-      d.setUTCDate(d.getUTCDate() + 1);
-    }
+    console.log(`Data processing completed in ${Date.now() - startTime}ms`);
 
-    console.log(`${new Date().toISOString()}: getSpotifyStatsByDateRange ||||| HAVE BUCKETS |||| Dates: `, startDate, endDate, ' Time Ellapsed:', new Date().getTime() - new Date(startTime).getTime(), 'ms');
-    ////// ------------ PERFROMANCE NOTES ------------ //////
-    //
-    //   First Run - 647ms
-    //  Second Run - 778ms
-    //   Third Run - 681ms
-    //
-    ////// ------------ PERFROMANCE NOTES ------------ //////
-
-    // Build a concise OR query: fully-contained year/month buckets + any day stats within range
-    const yearIds = fullYearBuckets.map(b => b.id);
-    const monthIds = fullMonthBuckets.map(b => b.id);
-    const bucketQueries: any[] = [];
-    if (yearIds.length) bucketQueries.push({ bucket_scope: 'year', yearbucketid: { in: yearIds } });
-    if (monthIds.length) bucketQueries.push({ bucket_scope: 'month', monthbucketid: { in: monthIds } });
-    bucketQueries.push({ bucket_scope: 'day', stat_date: { gte: rs, lte: re } });
-
-    const [artistStats, trackStats] = await Promise.all([
-      prisma.artiststat.findMany({ where: { OR: bucketQueries }, include: { artist: true } }),
-      prisma.trackstat.findMany({ where: { OR: bucketQueries }, include: { track: { include: { album: true, common_album: true, track_artists: { include: { artist: true } } } } } })
+    // Get accurate metadata counts for all tracks/artists in date range
+    const [totalCountsRaw] = await Promise.all([
+      prisma.$queryRaw`
+        SELECT 
+          COUNT(DISTINCT t.track_id) as total_track_count,
+          COUNT(DISTINCT a.artist_id) as total_artist_count,
+          COALESCE(SUM(CASE WHEN t.explicit = true THEN ts.count ELSE 0 END), 0) as explicit_count,
+          COALESCE(SUM(ts.count), 0) as total_play_count
+        FROM trackstat ts
+        INNER JOIN sptrack t ON ts.track_id = t.track_id
+        INNER JOIN sptrackartist ta ON t.track_id = ta.track_id
+        INNER JOIN spartist a ON ta.artist_id = a.artist_id
+        WHERE ts.stat_date >= ${startDate} AND ts.stat_date <= ${endDate}
+      `
     ]);
 
-    // Extract already-fetched day stats for precise in-range aggregation
-    const dayArtistStatsAll = (artistStats as any[]).filter(s => s.bucket_scope === 'day');
-    const dayTrackStatsAll = (trackStats as any[]).filter(s => s.bucket_scope === 'day');
+    const totalCounts = (totalCountsRaw as any[])[0];
+    const totalTrackCount = Number(totalCounts.total_track_count);
+    const totalArtistCount = Number(totalCounts.total_artist_count);
+    const explicitCount = Number(totalCounts.explicit_count);
+    const totalPlayCount = Number(totalCounts.total_play_count);
+    const percentExplicit = totalPlayCount > 0 ? parseFloat(((explicitCount / totalPlayCount) * 100).toFixed(1)) : 0.0;
 
-    console.log(`${new Date().toISOString()}: getSpotifyStatsByDateRange ||||| artiststat / trackstat ||||| Dates: `, startDate, endDate, ' Time Ellapsed:', new Date().getTime() - new Date(startTime).getTime(), 'ms');
-    ////// ------------ PERFROMANCE NOTES ------------ //////
-    //
-    //    First Run - N/A
-    // Second Run - 8662ms
-    //   Third Run - 813ms
-    //
-    ////// ------------ PERFROMANCE NOTES ------------ //////
-
-
-    const resolveBucketDate = (stat: any): Date | null => {
-      if (stat.bucket_scope === 'year') return bucketLookup.year[stat.yearbucketid ?? -1];
-      if (stat.bucket_scope === 'month') return bucketLookup.month[stat.monthbucketid ?? -1];
-      if (stat.bucket_scope === 'day') return stat.stat_date ?? null;
-      return null;
-    };
-
-    console.log(`${new Date().toISOString()}: getSpotifyStatsByDateRange ||||| BUCKETS NORMALIZED |||| Dates: `, startDate, endDate, ' Time Ellapsed:', new Date().getTime() - new Date(startTime).getTime(), 'ms');
-    ////// ------------ PERFROMANCE NOTES ------------ //////
-    //
-    //   First Run - 9802ms
-    //  Second Run - 8662ms
-    //   Third Run - 813ms
-    //
-    ////// ------------ PERFROMANCE NOTES ------------ //////
-
-
-    const normalizedArtistStats = artistStats.map(stat => ({ ...stat, bucket_date: resolveBucketDate(stat) }));
-    const normalizedTrackStats = trackStats.map(stat => ({ ...stat, bucket_date: resolveBucketDate(stat) }));
-
-    const filteredArtistStats = normalizedArtistStats.filter(stat => {
-      if (!stat.bucket_date) return false;
-      // For year/month buckets, include if bucket range overlaps requested range
-      if (stat.bucket_scope === 'year' && stat.yearbucketid) {
-        const bucket = yearBuckets.find(b => b.id === stat.yearbucketid);
-        if (bucket && bucket.range_end >= startDate && bucket.range_start <= endDate) return true;
-      }
-      if (stat.bucket_scope === 'month' && stat.monthbucketid) {
-        const bucket = monthBuckets.find(b => b.id === stat.monthbucketid);
-        if (bucket && bucket.range_end >= startDate && bucket.range_start <= endDate) return true;
-      }
-      // For day buckets, use bucket_date
-      const date = new Date(stat.bucket_date);
-      return date >= startDate && date <= endDate;
-    });
-
-    const filteredTrackStats = normalizedTrackStats.filter(stat => {
-      if (!stat.bucket_date) return false;
-      if (stat.bucket_scope === 'year' && stat.yearbucketid) {
-        const bucket = yearBuckets.find(b => b.id === stat.yearbucketid);
-        if (bucket && bucket.range_end >= startDate && bucket.range_start <= endDate) return true;
-      }
-      if (stat.bucket_scope === 'month' && stat.monthbucketid) {
-        const bucket = monthBuckets.find(b => b.id === stat.monthbucketid);
-        if (bucket && bucket.range_end >= startDate && bucket.range_start <= endDate) return true;
-      }
-      const date = new Date(stat.bucket_date);
-      return date >= startDate && date <= endDate;
-    });
-
-    // Robust aggregation for top artists: prefer day-level when present, else fallback to filtered buckets
-    const artistCounts = new Map<string, number>();
-    const artistMeta = new Map<string, any>();
-    const artistSource = dayArtistStatsAll.length ? dayArtistStatsAll : filteredArtistStats;
-    for (const stat of artistSource) {
-      const id = stat.artist_id;
-      artistCounts.set(id, (artistCounts.get(id) || 0) + stat.count);
-      if (!artistMeta.has(id) && stat.artist) { artistMeta.set(id, stat.artist); }
-    }
-    const topArtists = Array.from(artistCounts.entries())
-      .map(([id, count]) => {
-        const meta = artistMeta.get(id) || {};
-        return { artistId: id, name: meta.name || '', image: meta.image_url ?? 'images/spotify-icon.svg', artist_url: meta.artist_url || '', count };
-      })
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 10);
-
-    // Robust aggregation for top tracks: prefer day-level when present, else fallback to filtered buckets
-    const trackCounts = new Map<string, number>();
-    const trackMeta = new Map<string, any>();
-    const trackSource = dayTrackStatsAll.length ? dayTrackStatsAll : filteredTrackStats;
-    for (const stat of trackSource) {
-      const id = stat.track_id;
-      trackCounts.set(id, (trackCounts.get(id) || 0) + stat.count);
-      if (!trackMeta.has(id) && stat.track) { trackMeta.set(id, stat.track); }
-    }
-    const topTracks = Array.from(trackCounts.entries())
-      .map(([id, count]) => {
-        const meta = trackMeta.get(id) || {};
-        const defaultAlbum = { albumId: '', name: '', release_date: new Date(), image: 'images/spotify-icon.svg' };
-        const album = meta.album
-          ? { albumId: meta.album.album_id || '', name: meta.album.name || '', release_date: meta.album.release_date ?? new Date(), image: meta.album.image_url ?? 'images/spotify-icon.svg' }
-          : defaultAlbum;
-        const common_album = meta.common_album
-          ? { albumId: meta.common_album.album_id || '', name: meta.common_album.name || '', image: meta.common_album.image_url ?? 'images/spotify-icon.svg', release_date: meta.common_album.release_date ?? new Date() }
-          : defaultAlbum;
-        return {
-          trackId: id,
-          isrc: meta.isrc || '',
-          album,
-          common_album,
-          artists: meta.track_artists?.map((ta: any) => ta.artist?.name).join(', ') || '',
-          songUrl: meta.song_url ?? '',
-          title: meta.title || '',
-          release_date: meta.release_date ?? new Date(),
-          explicit: meta.explicit || false,
-          count
-        };
-      })
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 10);
-
-    console.log(`${new Date().toISOString()}: getSpotifyStatsByDateRange ||||| TOP DATA PROCESSED ||||| Dates: `, startDate, endDate, ' Time Ellapsed:', new Date().getTime() - new Date(startTime).getTime(), 'ms');
-    ////// ------------ PERFROMANCE NOTES ------------ //////
-    //
-    //   First Run - 9835ms
-    //  Second Run - 8692ms
-    //   Third Run - 813ms
-    //
-    ////// ------------ PERFROMANCE NOTES ------------ //////
-
-    const formatHeatmap = (stats: any[]): HeatmapFrequencies[] => {
-      //console.log('DEBUG formatHeatmap input:', stats.length, stats[0]);
-      return stats
-        .filter(stat => {
-          if (stat.bucket_scope === 'year' && stat.yearbucketid) {
-            const bucket = yearBuckets.find(b => b.id === stat.yearbucketid);
-            if (bucket && bucket.range_end >= startDate && bucket.range_start <= endDate) return true;
-          }
-          if (stat.bucket_scope === 'month' && stat.monthbucketid) {
-            const bucket = monthBuckets.find(b => b.id === stat.monthbucketid);
-            if (bucket && bucket.range_end >= startDate && bucket.range_start <= endDate) return true;
-          }
-          // For day buckets, use stat_date directly
-          if (stat.bucket_scope === 'day' && stat.stat_date) {
-            const date = new Date(stat.stat_date);
-            return date >= startDate && date <= endDate;
-          }
-          return false;
-        })
-        .map(stat => {
-          let dateStr;
-          let weekdayStr;
-          if (stat.bucket_scope === 'day' && stat.stat_date) {
-            dateStr = new Date(stat.stat_date).toISOString().split('T')[0];
-            weekdayStr = format(new Date(stat.stat_date), 'EEEE');
-          } else {
-            dateStr = new Date(stat.bucket_date).toISOString().split('T')[0];
-            weekdayStr = format(new Date(stat.bucket_date), 'EEEE');
-          }
-          return {
-            date: dateStr,
-            weekday: weekdayStr,
-            hourly_plays: Array.isArray(stat.hourly_plays) && stat.hourly_plays.length === 24
-              ? stat.hourly_plays
-              : Array(24).fill(0),
-            artistId: stat.artist_id,
-            trackId: stat.track_id
-          };
-        });
-    };
-
-  // Heatmaps will be assigned below after querying day buckets for top artists/tracks only
-
-    console.log(`${new Date().toISOString()}: getSpotifyStatsByDateRange ||||| HEATMAPS FORMATTED ||||| Dates: `, startDate, endDate, ' Time Ellapsed:', new Date().getTime() - new Date(startTime).getTime(), 'ms');
-    ////// ------------ PERFROMANCE NOTES ------------ //////
-    //
-    //   Heat Maps - 9860ms
-    //  Second Run - 8708ms
-    //    Third Run - 813ms
-    //
-    ////// ------------ PERFROMANCE NOTES ------------ //////
-
-    const trackMap = new Map<string, any>();
-    filteredTrackStats.forEach(stat => { 
-        const track = (stat as any).track; // Cast to any or adjust type if necessary
-        if (track && !trackMap.has(stat.track_id)) { 
-            trackMap.set(stat.track_id, track); 
-        } 
-    });
-
-    const artistMap = new Map<string, any>();
-    filteredArtistStats.forEach(stat => { 
-        const artist = (stat as any).artist; // Cast to any or adjust type if necessary
-        if (artist && !artistMap.has(stat.artist_id)) { 
-            artistMap.set(stat.artist_id, artist); 
-        } 
-    });
-
-    const trackIds = new Set(filteredTrackStats.map(stat => stat.track_id));
-    const artistIds = new Set(filteredArtistStats.map(stat => stat.artist_id));
-
-    const explicitCount = filteredTrackStats
-      .filter(stat => stat.track?.explicit)
-      .reduce((sum, stat) => sum + stat.count, 0);
-    const totalCount = filteredTrackStats.reduce((sum, stat) => sum + stat.count, 0);
-    const percentExplicit = totalCount > 0 ? parseFloat(((explicitCount / totalCount) * 100).toFixed(1)) : 0.0;
-
-    console.log(`${new Date().toISOString()}: getSpotifyStatsByDateRange ||||| COMPLETE ||||| Dates: `, startDate, endDate, ' Total Time:', new Date().getTime() - new Date(startTime).getTime(), 'ms');
-  // --- HEATMAP AGGREGATION BLOCK ---
+    // Get heatmap data for top artists and tracks only (much more efficient)
     let artistHeatmaps: HeatmapFrequencies[] = [];
     let trackHeatMaps: HeatmapFrequencies[] = [];
+    
     if (topArtists.length > 0 || topTracks.length > 0) {
       const topArtistIds = topArtists.map(a => a.artistId);
       const topTrackIds = topTracks.map(t => t.trackId);
-      const dayArtistStats = dayArtistStatsAll.filter(s => topArtistIds.includes(s.artist_id));
-      const dayTrackStats = dayTrackStatsAll.filter(s => topTrackIds.includes(s.track_id));
-      artistHeatmaps = topArtists.flatMap(({ artistId }) => formatHeatmap(dayArtistStats.filter(s => s.artist_id === artistId)) );
-      trackHeatMaps = topTracks.flatMap(({ trackId }) => formatHeatmap(dayTrackStats.filter(s => s.track_id === trackId)));
-    }
-    ////// ------------ PERFROMANCE NOTES ------------ //////
-    //
-    //   First Run - 9861ms
-    //  Second Run - 8709ms
-    //    Third Run - 813ms
-    //
-    ////// ------------ PERFROMANCE NOTES ------------ //////
+      
+      // Get detailed hourly data only for top items
+      const [heatmapArtistStats, heatmapTrackStats] = await Promise.all([
+        prisma.artiststat.findMany({
+          where: { 
+            artist_id: { in: topArtistIds },
+            stat_date: { gte: startDate, lte: endDate },
+            bucket_scope: 'day'
+          },
+          select: { artist_id: true, stat_date: true, hourly_plays: true }
+        }),
+        prisma.trackstat.findMany({
+          where: { 
+            track_id: { in: topTrackIds },
+            stat_date: { gte: startDate, lte: endDate },
+            bucket_scope: 'day'  
+          },
+          select: { track_id: true, stat_date: true, hourly_plays: true }
+        })
+      ]);
 
-    return { status: 200, data: {
-      topArtists,
-      topTracks,
-      playFrequency,
-      artistHeatmaps,
-      trackHeatMaps,
+      // Format heatmaps efficiently
+      artistHeatmaps = heatmapArtistStats.map(stat => ({
+        date: stat.stat_date.toISOString().split('T')[0],
+        weekday: format(stat.stat_date, 'EEEE'),
+        hourly_plays: Array.isArray(stat.hourly_plays) && stat.hourly_plays.length === 24 
+          ? stat.hourly_plays 
+          : Array(24).fill(0),
+        artistId: stat.artist_id,
+        trackId: undefined
+      }));
+
+      trackHeatMaps = heatmapTrackStats.map(stat => ({
+        date: stat.stat_date.toISOString().split('T')[0],
+        weekday: format(stat.stat_date, 'EEEE'),
+        hourly_plays: Array.isArray(stat.hourly_plays) && stat.hourly_plays.length === 24 
+          ? stat.hourly_plays 
+          : Array(24).fill(0),
+        artistId: undefined,
+        trackId: stat.track_id
+      }));
+    }
+
+    console.log(`Query completed in ${Date.now() - startTime}ms`);
+
+    console.log(`Query completed in ${Date.now() - startTime}ms`);
+
+    return { 
+      status: 200, 
+      data: {
+        topArtists,
+        topTracks,
+        playFrequency,
+        artistHeatmaps,
+        trackHeatMaps,
         meta: {
-          totalTrackCount: Array.from(trackIds).length,
-          totalArtistCount: Array.from(artistIds).length,
+          totalTrackCount,
+          totalArtistCount,
           percentExplicit
         }
-      } };
-  } catch (error) { console.error('Error in getSpotifyStatsByDateRange:', error);
-    return { status: 500, data: { topArtists: [], topTracks: [], playFrequency: [], artistHeatmaps: [], trackHeatMaps: [], meta: { totalTrackCount: 0, totalArtistCount: 0, percentExplicit: 0 } } };
+      }
+    };
+  } catch (error) {
+    console.error('Error in getSpotifyStatsByDateRange:', error);
+    return { 
+      status: 500, 
+      data: { 
+        topArtists: [], 
+        topTracks: [], 
+        playFrequency: [], 
+        artistHeatmaps: [], 
+        trackHeatMaps: [], 
+        meta: { totalTrackCount: 0, totalArtistCount: 0, percentExplicit: 0 } 
+      } 
+    };
   }
 };
