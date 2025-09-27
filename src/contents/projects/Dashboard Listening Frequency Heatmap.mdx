@@ -3,9 +3,9 @@ id: 1
 title: 'Spotify Usage Heatmap'
 stacks: ['JavaScript', 'TypeScript', 'Node.js', 'React', 'Next.js', 'PostgreSQL', 'Prisma', 'TailwindCSS']
 slug: 'spotify-usage-heatmap'
-image: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
-link_demo: null
-link_github: null
+image: 'https://lucas.untethered4life.com//images/projects/spotify/spotify-heatmap-banner.png'
+link_demo: 'https://lucas.untethered4life.com/dashboard'
+link_github: 'https://lucas.untethered4life.com/dashboard'
 created_at: '2025-09-25'
 updated_at: '2025-09-25'
 ---
@@ -22,7 +22,9 @@ In this article I will describe:
 - The technologies I used to bring it all together.
 - And the overall lessons and insights I gained from the experience.
 
-## Step 1: Sample Data
+## <span id="sample-data" name="Sample Data"></span>
+
+> Step 1: Sample Data
 
 - Create a [Spotify Developer account](https://developer.spotify.com/), register an application, and obtain necessary token to make API calls. For those that want to try this at home, the steps for authenticating with Spotify via the API can be found [HERE](https://developer.spotify.com/documentation/web-api/tutorials/code-flow).
 
@@ -546,7 +548,7 @@ The initial simple schema couldn't handle the reality that:
 
 This required creating junction tables with appropriate relations to properly normalize the many-to-many relationships.
 
-<div><div data-component="SvgScroll" data-src="/images/projects/spotify/schema-first-relations.svg" data-width="1600" data-height="1200" data-initial-scale="0.8" /></div>
+<div><div data-component="SvgScroll" data-src="/images/projects/spotify/schema-first-relations.svg" data-width="600" data-height="800" data-initial-scale="0.6" /></div>
 
 ### Step 4b - Performance and accuracy issues calculating top tracks/artists.
 
@@ -564,7 +566,7 @@ The `hourly_plays` column in the `spdailyplaystats` table is to track the number
 
 </div>
 
-<div><div data-component="SvgScroll" data-src="/images/projects/spotify/schema-daily-stats.svg" data-width="1600" data-height="1200" data-initial-scale="0.8" /></div>
+<div><div data-component="SvgScroll" data-src="/images/projects/spotify/schema-daily-stats.svg" data-width="600" data-height="800" data-initial-scale="0.6" /></div>
 
 The `spdailyplaystats` works great for the heatmap visualization, but it didn't help with the top artist or top tracks list. Daily stat summaries was incredibly over simplified and grossly misrepresented the data.
 - For example, if I listened to a track 10 times in one day, and that track was by Artist A, and I listened to another track by Artist B 5 times on the same day, the daily stats would show Artist A with 10 plays and Artist B with 5 plays for that day. However, if I listened to multiple tracks by Artist A on that same day, the daily stats would not accurately reflect the total plays for Artist A across all tracks.
@@ -577,7 +579,7 @@ c) I created the `yearbucket` and `monthbucket` and `weekbucket`. The idea being
 
 And that was when the final database schema was born (I mean, there were some tweeaks after this, but this was the big one and the rest was just details)!
 
-<div><div data-component="SvgScroll" data-src="/images/projects/spotify/schema-full.svg" data-width="1600" data-height="1200" data-initial-scale="0.8" /></div>
+<div><div data-component="SvgScroll" data-src="/images/projects/spotify/schema-full.svg" data-width="600" data-height="800" data-initial-scale="0.6" /></div>
 
 ## Step 5 - Real Time Data Ingestion
 

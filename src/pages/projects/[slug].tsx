@@ -54,31 +54,3 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
   return { props: { project: JSON.parse(JSON.stringify(response)) } };
 };
-
-// RY: moved from SSG to SSR since data updated frequently from DB
-// export const getStaticProps: GetStaticProps = async ({ params }) => {
-//   const response = await prisma.projects.findUnique({
-//     where: {
-//       slug: String(params?.slug),
-//     },
-//   });
-
-//   return {
-//     props: {
-//       project: JSON.parse(JSON.stringify(response)),
-//     },
-//     revalidate: 10,
-//   };
-// };
-
-// export const getStaticPaths: GetStaticPaths = async () => {
-//   const response = await prisma.projects.findMany();
-//   const paths = response.map((project) => ({
-//     params: { slug: project.slug },
-//   }));
-
-//   return {
-//     paths,
-//     fallback: false,
-//   };
-// };

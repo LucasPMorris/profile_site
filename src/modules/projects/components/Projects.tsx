@@ -25,7 +25,7 @@ const Projects = ({ projects, loadMore, hasMore }: ProjectsComponentProps) => {
 
   // TODO: Remove CurrentState and use EmptyState component after Projects have been added.
   { return <CurrentState />; }
-  // if (filteredProjects.length === 0) { return <EmptyState message='No projects available yet. Check back soon!' />; }
+  //if (filteredProjects.length === 0) { return <EmptyState message='No projects available yet. Check back soon!' />; }
 
   return (
     <InfiniteScroll dataLength={filteredProjects.length} next={loadMore} hasMore={hasMore} loader={<h4>Loading...</h4>} style={{ overflow: 'hidden' }}>
