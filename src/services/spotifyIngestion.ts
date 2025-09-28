@@ -138,8 +138,14 @@ export const aggregateDailyStats = async (targetDate: Date): Promise<void> => {
   console.log(`✅ Overall stats created for ${dateStr}`);
 
   // Find existing day bucket (daybuckets are pre-created up to 2030)
+  // Compare by date string to handle timezone differences
   const dayBucket = await prisma.daybucket.findFirst({
-    where: { start_date: start }
+    where: { 
+      start_date: {
+        gte: new Date(`${dateStr}T00:00:00.000Z`),
+        lt: new Date(`${dateStr}T23:59:59.999Z`)
+      }
+    }
   });
 
   if (!dayBucket) {
