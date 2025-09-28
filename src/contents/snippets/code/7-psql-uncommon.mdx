@@ -22,6 +22,8 @@ These snippets aren't as common but are still very useful in everyday PostgreSQL
 
 <br/>
 
+<span id="rank-function" name="Ranking Functions" data-toc></span>
+
 > Window Functions for Rankings
 ```sql
 SELECT 
@@ -40,6 +42,8 @@ FROM employees;
 ---
 
 <br/>
+
+<span id="recursion" name="Recursion CTE" data-toc></span>
 
 > Recursive CTE for Hierarchical Data
 ```sql
@@ -65,6 +69,8 @@ SELECT * FROM org_chart ORDER BY level, name;
 ---
 
 <br/>
+
+<span id="json-ops" name="JSON Operations" data-toc></span>
 
 > JSON Operations
 ```sql
@@ -94,6 +100,8 @@ WHERE id = 1;
 
 <br/>
 
+<span id="advanced-aggregation" name="Advanced Aggregation" data-toc></span>
+
 > Advanced Aggregations
 ```sql
 SELECT 
@@ -113,6 +121,8 @@ GROUP BY department;
 ---
 
 <br/>
+
+<span id="full-search" name="Full-Text Search" data-toc></span>
 
 > Full-Text Search
 ```sql
@@ -138,6 +148,8 @@ ORDER BY rank DESC;
 
 <br/>
 
+<span id="lateral-joins" name="Lateral Joins" data-toc></span>
+
 > LATERAL Joins for Correlated Subqueries
 ```sql
 SELECT u.name, recent_posts.title, recent_posts.created_at
@@ -158,6 +170,8 @@ WHERE u.active = true;
 ---
 
 <br/>
+
+<span id="missing-data" name="Series & Missing Data" data-toc></span>
 
 > Generate Series for Missing Data
 ```sql
@@ -181,6 +195,8 @@ ORDER BY date_series;
 ---
 
 <br/>
+
+<span id="table-partioning" name="Table Partitioning" data-toc></span>
 
 > Table Partitioning for Performance
 ```sql
@@ -211,6 +227,8 @@ WHERE sale_date BETWEEN '2023-01-15' AND '2023-02-15';
 
 <br/>
 
+<span id="advisory-locks" name="Advisory Locks" data-toc></span>
+
 > Advisory Locks for Application Logic
 ```sql
 -- Try to acquire lock (non-blocking)
@@ -235,6 +253,8 @@ SELECT pg_advisory_unlock(12345);
 
 <br/>
 
+<span id="custom-agg" name="Custom Aggregation" data-toc></span
+>
 > Custom Aggregate Functions
 ```sql
 -- Create a custom aggregate for concatenating with separator

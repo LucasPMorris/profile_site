@@ -22,6 +22,8 @@ These are my favorite PostgreSQL snippets. Some are common, others are obscure, 
 
 <br/>
 
+<span id="smart-pagination" name="Smart Pagination" data-toc></span>
+
 > Smart Pagination with Cursor-Based Approach
 ```sql
 -- Instead of OFFSET (slow for large offsets)
@@ -46,6 +48,8 @@ LIMIT 20;
 ---
 
 <br/>
+
+<span id="db-health" name="Database Health Check" data-toc></span>
 
 > Database Health Check Queries
 ```sql
@@ -93,6 +97,8 @@ ORDER BY efficiency_percent DESC;
 
 <br/>
 
+<span id="safe-migrations" name="Safe Migrations" data-toc></span>
+
 > Safe Schema Migrations for Production
 ```sql
 -- Add column with default safely (large tables)
@@ -135,6 +141,8 @@ ON users(status) WHERE status = 'active';
 
 <br/>
 
+<span id="json-ops" name="JSON Operations" data-toc></span>
+
 > Bulk Data Operations
 ```sql
 -- Efficient bulk insert with conflict handling
@@ -171,6 +179,8 @@ CSV HEADER;
 ---
 
 <br/>
+
+<span id="advanced-validation" name="Advanced Validation" data-toc></span>
 
 > Advanced Data Validation
 ```sql
@@ -221,7 +231,9 @@ CREATE TRIGGER validate_order_total
 
 <br/>
 
-> Complex Date/Time Calculations
+<span id="complex-datetime" name="Complex Date Queries" data-toc></span>
+
+> Complex Date/Time Queries
 ```sql
 -- Business days calculation
 SELECT 
@@ -262,6 +274,8 @@ WHERE hour_ny BETWEEN 9 AND 17  -- NY business hours
 ---
 
 <br/>
+
+<span id="performance-optimization" name="Optimization" data-toc></span>
 
 > Performance Optimization Techniques
 ```sql
@@ -307,6 +321,8 @@ ORDER BY estimated_clv DESC;
 ---
 
 <br/>
+
+<span id="data-archiving" name="Data Archiving" data-toc></span>
 
 > Data Archiving and Cleanup Strategy
 ```sql

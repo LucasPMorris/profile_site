@@ -22,6 +22,8 @@ These snippets are incredibly common and are very useful in everyday PostgreSQL 
 
 <br/>
 
+<span id="select-w-where" name="SELECT with WHERE" data-toc></span>
+
 > Basic SELECT with WHERE
 ```sql
 SELECT id, name, email 
@@ -39,6 +41,8 @@ LIMIT 50;
 
 <br/>
 
+<span id="join" name="Basic JOIN" data-toc></span>
+
 > JOIN Tables
 ```sql
 SELECT u.name, p.title, p.created_at
@@ -54,6 +58,8 @@ WHERE u.active = true;
 
 <br/>
 
+<span id="left-join" name="LEFT JOIN" data-toc></span>
+
 > LEFT JOIN for Optional Relationships
 ```sql
 SELECT u.name, COUNT(p.id) as post_count
@@ -68,6 +74,8 @@ GROUP BY u.id, u.name;
 ---
 
 <br/>
+
+<span id="insert-retuning" name="INSERT with RETURN" data-toc></span>
 
 > INSERT with RETURNING
 ```sql
@@ -98,6 +106,8 @@ WHERE email = 'user@example.com';
 
 <br/>
 
+<span id="upsert" name="UPSERT" data-toc></span>
+
 > UPSERT (INSERT ON CONFLICT)
 ```sql
 INSERT INTO user_preferences (user_id, theme, language)
@@ -115,6 +125,8 @@ DO UPDATE SET
 
 <br/>
 
+<span id="aggregation" name="Aggregation" data-toc></span>
+
 > Basic Aggregation
 ```sql
 SELECT 
@@ -131,6 +143,8 @@ FROM users;
 
 <br/>
 
+<span id="date-filtering" name="Date Filtering" data-toc></span>
+
 > Date/Time Filtering
 ```sql
 SELECT *
@@ -145,6 +159,8 @@ WHERE created_at >= CURRENT_DATE - INTERVAL '7 days'
 ---
 
 <br/>
+
+<span id="case" name="CASE" data-toc></span>
 
 > CASE Statement
 ```sql
@@ -165,6 +181,8 @@ FROM users;
 ---
 
 <br/>
+
+<span id="cte" name="CTE" data-toc></span>
 
 > Common Table Expression (CTE)
 ```sql

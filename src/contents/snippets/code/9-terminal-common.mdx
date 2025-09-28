@@ -1,20 +1,32 @@
 ---
-id: 11
+id: 9
 chapter_id: 3
 chapter_title: 'Terminal'
-title: 'Personal Favorites'
+title: 'Common Snippets'
 category: 'Code'
 language: 'Bash'
-difficulty: 'Medium'
+difficulty: 'Easy'
 source: null
 cover_url: 'https://cloud.aulianza.com/public/images/learn/javascript.webp'
 source_url: null
-created_at: '2025-08-30'
-updated_at: '2025-09-06'
+created_at: '2023-09-17'
+updated_at: '2023-09-17'
 is_playground: true
 ---
 
-These are my favorite terminal snippets. Some are common, others are obscure, or I just happen to use them a lot in my development workflow.
+These snippets are incredibly common and very useful when working in the terminal. Some of these will become so familiar that you will not even think about them anymore, others it is just easy some time to cut and paste!
+
+---
+
+<br/>
+
+<span id="ls-list" name="List Directory Contents" data-toc></span>
+
+> List Directory Contents
+```bash
+ls -la
+```
+**Function:** Lists all files and directories in the current location with detailed information including hidden files, permissions, owner, size, and modification date.
 
 <br/>
 
@@ -22,26 +34,13 @@ These are my favorite terminal snippets. Some are common, others are obscure, or
 
 <br/>
 
-> Git Workflow Shortcuts
+<span id="change-directory" name="Change Directory" data-toc></span>
+
+> Change Directory
 ```bash
-# My favorite git aliases
-alias gs='git status'
-alias gp='git push'
-alias gl='git log --oneline --graph --decorate'
-alias gd='git diff'
-alias ga='git add .'
-alias gc='git commit -m'
-
-# Undo last commit (keep changes)
-git reset --soft HEAD~1
-
-# Interactive rebase for cleaning history
-git rebase -i HEAD~3
-
-# Stash with message
-git stash push -m "work in progress on feature X"
+cd /path/to/directory
 ```
-**Function:** Speed up Git workflow with aliases and powerful commands for managing commit history and temporary changes.
+**Function:** Navigates to the specified directory. Use `cd ..` to go up one level, `cd ~` to go to home directory, or `cd -` to go to the previous directory.
 
 <br/>
 
@@ -49,23 +48,13 @@ git stash push -m "work in progress on feature X"
 
 <br/>
 
-> Development Server Shortcuts
+<span id="pwd-directory" name="Show Current Directory" data-toc></span>
+
+> Print Working Directory
 ```bash
-# Quick HTTP server for static files
-python3 -m http.server 8000
-# or
-npx serve .
-
-# Find and kill process on port
-lsof -ti:3000 | xargs kill -9
-
-# Monitor file changes and restart server
-find . -name "*.js" | entr -r npm start
-
-# Quick port check
-nc -zv localhost 3000
+pwd
 ```
-**Function:** Quickly serve files, manage development servers, and handle port conflicts during development.
+**Function:** Displays the full path of the current directory you're working in. Useful for confirming your location in the file system.
 
 <br/>
 
@@ -73,22 +62,13 @@ nc -zv localhost 3000
 
 <br/>
 
-> File and Directory Shortcuts
+<span id="mkdir" name="Create Directory" data-toc></span>
+
+> Create New Directory
 ```bash
-# Create directory and cd into it
-mkcd() { mkdir -p "$1" && cd "$1"; }
-
-# Find file and open in editor
-ff() { find . -name "*$1*" -type f | head -5; }
-
-# Quick backup of file
-bak() { cp "$1" "$1.bak.$(date +%Y%m%d_%H%M%S)"; }
-
-# Get file size in human readable format
-alias du='du -h'
-alias df='df -h'
+mkdir new-folder
 ```
-**Function:** Convenient functions for common file operations, finding files, and creating backups.
+**Function:** Creates a new directory with the specified name. Use `mkdir -p path/to/nested/folder` to create nested directories all at once.
 
 <br/>
 
@@ -96,24 +76,13 @@ alias df='df -h'
 
 <br/>
 
-> Log Analysis Made Easy
+<span id="cp-files" name="Copy" data-toc></span>
+
+> Copy Files or Directories
 ```bash
-# Follow multiple log files
-tail -f /var/log/*.log
-
-# Search logs with context
-grep -A 5 -B 5 "ERROR" app.log
-
-# Count occurrences of patterns
-grep -c "404" access.log
-
-# Show unique IPs from access log
-awk '{print $1}' access.log | sort | uniq -c | sort -nr
-
-# Filter logs by time range
-sed -n '/2023-09-06 10:00/,/2023-09-06 11:00/p' app.log
+cp source.txt destination.txt
 ```
-**Function:** Efficiently analyze log files, find errors, count patterns, and extract specific time ranges.
+**Function:** Copies files from source to destination. Use `cp -r source-folder/ destination-folder/` to recursively copy entire directories.
 
 <br/>
 
@@ -121,24 +90,13 @@ sed -n '/2023-09-06 10:00/,/2023-09-06 11:00/p' app.log
 
 <br/>
 
-> System Monitoring Favorites
+<span id="mv-files" name="Move/Rename Files" data-toc></span>
+
+> Move or Rename Files
 ```bash
-# Monitor disk usage and alert
-watch -n 30 'df -h | grep -E "(8[0-9]|9[0-9])%"'
-
-# Show top CPU processes
-ps aux | sort -nrk 3,3 | head -5
-
-# Memory usage by process
-ps aux | sort -nrk 4,4 | head -5
-
-# Network connections summary
-ss -tuln | grep LISTEN | wc -l
-
-# Check system load
-uptime | awk '{print $NF}'
+mv oldname.txt newname.txt
 ```
-**Function:** Monitor system health, track resource usage, and quickly identify performance bottlenecks.
+**Function:** Moves or renames files and directories. Can be used to move files to different locations or simply rename them in place.
 
 <br/>
 
@@ -146,24 +104,13 @@ uptime | awk '{print $NF}'
 
 <br/>
 
-> Docker and Container Management
+<span id="remove-files" name="Remove Files" data-toc></span>
+
+> Remove Files
 ```bash
-# Clean up Docker system
-docker system prune -a
-
-# Get shell in running container
-docker exec -it container_name /bin/bash
-
-# View container logs with timestamps
-docker logs -t container_name
-
-# Monitor container stats
-docker stats
-
-# Quick container inspection
-docker inspect container_name | jq '.[0].State'
+rm filename.txt
 ```
-**Function:** Efficiently manage Docker containers, debug issues, and monitor container resource usage.
+**Function:** Deletes the specified file permanently. Use `rm -r folder/` to delete directories and their contents, or `rm -f` to force deletion without prompts.
 
 <br/>
 
@@ -171,25 +118,13 @@ docker inspect container_name | jq '.[0].State'
 
 <br/>
 
-> Environment and Configuration
+<span id="view-file" name="View File" data-toc></span>
+
+> View File Contents
 ```bash
-# Quickly edit and reload bash config
-alias bashrc='vim ~/.bashrc && source ~/.bashrc'
-
-# Show environment variables for debugging
-env | grep -i node
-
-# Quick PATH manipulation
-export PATH="$HOME/.local/bin:$PATH"
-
-# Set temporary environment for command
-NODE_ENV=development npm start
-
-# Check which command is being used
-which node
-type node
+cat filename.txt
 ```
-**Function:** Manage shell configuration, environment variables, and debug PATH issues during development.
+**Function:** Displays the entire contents of a file in the terminal. Good for quickly viewing small to medium-sized text files.
 
 <br/>
 
@@ -197,23 +132,54 @@ type node
 
 <br/>
 
-> Productivity Boosters
+<span id="text-search" name="File Text Search" data-toc></span>
+
+> Search for Text in Files
 ```bash
-# History search with fzf (if installed)
-ctrl-r # then type to search
-
-# Quick calculator
-calc() { echo "scale=2; $*" | bc; }
-
-# Generate random password
-genpass() { openssl rand -base64 ${1:-12}; }
-
-# Weather in terminal
-curl wttr.in/your_city
-
-# Quick notes
-note() { echo "$(date): $*" >> ~/.notes; }
+grep "search term" filename.txt
 ```
-**Function:** Boost productivity with quick calculations, password generation, and note-taking directly in terminal.
+**Function:** Searches for specific text patterns within files. Use `grep -r "search term" .` to search recursively through all files in current directory.
 
 <br/>
+
+---
+
+<br/>
+
+<span id="command-history" name="Command History" data-toc></span>
+
+> Command History
+```bash
+history
+```
+**Function:** Shows a list of previously executed commands. Use `!number` to re-run a specific command from history, or `!!` to repeat the last command.
+
+<br/>
+
+---
+
+<br/>
+
+<span id="find" name="Find" data-toc></span>
+
+> Find Files and Directories
+```bash
+find . -name "*.txt"
+```
+**Function:** Searches for files and directories by name, type, size, or other criteria. This example finds all .txt files in current directory and subdirectories.
+
+<br/>
+
+---
+
+<br/>
+
+<span id="disk-usage" name="Disk Usage" data-toc></span>
+
+> Check Disk Space Usage
+```bash
+df -h
+```
+**Function:** Displays disk space usage for all mounted filesystems in human-readable format (KB, MB, GB). Shows used, available, and total space.
+
+---

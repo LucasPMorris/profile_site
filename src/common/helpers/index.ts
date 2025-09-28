@@ -1,6 +1,6 @@
 import { format, parseISO } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
-
+import { TocItem } from '@/common/types/toc';
 import { ChapterGroupProps, MdxFileContentProps } from '../types/snippets';
 
 interface ParsedUrlProps {
@@ -58,4 +58,23 @@ export const calculateReadingTime = (content: string, wordsPerMinute = 5) => {
   const cleanedContent = formatExcerpt(content);
   const readingTimeMinutes = Math.ceil(cleanedContent.split(/\s+/).length / wordsPerMinute );
   return readingTimeMinutes;
+};
+
+export const scrollToSection = (item: TocItem) => {
+  const element = document.getElementById(item.id);
+  
+  if (element) {
+    const headerOffset = 80;
+    const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+    const offsetPosition = elementPosition - headerOffset;
+    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+  } else { 
+    const spanByName = document.querySelector(`span[name="${item.title}"]`);
+    if (spanByName) {
+      const headerOffset = 80;
+      const elementPosition = spanByName.getBoundingClientRect().top + window.scrollY;
+      const offsetPosition = elementPosition - headerOffset;
+      window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+    }
+  }
 };

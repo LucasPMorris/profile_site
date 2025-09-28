@@ -1,0 +1,599 @@
+---
+id: 1
+title: 'Spotify Usage Heatmap'
+stacks: ['JavaScript', 'TypeScript', 'Node.js', 'React', 'Next.js', 'PostgreSQL', 'Prisma', 'TailwindCSS']
+slug: 'spotify-usage-heatmap'
+image: 'https://lucas.untethered4life.com//images/projects/spotify/spotify-heatmap-banner.png'
+link_demo: 'https://lucas.untethered4life.com/dashboard'
+link_github: 'https://lucas.untethered4life.com/dashboard'
+created_at: '2025-09-25'
+updated_at: '2025-09-25'
+---
+
+# Spotify Usage Heatmap
+
+Many developers have likely seen the classic Github repo submit history map. A visualization where each square in A GRID represents a day. The color intensity of each square indicating the number of commits made on that day. Darker squares represent days with more commits, while lighter squares represent days with fewer commits. A visualization that helps to quickly review coding activity over time.
+
+After including a Spotify "Now Playing" component on this site, which was pulled from a Github repository, my curiosity got the best of me and I delved into a rabbit hole of REST API calls, relational database sctructures, data transormations, jq bash scripts, server side cron jobs, and a whole lot more. The end result was a dashboard that visualizes my own music listening habits over time, similar to that well known Github commit history map most developers today know.
+
+In this article I will describe:
+- The steps I took to build the dashboard.
+- The challenges I faced along the way.
+- The technologies I used to bring it all together.
+- And the overall lessons and insights I gained from the experience.
+
+---
+
+## Overview
+<span id="overview" name="Overview" data-toc></span>
+
+
+---
+
+## Getting Started
+<span id="getting-started" name="Getting Started" data-toc></span>
+
+### Sampling Spotify Data
+<span id="samping-data" name="Sampling Data" data-tocsub></span>
+
+
+> Step 1: Sample Data
+
+- Create a [Spotify Developer account](https://developer.spotify.com/), register an application, and obtain necessary token to make API calls. For those that want to try this at home, the steps for authenticating with Spotify via the API can be found [HERE](https://developer.spotify.com/documentation/web-api/tutorials/code-flow).
+
+- Call the Spotify API using Insomnia.
+
+```
+##Request
+#canCollapse
+curl --request GET \
+  --url 'https://api.spotify.com/v1/me/player/recently-played?limit=50' \
+  --header 'Authorization: Bearer token' \
+  --header 'Content-Type: application/json'
+```
+
+```
+##Response
+#canCollapse
+#language-json
+{
+"played_at": "2025-08-29T00:00:27.043Z",  
+"context": {
+	"type": "playlist",
+	"external_urls": {
+	  "spotify": "https://open.spotify.com/playlist/4gowSSvFaSz8Auzizrjkyw"
+	},
+	"href": "https://api.spotify.com/v1/playlists/4gowSSvFaSz8Auzizrjkyw",
+	"uri": "spotify:playlist:4gowSSvFaSz8Auzizrjkyw"
+},
+"track": {		
+	"album": {
+	  "album_type": "album",
+	  "artists": [
+		{
+		  "external_urls": {
+			"spotify": "https://open.spotify.com/artist/378dH6EszOLFShpRzAQkVM"
+		  },
+		  "href": "https://api.spotify.com/v1/artists/378dH6EszOLFShpRzAQkVM",
+		  "id": "378dH6EszOLFShpRzAQkVM",
+		  "name": "Lindsey Stirling",
+		  "type": "artist",
+		  "uri": "spotify:artist:378dH6EszOLFShpRzAQkVM"
+		}
+	  ],
+	  "available_markets": [ "AR", "AU", "..." ],
+	  "external_urls": {
+		"spotify": "https://open.spotify.com/album/5EH0A5mhsGNCOPPpvi3RfF"
+	  },
+	  "href": "https://api.spotify.com/v1/albums/5EH0A5mhsGNCOPPpvi3RfF",
+	  "id": "5EH0A5mhsGNCOPPpvi3RfF",
+	  "images": [
+		{
+		  "url": "https://i.scdn.co/image/ab67616d0000b273af2acf076c7856bfe6ef580e",
+		  "width": 640,
+		  "height": 640
+		},
+		{
+		  "url": "https://i.scdn.co/image/ab67616d00001e02af2acf076c7856bfe6ef580e",
+		  "width": 300,
+		  "height": 300
+		},
+		{
+		  "url": "https://i.scdn.co/image/ab67616d00004851af2acf076c7856bfe6ef580e",
+		  "width": 64,
+		  "height": 64
+		}
+	  ],
+	  "name": "Brave Enough",
+	  "release_date": "2016-08-19",
+	  "release_date_precision": "day",
+	  "total_tracks": 14,
+	  "type": "album",
+	  "uri": "spotify:album:5EH0A5mhsGNCOPPpvi3RfF"
+	},
+	"artists": [
+	  {
+		"external_urls": {
+		  "spotify": "https://open.spotify.com/artist/378dH6EszOLFShpRzAQkVM"
+		},
+		"href": "https://api.spotify.com/v1/artists/378dH6EszOLFShpRzAQkVM",
+		"id": "378dH6EszOLFShpRzAQkVM",
+		"name": "Lindsey Stirling",
+		"type": "artist",
+		"uri": "spotify:artist:378dH6EszOLFShpRzAQkVM"
+	  },
+	  {
+		"external_urls": {
+		  "spotify": "https://open.spotify.com/artist/31rVRoX5ZG9ZyRbHvlEwjA"
+		},
+		"href": "https://api.spotify.com/v1/artists/31rVRoX5ZG9ZyRbHvlEwjA",
+		"id": "31rVRoX5ZG9ZyRbHvlEwjA",
+		"name": "RuthAnne",
+		"type": "artist",
+		"uri": "spotify:artist:31rVRoX5ZG9ZyRbHvlEwjA"
+	  }
+	],
+	"available_markets": [ "AR", "AU", "..." ],
+	"disc_number": 1,
+	"duration_ms": 229120,
+	"explicit": false,
+	"external_ids": {
+	  "isrc": "TCACO1625907"
+	},
+	"external_urls": {
+	  "spotify": "https://open.spotify.com/track/0uFwdpkVJzpyUxlu9reTWK"
+	},
+	"href": "https://api.spotify.com/v1/tracks/0uFwdpkVJzpyUxlu9reTWK",
+	"id": "0uFwdpkVJzpyUxlu9reTWK",
+	"is_local": false,
+	"name": "Love's Just a Feeling (feat. Rooty)",
+	"popularity": 39,
+	"preview_url": null,
+	"track_number": 12,
+	"type": "track",
+	"uri": "spotify:track:0uFwdpkVJzpyUxlu9reTWK"
+  }
+}
+```
+
+### Initial Database Setup
+<span id="initial-db-setup" name="Initial DB Setup" data-tocsub></span>
+
+After sampling the data I jumped into the design of the database schema. Keeping it simple initially, I started with a unique table for tracks, artists, albums, and play history, stripping away the fields I didn't want to use.
+
+<div className="flex flex-col lg:flex-row gap-5">  
+
+  <img src="/images/projects/spotify/sptrack-block-first.svg" width="250" alt="Table Diagram - sptrack" />
+  <img src="/images/projects/spotify/spartist-block-first.svg" width="250" alt="Table Diagram - spartist" />
+  <img src="/images/projects/spotify/spalbum-block-first.svg" width="250" alt="Table Diagram - spalbum" />
+  <img src="/images/projects/spotify/spplayhistory-block-end.svg" width="250" alt="Table Diagram - spplayhistory" />
+
+</div>
+
+<div data-component="CallOut" data-header="Important Detail">
+  Spotify Play History API is limited to the last 50 tracks played.
+
+  On request Spotify will send you all of "your data" with a notice that it may take up to 30 days to process.
+</div>
+
+I submitted a request for me data from Spotify and after a few days I received an email with a link to download my data. The download included 4 JSON files titled like containing my entire Spotify listening history. 
+  - The files were ~47MB and contained just over 60,000 records.
+  - The format was different than data returned from the Spotify API. It was missing a lot of details.
+
+```
+##Bulk Play History Sample
+#canCollapse
+{
+  "ts": "2017-07-27T00:56:06Z",
+  "platform": "Android OS 7.0 API 24 (LGE, LGLS992)",
+  "ms_played": 75338,
+  "conn_country": "US",
+  "ip_addr": "73.181.8.221",
+  "master_metadata_track_name": "Love's Just a Feeling (feat. Rooty)",
+  "master_metadata_album_artist_name": "Lindsey Stirling",
+  "master_metadata_album_album_name": "Brave Enough",
+  "spotify_track_uri": "spotify:track:0uFwdpkVJzpyUxlu9reTWK",
+  "episode_name": null,
+  "episode_show_name": null,
+  "spotify_episode_uri": null,
+  "audiobook_title": null,
+  "audiobook_uri": null,
+  "audiobook_chapter_uri": null,
+  "audiobook_chapter_title": null,
+  "reason_start": "clickrow",
+  "reason_end": "endplay",
+  "shuffle": false,
+  "skipped": false,
+  "offline": false,
+  "offline_timestamp": null,
+  "incognito_mode": false
+}
+```
+
+---
+
+## Preparing Historical Data
+<span id="data-preperation" name="Data Prep" data-toc></span>
+
+The next series of steps involved running a handful of one off node and bash scripts to a) transform the historical data, b) enrich the data, and  c) manually load it into the database.
+
+### Transforming the Data
+<span id="transforming-data" name="Transforming" data-tocsub></span>
+
+For the transformation, I used array destructuring `items.map(item => {})` and the `...rest` operator to remove unnecessary key value pairs from the bulk data set. I transformed the data to match what was returned from the `api.spotify.com/v1/me/player/recently-played` endpoint and dumped the results out to a new JSON file, `ProcessedSpotifyHistory.json`.
+
+<div data-component="CallOut" data-header="Improvements">
+
+The functions `removeUnwantendPropertiesFromHistory()` and `transformHistoryData(history)` in the code snippet below could be wrapped into one function. I was in a flow state and knew this would only need to run once, so I just kept flowing. 
+
+</div>
+
+```
+## Data Transformation Script
+#canCollapse
+// Data files provided by Spotify
+import History1 from './History1.json' with { type: 'json' }; 
+import History2 from './History2.json' with { type: 'json' };
+import History3 from './History3.json' with { type: 'json' };
+import History4 from './History4.json' with { type: 'json' };
+
+import fs from 'fs';
+import path from 'path';
+
+function removeUnwantedPropertiesFromHistory(history) {
+  return history.map(item => {
+    const { 
+      platform,
+      ms_played,
+      conn_country,
+      ip_addr,
+      master_metadata_album_artist_name,
+      episode_name, episode_show_name,
+      spotify_episode_uri,
+      shuffle,
+      audiobook_title,
+      audiobook_uri,
+      audiobook_chapter_uri,
+      audiobook_chapter_title,
+      reason_start, reason_end,
+      skipped,
+      offline,
+      offline_timestamp,
+      incognito_mode,
+      ...rest } = item;
+      return rest;
+  });
+}
+
+function transformHistoryData(history) {
+  return history.map(item => {
+    item.played_at = item.ts;
+    item.album = { name: item.master_metadata_album_album_name || 'Unknown Album' };
+    item.title = item.master_metadata_track_name;
+    item.songUrl = `https://open.spotify.com/track/${item.spotify_track_uri?.split(':').pop()}`;
+    delete item.ts;
+    delete item.master_metadata_album_album_name;
+    delete item.master_metadata_track_name;
+    delete item.spotify_track_uri;
+    return item;
+  });
+}
+
+async function processAndSaveHistory() {
+  const allHistory = [...History1, ...History2, ...History3, ...History4];
+  const cleanedHistory = removeUnwantedPropertiesFromHistory(allHistory);
+  const transformedHistory = transformHistoryData(cleanedHistory);
+
+  if (transformedHistory.length === 0) {
+    console.warn('⚠️ No records to write. Check input files.');
+    return;
+  }
+
+  const directory = process.cwd();
+  const outputPath = path.join(directory, 'ProcessedSpotifyHistory.json');
+  fs.writeFileSync(outputPath, JSON.stringify(transformedHistory, null, 2));
+  console.log(`Processed history saved to ${outputPath}`);
+}
+
+processAndSaveHistory().catch(console.error);
+```
+
+```
+## Bulk Play History Transformed - ProcessedSpotifyHistory.json
+#canCollapse
+#language-json
+{
+  "id": "0uFwdpkVJzpyUxlu9reTWK",
+  "played_at": "2017-07-27T00:57:32Z",
+  "album": {
+    "name": "Brave Enough"
+  },
+  "title": "Love's Just a Feeling (feat. Rooty)",
+  "songUrl": "https://open.spotify.com/track/0uFwdpkVJzpyUxlu9reTWK"
+}
+```
+
+<div data-component="CallOut" data-header="Important Observations">
+
+- A single track can only be on a single album. However, a single track or a single album can have multiple artists.
+- The bulk data did not include an id for the track played, however, I extracted it from the `spotify_track_uri` key.
+- The track_id was also used to compose the value for the `"songUrl"` key. 
+
+</div>
+
+Before I could load the data into the database I had to acquire the missing track, album, and artist details.
+
+Fortunately Spotify has the `api.spotify.com/v1/artists` and `api.spotify.com/v1/tracks` endpoints for bulk data retriaval. **YAY!**
+
+Unfortunately, you can only request 50 artist or track details at a time. **UGGH!**
+
+### Step 3b - Extracting the Track Id's
+<span id="extract-track-ids" name="Extraction" data-tocsub></span>
+- Extract each track id from the end of every songUrl in `ProcessedSpotifyHistory.json`.
+- Write every set of 50 track id's to a file as a JSON array, `SpotifyTrackIdList${count}.json`.
+
+```
+## Extraction Script
+#canCollapse
+import fs from 'fs';
+import path from 'path';
+
+var startTime = new Date();
+
+function getTrackIdListFromHistory(history: any[]) { 
+  const trackIdSet = new Set();
+  const directory = process.cwd();
+  var chunkCount = 1;
+  
+  while (history.length > 0) {
+    const chunk = history.splice(0, 50); // Take the first 50 records
+    chunk.forEach(item => {
+      if (item.songUrl) {
+        const trackId = item.songUrl.split('/').pop();
+        if (trackId) {
+          trackIdSet.add(trackId);
+        }
+      }
+    });
+
+    const outputPath = path.join(directory, `tools/trackHistoryList/spotifyTrackIdList${chunkCount}.json`);
+    fs.writeFileSync(outputPath, JSON.stringify(Array.from(trackIdSet), null, 2));
+    log(`Track ID list #${chunkCount} saved to ${outputPath}`);
+    
+    trackIdSet.clear();
+    chunkCount++;
+  }
+  return Array.from(trackIdSet);
+} 
+```
+
+### Step 3c - Data Enrichment
+<span id="data-enrichment" name="Enrichment" data-tocsub></span>
+
+- Open each `spotifyTrackIdList${count}.json` file. 
+- Call `api.spotify.com/v1/tracks?${trackIdList}` and acquire the additional details for every track.
+- Write JSON data to file 
+
+```
+## Data Enrichment Script
+#canCollapse
+import fs from 'fs';
+import path from 'path';
+
+async function getTrackDetailFromSpotifyTrackIdList(chunkNumber: number, access_token: any) { // STEP 2: Fetch track details from Spotify API
+  const inputPath = path.join(directory, `tools/trackHistoryList/spotifyTrackIdList${chunkNumber}.json`);
+  
+  if (!fs.existsSync(inputPath)) { log(`Input file not found: ${inputPath}`); return; }
+
+  const trackIdList = JSON.parse(fs.readFileSync(inputPath, 'utf-8'));
+  if (trackIdList.length === 0) {
+    log('⚠️ No track IDs found in the input file.');
+    return;
+  }
+
+  const chunkSize = 50; // Spotify API allows up to 50 IDs per request
+  const trackDetails: any[] = [];
+
+  for (let i = 0; i < trackIdList.length; i += chunkSize) {
+    const chunk = trackIdList.slice(i, i + chunkSize);
+    const idsParam = chunk.join(','); 
+
+    try {
+      const response = await fetch(`https://api.spotify.com/v1/tracks?ids=${idsParam}`, { headers: { Authorization: `Bearer ${access_token}` } });
+      
+      if (!response.ok) {
+        var responseJson = await response.json();
+        log(`Error fetching track details: ${response.status} ${response.statusText}`);
+        log(`Response: ${responseJson}`);
+        continue;
+      }
+      
+      const data = await response.json();
+      trackDetails.push(...data.tracks);
+    } catch (error) { log(`Fetch error:, ${JSON.stringify(error)}`); }
+  }
+
+  const outputPath = path.join(directory, `tools/trackHistoryData/spotifyTrackDetails${chunkNumber}.json`);
+  fs.writeFileSync(outputPath, JSON.stringify(trackDetails, null, 2));
+  log(`Track details chunk #${chunkNumber} saved to ${outputPath}`);
+}
+
+async function getTrackDetailsInChunks() {
+ for (let chunkNumber = 1; chunkNumber <= 1224; chunkNumber++) {       
+   getTrackDetailFromSpotifyTrackIdList(chunkNumber, access_token);              
+   var endtime = new Date();
+   if ((endtime.getMilliseconds() - startTime.getMilliseconds()) > 3300000) access_token = getAccessToken();         
+   await new Promise(resolve => setTimeout(resolve, 10000));
+ }
+}
+
+async function joinFiles() {
+  var allTrackDetails = [];
+  for (let i = 1; i <= 1224; i++) {
+    var inputPath = path.join(process.cwd(), `tools/trackHistoryData/spotifyTrackDetails${i}.json`);
+    if(!fs.existsSync(inputPath)) { console.log(`File ${inputPath} does not exist, skipping...`); continue; }
+    allTrackDetails = allTrackDetails.concat(JSON.parse(fs.readFileSync(inputPath, 'utf-8')));
+    console.log(`File #${i} processed, total tracks so far: ${allTrackDetails.length}`);
+  }
+
+  var outputPath = path.join(process.cwd(), `tools/trackHistoryData/finalSpotifyTrackDetails.json`);
+  fs.writeFileSync(outputPath, JSON.stringify(allTrackDetails, null, 2));
+  console.log(`All files joined. Total tracks: ${allTrackDetails.length}`);
+}
+
+(async () => {
+  await getTrackDetailsInChunks();
+  await joinFiles();
+  log('All chunks processed and files joined.');
+})();
+```
+---
+
+### Step 3d - Bash Data Merge
+<span id="data-merge" name="Merging Data" data-tocsub></span>
+
+- Using the command line tool, jq, I added details to the `ProcessedSpotifyHistory.json` for every played song.
+- Essentially this adds one more nested level of JSON for the track information with the `played_at` key value at the root.
+- `{ "played_at": "2017-07-27T00:56:06Z", "track": {...} }, { "played_at": "2017-07-27T00:57:32Z", "track": {...} }`
+- This duplicated a lot of data, but when I add it to the database I can use the same structures for future calls to the Spotify API. 
+ 
+```
+## Merge Track Details and Play History with jq
+#canCollapse
+jq -s '
+  (.[1] | map({ (.id): . }) | add) as $trackDetails
+  |
+  .[0] | map(
+    (
+      .track_id = (.songUrl | split("/track/")[1] | split("?")[0]) |
+      .detail = $trackDetails[.track_id] |
+      if .detail != null then
+        {
+          "played_at": .played_at,
+          "track": {
+            "id": .track_id,
+            "name": .detail.name,
+            "external_ids": { "isrc": .detail.external_ids.isrc },
+            "duration_ms": .detail.duration_ms,
+            "explicit": .detail.explicit,
+            "external_urls": {
+              "spotify": .detail.external_urls.spotify
+            },
+            "album": {
+              "id": .detail.album.id,
+              "name": .detail.album.name,
+              "release_date": .detail.album.release_date, 
+              "images": (.detail.album.images // null),
+              "artists": (
+                .detail.album.artists // [] | map({
+                  "id": .id,
+                  "name": .name,
+                  "external_urls": {
+                    "spotify": .external_urls.spotify
+                  }
+                })
+              )
+            },
+            "artists": (
+              .detail.artists | map({
+                "id": .id,
+                "name": .name,
+                "external_urls": {
+                  "spotify": .external_urls.spotify
+                }
+              })
+            )
+          }
+        }
+      else
+        empty
+      end
+    )
+  )
+' "ProcessedSpotifyHistory.json" "finalSpotifyTrackDetails.json" > "merged_spotifyTrackDetails.json"
+
+echo "✅ Merged chunk"
+```
+
+## Overall Database Design
+<span id="database-design" name="DB Design" data-toc></span>
+
+Now that I had prepared all of my historical data and created a process for ingesting it, I realized that my database needed to be properly prepared for the complexities of music data relationships.
+
+### Defining Table Relationships
+<span id="defining-relationships" name="Table Relationships" data-tocsub></span>
+
+The initial simple schema couldn't handle the reality that:
+- **A single track can have multiple artists** (features, collaborations)
+- **An album can have multiple artists** (compilations, various artists albums)
+
+This required creating junction tables with appropriate relations to properly normalize the many-to-many relationships.
+
+<div><div data-component="SvgScroll" data-src="/images/projects/spotify/schema-first-relations.svg" data-width="600" data-height="1100" data-initial-scale="1.2" /></div>
+
+### Performance and the Magic Moment
+<span id="performance-indexing" name="Performance & Indexing" data-tocsub></span>
+
+---
+
+## Deploying
+<span id="deploying" name="Deploying" data-toc></span>
+
+### Hosting - Render.com
+<span id="hosting-render" name="Hosting - Render.com" data-tocsub></span>
+
+### Render Environment
+<span id="build-commands" name="Render Environment" data-tocsub></span>
+
+### Deployment Pipeline
+<span id="ci-cd" name="Deployment Pipeline" data-tocsub></span>
+
+### Monitoring & Alerts
+<span id="monitoring-alerts" name="Monitoring & Alerts" data-tocsub></span>
+
+---
+
+## Data Aggregation and Polling
+<span id="data-polling" name="Data Polling" data-toc></span>
+
+### Initial Table Population
+<span id="initial-population" name="Initial Table Population" data-tocsub></span>
+
+### Historical Aggregation
+<span id="historical-aggregation" name="Historical Aggregation" data-tocsub></span>
+
+### Routine Data Polling
+<span id="ongoing-polling" name="Routing Data Polling" data-tocsub></span>
+
+---
+
+## Rendering
+<span id="rendering" name="Rendering" data-toc></span>
+
+---
+
+## Lessons & Bloopers
+<span id="lessons-bloopers" name="Lessons & Bloopers" data-toc></span>
+
+### Count Everything, Always!
+<span id="count-everything" name="Count Everything, Always!" data-tocsub></span>
+
+### Double wrapped
+<span id="double-wrapped" name="Double wrapped" data-tocsub></span>
+
+---
+
+## Future Enhancements
+<span id="future-enhancements" name="Future Enhancements" data-toc></span>
+
+### ISRC Code Integration
+<span id="isrc-integration" name="ISRC Code Integration" data-tocsub></span>
+
+### Specific Hour Details
+<span id="specific-hour-details" name="Specific Hour Details" data-tocsub></span>
+
+### Track Features
+<span id="track-characteristics" name="Track Features" data-tocsub></span>
+
+### Social Sharing
+<span id="social-sharing" name="Social Sharing" data-tocsub></span>
