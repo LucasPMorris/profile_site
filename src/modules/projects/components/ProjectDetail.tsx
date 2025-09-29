@@ -21,7 +21,7 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
         {/* Project Content Container with Floating TOC */}
         <div className="relative">
           {/* Floating TOC for Desktop - positioned relative to this container */}
-          <TableOfContents content={content || ''} title={title} mode="floating" />
+          <div className="hidden lg:block"><TableOfContents content={content || ''} title={title} mode="floating" /></div> 
           
           {/* Project Content */}
           <div className='space-y-8 project-content-start'>

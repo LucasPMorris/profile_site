@@ -13,6 +13,7 @@ interface FloatingTOCProps {
 export const FloatingTOC = ({ content, tableOfContents, title = "Contents" }: FloatingTOCProps) => {
   const [hoveredItem, setHoveredItem] = useState<string>('');
   const [topPosition, setTopPosition] = useState(220);
+  const [isVisible, setIsVisible] = useState(false);
 
   const handleScroll = useCallback(() => {
     const projectContentStart = document.querySelector('.project-content-start');
@@ -23,23 +24,36 @@ export const FloatingTOC = ({ content, tableOfContents, title = "Contents" }: Fl
       // Calculate the initial offset of the content from the top
       const contentOffsetFromTop = rect.top + scrollY;
       
-      // If we've scrolled past the content start, stick to top-20 (80px)
+      // If we've scrolled past the content start, stick to top-0
       // Otherwise, position relative to the content start
-      if (scrollY >= contentOffsetFromTop) { setTopPosition(0); }
-      else { setTopPosition(Math.max(contentOffsetFromTop - scrollY)); }
+      if (scrollY >= contentOffsetFromTop) { 
+        setTopPosition(0); 
+      } else { 
+        setTopPosition(Math.max(0, contentOffsetFromTop - scrollY)); 
+      }
     }
   }, []);
 
   useEffect(() => {
+    // Delayed fade-in animation
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 300); // 300ms delay
+
     window.addEventListener('scroll', handleScroll);
     handleScroll(); // Check initial position
     
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, [handleScroll]);
 
   return (
     <aside 
-      className="hidden lg:block fixed left-4 xl:left-8 w-64 h-fit z-40 transition-all duration-200"
+      className={`hidden lg:block fixed left-4 xl:left-8 w-64 h-fit z-40 transition-all duration-200 ${
+        isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+      }`}
       style={{ top: `${topPosition}px` }}
     >
       <div className="max-h-[calc(100vh-5rem)] overflow-y-auto">
