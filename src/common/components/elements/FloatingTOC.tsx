@@ -25,9 +25,7 @@ export const FloatingTOC = ({ content, tableOfContents, title = "Contents" }: Fl
           
           // Get the TOC ID from the data attribute we set
           const tocId = mostVisible.target.getAttribute('data-toc-id');
-          if (tocId) {
-            setActiveItem(tocId);
-          }
+          if (tocId) { setActiveItem(tocId); }
         }
       },
       {
@@ -39,16 +37,6 @@ export const FloatingTOC = ({ content, tableOfContents, title = "Contents" }: Fl
 
     // Debug: Find all span elements with data-toc attribute and log their IDs
     const tocMarkers = document.querySelectorAll('span[data-toc]');
-    console.log('=== DEBUGGING TOC MARKERS ===');
-    console.log('TOC items from props:', tableOfContents.map(item => ({ id: item.id, title: item.title })));
-    console.log('Span elements found in DOM:');
-    tocMarkers.forEach(span => {
-      console.log({
-        id: span.id,
-        name: span.getAttribute('name'),
-        element: span
-      });
-    });
     
     const observedElements: Element[] = [];
     
@@ -73,9 +61,8 @@ export const FloatingTOC = ({ content, tableOfContents, title = "Contents" }: Fl
           console.log(`❌ No span found by name either. Tried names: "${tocItem.title}", "${tocItem.originalTitle}"`);
           return; // Skip this item
         }
-      } else {
-        console.log(`✅ Found span by ID:`, spanElement);
-      }
+}
+      else { console.log(`✅ Found span by ID:`, spanElement); }
       
       if (spanElement) {
         // Find the next meaningful element to observe
@@ -93,9 +80,7 @@ export const FloatingTOC = ({ content, tableOfContents, title = "Contents" }: Fl
           () => {
             let next = spanElement.nextElementSibling;
             while (next) {
-              if (next.tagName?.match(/^(P|DIV|H[1-6]|SECTION|ARTICLE)$/)) {
-                return next;
-              }
+              if (next.tagName?.match(/^(P|DIV|H[1-6]|SECTION|ARTICLE)$/)) { return next; }
               next = next.nextElementSibling;
             }
             return null;
@@ -106,42 +91,22 @@ export const FloatingTOC = ({ content, tableOfContents, title = "Contents" }: Fl
         
         for (const strategy of strategies) {
           elementToObserve = strategy() || null;
-          if (elementToObserve && (elementToObserve as HTMLElement).offsetHeight > 0) {
-            break;
-          }
+          if (elementToObserve && (elementToObserve as HTMLElement).offsetHeight > 0) { break; }
         }
         
         if (elementToObserve) {
-          // Add a data attribute to link back to the TOC item
           elementToObserve.setAttribute('data-toc-id', tocItem.id);
-          
           observer.observe(elementToObserve);
           observedElements.push(elementToObserve);
-          
-          console.log(`✅ Observing content for TOC item:`, {
-            tocId: tocItem.id,
-            tocTitle: tocItem.title,
-            spanElement: spanElement,
-            observedElement: elementToObserve,
-            elementTag: elementToObserve.tagName,
-            elementHeight: (elementToObserve as HTMLElement).offsetHeight
-          });
-        } else {
-          console.warn(`❌ Could not find meaningful content to observe for:`, {
-            id: tocItem.id,
-            title: tocItem.title,
-            spanElement: spanElement
-          });
-        }
+        } 
+        else { console.warn(`❌ Could not find meaningful content to observe for:`, { id: tocItem.id, title: tocItem.title, spanElement: spanElement }); }
       }
     });
     
     console.log(`\n=== SUMMARY ===`);
     console.log(`Total elements being observed: ${observedElements.length}/${tableOfContents.length}`);
 
-    return () => {
-      observer.disconnect();
-    };
+    return () => { observer.disconnect(); };
   }, [tableOfContents]);
 
   useEffect(() => {
@@ -154,11 +119,7 @@ export const FloatingTOC = ({ content, tableOfContents, title = "Contents" }: Fl
   }, []);
 
   return (
-    <aside 
-      className={`hidden lg:block fixed left-4 xl:left-8 top-20 w-64 h-fit z-40 transition-all duration-200 ${
-        isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
-      }`}
-    >
+    <aside className={`hidden lg:block fixed left-4 xl:left-8 top-20 w-64 h-fit z-40 transition-all duration-200 ${ isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4' }`} >
       <div className="max-h-[calc(100vh-6rem)] overflow-y-auto">
         <div className="rounded-r-xl border-l-[5px] bg-white/40 dark:bg-white/5 border-neutral-900 border-l-cyan-500 backdrop-blur-sm shadow-lg py-3 pl-2">
           <h3 className="text-lg font-semibold mb-4 text-neutral-700 dark:text-neutral-400 px-2">{title}</h3>
@@ -179,25 +140,12 @@ export const FloatingTOC = ({ content, tableOfContents, title = "Contents" }: Fl
                     isActive 
                       ? 'bg-cyan-50 dark:bg-cyan-900/20 border-l-2 border-cyan-500' 
                       : 'hover:bg-white dark:hover:bg-neutral-700'
-                  }`}>
-                    {item.level === 1 && (
-                      <ContentIcon 
-                        size={16} 
-                        className={`inline mr-[12px] transition-colors ${
-                          isActive ? 'text-cyan-600 dark:text-cyan-400' : ''
-                        }`} 
-                      />
-                    )}
-                    <div className='flex justify-between items-center w-full' 
-                         onMouseEnter={() => setHoveredItem(item.id)} 
-                         onMouseLeave={() => setHoveredItem('')}>
+                    }`}>
+                    {item.level === 1 && ( <ContentIcon size={16} className={`inline mr-[12px] transition-colors ${ isActive ? 'text-cyan-600 dark:text-cyan-400' : '' }`}  /> )}
+                    <div className='flex justify-between items-center w-full' onMouseEnter={() => setHoveredItem(item.id)} onMouseLeave={() => setHoveredItem('')}>
                       <span className="block truncate text-left">{item.title}</span>
-                      {isHovered && !isActive && ( 
-                        <ArrowIcon size={14} className="text-neutral-900 dark:text-neutral-300" />
-                      )}
-                      {isActive && (
-                        <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
-                      )}
+                      {isHovered && !isActive && ( <ArrowIcon size={14} className="text-neutral-900 dark:text-neutral-300" /> )}
+                      {isActive && ( <div className="w-2 h-2 bg-cyan-500 rounded-full"></div> )}
                     </div>
                   </div>
                 </div>
