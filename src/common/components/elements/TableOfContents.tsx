@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { MobileTOC } from './MobileTOC';
 import { FloatingTOC } from './FloatingTOC';
 import { InlineTOC } from './InlineTOC';
 
@@ -25,24 +24,6 @@ export const TableOfContents = ({ content, title = "Contents", showMobile = true
 
     return tocItems;
   }, [content]);
-
-  const scrollToSection = (item: TocItem) => {
-    const element = document.getElementById(item.id);
-    
-    if (element) {
-      const headerOffset = 80;
-      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-      const offsetPosition = elementPosition - headerOffset;
-      window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-    } else { 
-      const spanByName = document.querySelector(`span[name="${item.title}"]`);
-      if (spanByName) {
-        const headerOffset = 80;
-        const elementPosition = spanByName.getBoundingClientRect().top + window.scrollY;
-        const offsetPosition = elementPosition - headerOffset;
-        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-      } else { console.warn(`Could not find span with name: ${item.title}`); } }
-  };
 
   if (tableOfContents.length === 0) { return null; }
 
