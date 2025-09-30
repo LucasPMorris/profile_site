@@ -15,33 +15,6 @@ export const chunk = <T>(arr: T[], size: number): T[][] => {
   return chunks;
 };
 
-function dedupeById<T extends { [key: string]: any }>(records: T[], key: keyof T): T[] {
-  const seen = new Map<any, T>();
-  for (const record of records) {
-    if (!seen.has(record[key])) seen.set(record[key], record);
-  }
-  return Array.from(seen.values());
-}
-
-function dedupeByComposite<T>(records: T[], keys: (keyof T)[]): T[] {
-  const seen = new Set<string>();
-  const result: T[] = [];
-  for (const record of records) {
-    const compositeKey = keys.map(k => record[k]).join('|');
-    if (!seen.has(compositeKey)) { 
-      seen.add(compositeKey);
-      result.push(record);
-    }
-  }
-  return result;
-}
-
-function writeFileForTest(filename: string, data: any): void {
-  const filePath = path.resolve(__dirname, filename);
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-  console.log(`Wrote data to ${filePath}`);
-}
-
 type TrackVariantForSelection = {
   track_id: string; album_id: string; common_album_id: string | null; title: string; duration: number; release_date: Date | null; song_url: string | null;
   explicit: boolean; isrc: string; album: { album_id: string; name: string; image_url: string | null; }; plays: { track_id: string; played_at: Date; }[];
@@ -52,7 +25,7 @@ function selectBestAlbumVariant(variants: TrackVariantForSelection[]): TrackVari
   return single ?? variants.reduce((a, b) => b.plays.length > a.plays.length ? b : a);
 }
 
-export const optimizedAssignCommonAlbumUrls = async (): Promise<void> => {
+export const assignCommonAlbumUrls = async (): Promise<void> => {
   try {
     // Single query to get all tracks with necessary data
     const tracks = await prisma.sptrack.findMany({ 
@@ -303,7 +276,7 @@ export const ingestSpotifyPlays = async (): Promise<void> => {
   // Fetch artist images and update common albums
   await Promise.all([
     updateArtistImages(Array.from(allArtistIds)),
-    optimizedAssignCommonAlbumUrls()
+    assignCommonAlbumUrls()
   ]);
 
   // Aggregate daily stats for the unique dates in the ingested plays

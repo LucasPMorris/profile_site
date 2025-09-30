@@ -142,7 +142,6 @@ const SpotifyStats = () => {
     if (!monthlyMap.has(year)) { 
       monthlyMap.set(year, Array(12).fill(null)); 
     }
-    const current = monthlyMap.get(year)![monthIndex];
     if (monthlyMap.get(year)) { 
       monthlyMap.get(year)![monthIndex] = (monthlyMap.get(year)![monthIndex] ?? 0) + totalPlays; 
     }
@@ -303,7 +302,7 @@ const SpotifyStats = () => {
             </Card>
           </div>
           <div className='md:col-span-4 flex flex-col gap-2'>  
-            <Heatmap hourlyMap={artistHourlyMap}  sortedWeekdays={weekdayOrder.filter(day => artistHourlyMap.has(day))}  weekdayMap={artistWeekdayMap}  monthlyMap={artistMonthlyMap}  maxPlays={maxPlays} />
+            <Heatmap hourlyMap={artistHourlyMap} weekdayMap={artistWeekdayMap}  monthlyMap={artistMonthlyMap}  maxPlays={maxPlays} />
           </div>
           </div>
         )}
@@ -336,7 +335,7 @@ const SpotifyStats = () => {
         </div>
 
         {/* Right Column: Heatmap */}
-        <div className='md:col-span-4 flex flex-col gap-2'><Heatmap hourlyMap={trackHourlyMap} sortedWeekdays={weekdayOrder.filter(day => trackHourlyMap.has(day))} weekdayMap={trackWeekdayMap} monthlyMap={trackMonthlyMap} maxPlays={maxPlays} /></div>
+        <div className='md:col-span-4 flex flex-col gap-2'><Heatmap hourlyMap={trackHourlyMap} weekdayMap={trackWeekdayMap} monthlyMap={trackMonthlyMap} maxPlays={maxPlays} /></div>
       </div>
       )}
 

@@ -75,8 +75,8 @@ const CodeBlock = ({ className = '', children, inline, header, canCollapse, ...p
     <>
       {!inline ? (
         <div className='relative rounded-lg bg-[rgb(43,43,43)] border border-neutral-700'>
-          <div className={header ? 'flex flex-row justify-between border-b-2 border-cyan-800 dark:border-cyan-200' : ''}>
-            {header && <div className='pl-6 py-3 font-sans text-lg font-medium text-cyan-800 dark:text-cyan-200'>{header}</div>}
+          <div className={header ? 'flex flex-row justify-between border-b-2 border-cyan-500 dark:border-cyan-200' : ''}>
+            {header && <div className='pl-6 py-3 font-sans text-lg font-medium text-cyan-500 dark:text-cyan-200'>{header}</div>}
             {header &&
               <div className='relative flex justify-end gap-2 p-2'>
                 <button type='button' aria-label='Copy to Clipboard' onClick={() => handleCopy(rawCode)} className='p-2 rounded border border-neutral-700 hover:bg-neutral-800' >

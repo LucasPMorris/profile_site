@@ -128,7 +128,7 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
           
           return isBlock
             ? (<CodeBlock className={className} header={header || undefined} canCollapse={canCollapse}>{codeContent}</CodeBlock>)
-            : (<code className='rounded bg-neutral-400/70 px-1 py-0.5 font-mono text-sm dark:bg-neutral-800'>{children}</code>); },
+            : (<code className='rounded bg-neutral-400/70 px-1 py-0.5 font-mono text-sm dark:bg-slate-700'>{children}</code>); },
         hr: () => ( <hr className='my-6 border-t-1 border-neutral-700' /> ),
         blockquote: (props: React.HTMLProps<HTMLQuoteElement>) => ( <blockquote className='rounded-br-2xl rounded-tr-2xl items-center border-l-[5px] border-neutral-700 border-l-cyan-500 bg-neutral-200 py-2 pl-6 text-lg font-medium text-cyan-800 dark:bg-neutral-800 dark:text-cyan-200' {...props} /> ),
         table: (props: React.HTMLProps<HTMLTableElement>) => <Table {...props} />,
@@ -136,19 +136,27 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
         td: (props: React.HTMLProps<HTMLTableCellElement>) => ( <td className='border px-3 py-1 dark:border-neutral-600'>{props.children}</td> ),
         img: ({ src = '', alt = '', width, height, className, style }: React.ImgHTMLAttributes<HTMLImageElement>) => {
           // Don't render if src is empty
-          if (!src || (typeof src === 'string' && src.trim() === '')) {
-            return null;
+          if (!src || (typeof src === 'string' && src.trim() === '')) { return null; }
+
+          var fallbackHeight = 1080;
+          // If width and height are provided, use them directly
+          if (typeof width === 'number' || typeof width === 'string') {
+            fallbackHeight = typeof height === 'number' ? height : typeof height === 'string' ? parseInt(height) : 1080;
           }
+          const fallbackWidth = typeof width === 'number' ? width : typeof width === 'string' ? parseInt(width) : 1920;
 
           // Optional: fallback dimensions or styling
-          const fallbackWidth = width ? parseInt(width as string) : 800;
-          const fallbackHeight = height ? parseInt(height as string) : 600;
-          const fallbackStyle = style ? style : { maxWidth: '100%', height: 'auto' };
-          const fallbackClassName = className ? className : "rounded-lg shadow-md";
+          const fallbackStyle = {
+            maxWidth: width ? undefined : '90%',
+            width: width ? undefined : '90%',
+            height: 'auto',
+            ...style,
+          };
+          const fallbackClassName = className ? className : '';
 
           return (
             <div className="my-6 flex justify-center">
-              <Image src={typeof src === 'string' ? src : ''} alt={alt} width={fallbackWidth} height={fallbackHeight} className={fallbackClassName} style={fallbackStyle} />
+              <Image src={typeof src === 'string' ? src : ''} width={fallbackWidth} height={fallbackHeight} alt={alt} className={fallbackClassName} style={fallbackStyle} />
             </div>
           );
         },

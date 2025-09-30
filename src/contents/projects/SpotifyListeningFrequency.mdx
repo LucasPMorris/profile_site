@@ -10,19 +10,44 @@ created_at: '2025-09-25'
 updated_at: '2025-09-25'
 ---
 
-# Spotify Usage Heatmap
-
 Many developers have likely seen the classic Github repo submit history map. A visualization where each square in A GRID represents a day. The color intensity of each square indicating the number of commits made on that day. Darker squares represent days with more commits, while lighter squares represent days with fewer commits. A visualization that helps to quickly review coding activity over time.
 
-After including a Spotify "Now Playing" component on this site, which was pulled from a Github repository, my curiosity got the best of me and I delved into a rabbit hole of REST API calls, relational database sctructures, data transormations, jq bash scripts, server side cron jobs, and a whole lot more. The end result was a dashboard that visualizes my own music listening habits over time, similar to that well known Github commit history map most developers today know.
+After including a Spotify "Now Playing" component on this site, which was pulled from a Github repository, my curiosity got the best of me and I delved into a rabbit hole of REST API calls, relational database sctructures, data transormations, jq bash scripts, server side cron jobs, and a whole lot more. The end result was a dashboard that visualizes my Spotify listening history in a granular and expressive way.
 
 In this article I will describe:
 - The steps I took to build the dashboard.
-- The challenges I faced along the way.
-- The technologies I used to bring it all together.
-- And the overall lessons and insights I gained from the experience.
+- Challenges I faced along the way.
+- Technologies I used.
+- Lessons and insights I gained from the experience.
+
+<div data-component="CallOut" data-header="Article Update Notice">
+
+  This "project" is a work in progress. `interface project {usageHeatmap: HeatmapDisplayProps; site: webSite; author?: any | Luke}`
+
+  <br />
+
+  Everything I commit to becomes a part of who I am. I become a part of everything I commit to.
+
+  <br />
+  
+  `export interface Luke { any }`
+
+  Sometimes transformation is more important than the end result. I spent so much time on this and while I attempted to account for every detail, I know that I there is a decent amount to fix (the floating menu will be fixed soon, in the mean time, check it out on a desktop).
+
+  <br />
+
+  AI Suggestion re: the work "project" definition:
+
+  <br />
+
+  `interface project {usageHeatmap: HeatmapDisplayProps; site: webSite; accessibility: !null; author?: any | Luke}`
+
+</div>
+<br />
 
 ---
+
+<br />
 
 # Getting Started
 <span id="getting-started" name="Getting Started" data-toc></span>
@@ -152,7 +177,11 @@ curl --request GET \
 }
 ```
 
+<br />
+
 ---
+
+<br />
 
 ## Initial Database Setup
 
@@ -179,7 +208,7 @@ I included some very simple relationships defined between the tables. While this
   On request Spotify will send you all of your data with a notice that it may take up to 30 days to process.
 </div>
 
-I submitted a request for my data and, despite the 30 day notice, I received an email with a link to download my data within a week. The download included 4 JSON files containing roughly 2 years of my Spotify listening history each. 
+I submitted a request for my data and, despite the 30 day notice, I received an email with a link to download it within a week. The data included 4 JSON files containing roughly 2 years of my Spotify listening history each. 
   - The files were ~47MB and contained just over 60,000 records.
   - I anticipated that data would be in a similar format to the Spotify API, but it was different and missing a lot of details.
 
@@ -213,14 +242,22 @@ I submitted a request for my data and, despite the 30 day notice, I received an 
 }
 ```
 
+<br />
+
 ---
+
+<br />
 
 # Preparing Historical Data
-<span id="data-preperation" name="Data Prep" data-toc></span>
+<span id="data-preparation" name="Data Preparation" data-toc></span>
 
-The next series of steps involved running a handful of one off node and bash scripts to a) transform the historical data, b) extract a list of track id's, and c) use those track id's to enrich that data with the missing details.
+The next series of steps involved running a handful of one off node and bash scripts to **a)** transform the historical data, **b)** extract a list of track id's, and **c)** use those track id's to enrich that data with the missing details.
+
+<br />
 
 ---
+
+<br />
 
 ## Transforming the Data
 
@@ -235,71 +272,102 @@ The functions `removeUnwantedPropertiesFromHistory()` and `transformHistoryData(
 ```
 ## Data Transformation Script
 #canCollapse
-// Data files provided by Spotify
-import History1 from './History1.json' with { type: 'json' }; 
+// Import Spotify history data files (JSON format)
+import History1 from './History1.json' with { type: 'json' };
 import History2 from './History2.json' with { type: 'json' };
 import History3 from './History3.json' with { type: 'json' };
 import History4 from './History4.json' with { type: 'json' };
 
+// Node.js modules for file system and path operations
 import fs from 'fs';
 import path from 'path';
 
+/*
+// Removes extraneous metadata from each history item.
+// Keeps only the properties relevant for downstream processing.
+*/
 function removeUnwantedPropertiesFromHistory(history) {
   return history.map(item => {
-    const { 
+    const {
       platform,
       ms_played,
       conn_country,
       ip_addr,
       master_metadata_album_artist_name,
-      episode_name, episode_show_name,
+      episode_name,
+      episode_show_name,
       spotify_episode_uri,
       shuffle,
       audiobook_title,
       audiobook_uri,
       audiobook_chapter_uri,
       audiobook_chapter_title,
-      reason_start, reason_end,
+      reason_start,
+      reason_end,
       skipped,
       offline,
       offline_timestamp,
       incognito_mode,
-      ...rest } = item;
-      return rest;
+      ...rest // Retain only the remaining useful fields
+    } = item;
+    return rest;
   });
 }
 
+/*
+// Transforms history items into a cleaner, more readable format.
+// Adds derived fields and removes redundant metadata.
+*/
 function transformHistoryData(history) {
   return history.map(item => {
-    item.played_at = item.ts;
-    item.album = { name: item.master_metadata_album_album_name || 'Unknown Album' };
+    item.played_at = item.ts; // Rename timestamp for clarity
+    item.album = {
+      name: item.master_metadata_album_album_name || 'Unknown Album'
+    };
     item.title = item.master_metadata_track_name;
     item.songUrl = `https://open.spotify.com/track/${item.spotify_track_uri?.split(':').pop()}`;
+
+    // Remove original metadata fields after transformation
     delete item.ts;
     delete item.master_metadata_album_album_name;
     delete item.master_metadata_track_name;
     delete item.spotify_track_uri;
+
     return item;
   });
 }
 
+/*
+// Main function to process all history files and save the output.
+// Combines, cleans, transforms, and writes to a new JSON file.
+*/
 async function processAndSaveHistory() {
+  // Merge all history files into a single array
   const allHistory = [...History1, ...History2, ...History3, ...History4];
+
+  // Step 1: Remove unnecessary fields
   const cleanedHistory = removeUnwantedPropertiesFromHistory(allHistory);
+
+  // Step 2: Transform data into final format
   const transformedHistory = transformHistoryData(cleanedHistory);
 
+  // Handle empty dataset edge case
   if (transformedHistory.length === 0) {
     console.warn('⚠️ No records to write. Check input files.');
     return;
   }
 
+  // Define output path and write processed data to disk
   const directory = process.cwd();
   const outputPath = path.join(directory, 'ProcessedSpotifyHistory.json');
   fs.writeFileSync(outputPath, JSON.stringify(transformedHistory, null, 2));
-  console.log(`Processed history saved to ${outputPath}`);
+
+  console.log(`✅ Processed history saved to ${outputPath}`);
 }
 
+// Execute the processing pipeline and handle any errors
 processAndSaveHistory().catch(console.error);
+
 ```
 
 ```
@@ -331,7 +399,11 @@ Before I could load the data into the database I had to acquire the missing trac
 
 **UGGH!** You can only request 50 artist or track details at a time.
 
+<br />
+
 ---
+
+<br />
 
 ## Extracting the Track Id's
 
@@ -343,18 +415,28 @@ This resulted in 1224 files, all but the last file containing 50 track id's!
 ```
 ## Extraction Script
 #canCollapse
+
+// Imports Node.js modules for file system and path operations.
 import fs from 'fs';
 import path from 'path';
 
+// Capture the start time of execution for potential benchmarking or logging.
 var startTime = new Date();
 
-function getTrackIdListFromHistory(history: any[]) { 
+/*
+// Extracts Spotify track IDs from a history array and writes them to chunked JSON files.
+// Each chunk contains up to 50 records, and a new file is created per chunk.
+*/
+function getTrackIdListFromHistory(history: any[]) {
   const trackIdSet = new Set();
   const directory = process.cwd();
   var chunkCount = 1;
-  
+
   while (history.length > 0) {
-    const chunk = history.splice(0, 50); // Take the first 50 records
+    // Take the first 50 records from the history array
+    const chunk = history.splice(0, 50);
+
+    // Extract track IDs from each item in the chunk
     chunk.forEach(item => {
       if (item.songUrl) {
         const trackId = item.songUrl.split('/').pop();
@@ -364,18 +446,30 @@ function getTrackIdListFromHistory(history: any[]) {
       }
     });
 
-    const outputPath = path.join(directory, `tools/trackHistoryList/spotifyTrackIdList${chunkCount}.json`);
+    // Write the current chunk of track IDs to a JSON file
+    const outputPath = path.join(
+      directory,
+      `tools/trackHistoryList/spotifyTrackIdList${chunkCount}.json`
+    );
     fs.writeFileSync(outputPath, JSON.stringify(Array.from(trackIdSet), null, 2));
     log(`Track ID list #${chunkCount} saved to ${outputPath}`);
-    
+
+    // Clear the set for the next chunk
     trackIdSet.clear();
     chunkCount++;
   }
+
+  // Return the final (empty) set as an array—likely unused but included for completeness
   return Array.from(trackIdSet);
-} 
+}
+
 ```
 
+<br />
+
 ---
+
+<br />
 
 ## Enriching the Data
 
@@ -400,74 +494,116 @@ Enriching the data would require that I call the Spotify API over 1200 times!
 import fs from 'fs';
 import path from 'path';
 
-async function getTrackDetailFromSpotifyTrackIdList(chunkNumber: number, access_token: any) { // STEP 2: Fetch track details from Spotify API
+/*
+// Fetches detailed track metadata from Spotify's API using a list of track IDs.
+// Each chunk corresponds to a JSON file containing up to 50 track IDs.
+*/
+async function getTrackDetailFromSpotifyTrackIdList(chunkNumber: number, access_token: any) {
   const inputPath = path.join(directory, `tools/trackHistoryList/spotifyTrackIdList${chunkNumber}.json`);
-  
-  if (!fs.existsSync(inputPath)) { log(`Input file not found: ${inputPath}`); return; }
+
+  // Exit early if the input file doesn't exist
+  if (!fs.existsSync(inputPath)) {
+    log(`Input file not found: ${inputPath}`);
+    return;
+  }
 
   const trackIdList = JSON.parse(fs.readFileSync(inputPath, 'utf-8'));
+
+  // Exit early if the input file is empty
   if (trackIdList.length === 0) {
-    log('⚠️ No track IDs found in the input file.');
+    log('No track IDs found in the input file.');
     return;
   }
 
   const chunkSize = 50; // Spotify API allows up to 50 IDs per request
   const trackDetails: any[] = [];
 
+  // Process track IDs in batches of 50
   for (let i = 0; i < trackIdList.length; i += chunkSize) {
     const chunk = trackIdList.slice(i, i + chunkSize);
-    const idsParam = chunk.join(','); 
+    const idsParam = chunk.join(',');
 
     try {
-      const response = await fetch(`https://api.spotify.com/v1/tracks?ids=${idsParam}`, { headers: { Authorization: `Bearer ${access_token}` } });
-      
+      const response = await fetch(
+        `https://api.spotify.com/v1/tracks?ids=${idsParam}`,
+        { headers: { Authorization: `Bearer ${access_token}` } }
+      );
+
+      // Log and skip if the response is not successful
       if (!response.ok) {
-        var responseJson = await response.json();
+        const responseJson = await response.json();
         log(`Error fetching track details: ${response.status} ${response.statusText}`);
         log(`Response: ${responseJson}`);
         continue;
       }
-      
+
       const data = await response.json();
       trackDetails.push(...data.tracks);
-    } catch (error) { log(`Fetch error:, ${JSON.stringify(error)}`); }
+    } catch (error) {
+      log(`Fetch error: ${JSON.stringify(error)}`);
+    }
   }
 
+  // Write the fetched track details to disk
   const outputPath = path.join(directory, `tools/trackHistoryData/spotifyTrackDetails${chunkNumber}.json`);
   fs.writeFileSync(outputPath, JSON.stringify(trackDetails, null, 2));
   log(`Track details chunk #${chunkNumber} saved to ${outputPath}`);
 }
 
+/*
+ * Iterates through all chunk files and fetches track details for each.
+ * Refreshes the access token if the elapsed time exceeds a threshold.
+ */
 async function getTrackDetailsInChunks() {
- for (let chunkNumber = 1; chunkNumber <= 1224; chunkNumber++) {       
-   getTrackDetailFromSpotifyTrackIdList(chunkNumber, access_token);              
-   var endtime = new Date();
-   if ((endtime.getMilliseconds() - startTime.getMilliseconds()) > 3300000) access_token = getAccessToken();         
-   await new Promise(resolve => setTimeout(resolve, 10000));
- }
+  for (let chunkNumber = 1; chunkNumber <= 1224; chunkNumber++) {
+    getTrackDetailFromSpotifyTrackIdList(chunkNumber, access_token);
+
+    const endtime = new Date();
+    if ((endtime.getMilliseconds() - startTime.getMilliseconds()) > 3300000) {
+      access_token = getAccessToken();
+    }
+
+    // Wait 10 seconds between requests to avoid rate limits
+    await new Promise(resolve => setTimeout(resolve, 10000));
+  }
 }
 
+// Joins all individual track detail files into a single consolidated JSON file.
 async function joinFiles() {
-  var allTrackDetails = [];
+  let allTrackDetails = [];
+
   for (let i = 1; i <= 1224; i++) {
-    var inputPath = path.join(process.cwd(), `tools/trackHistoryData/spotifyTrackDetails${i}.json`);
-    if(!fs.existsSync(inputPath)) { console.log(`File ${inputPath} does not exist, skipping...`); continue; }
-    allTrackDetails = allTrackDetails.concat(JSON.parse(fs.readFileSync(inputPath, 'utf-8')));
+    const inputPath = path.join(process.cwd(), `tools/trackHistoryData/spotifyTrackDetails${i}.json`);
+
+    if (!fs.existsSync(inputPath)) {
+      console.log(`File ${inputPath} does not exist, skipping...`);
+      continue;
+    }
+
+    const fileData = JSON.parse(fs.readFileSync(inputPath, 'utf-8'));
+    allTrackDetails = allTrackDetails.concat(fileData);
+
     console.log(`File #${i} processed, total tracks so far: ${allTrackDetails.length}`);
   }
 
-  var outputPath = path.join(process.cwd(), `tools/trackHistoryData/finalSpotifyTrackDetails.json`);
+  const outputPath = path.join(process.cwd(), `tools/trackHistoryData/finalSpotifyTrackDetails.json`);
   fs.writeFileSync(outputPath, JSON.stringify(allTrackDetails, null, 2));
   console.log(`All files joined. Total tracks: ${allTrackDetails.length}`);
 }
 
+// Entry point: fetch all track details and join them into one file.
 (async () => {
   await getTrackDetailsInChunks();
   await joinFiles();
   log('All chunks processed and files joined.');
 })();
 ```
+
+<br />
+
 ---
+
+<br />
 
 ## Merging the fetched and transformed data
 
@@ -533,22 +669,32 @@ jq -s '
 
 echo "✅ Merged chunk"
 ```
+
+<br />
+
 ---
 
+<br />
+
 # Database Design
+<span id="database-design" name="Database Design" data-toc></span>
 
 Now that I had prepared all of my historical data and created a process for ingesting it, it was time to fully build out the database schema.
 
+<br />
+
 ---
+
+<br />
 
 ## Defining Table Relationships
 
 Design Considerations:
 - **A single track can have multiple artists** (features, collaborations)
 - **An album can have multiple artists** (compilations, various artists albums)
-- **Determine an efficient way to store the data for use in the heatmap.**
+- **Determine an efficient way to store the data for use in the heatmap**
 - **Not every album had an image url**
-- **Tracks may be on different albums with different images.** (or so I thought, see Feature Enhancement section for more detail)
+- **Tracks may be on different albums with different images** (or so I thought, see Feature Enhancement section for more detail)
 
 I began by creating many-to-many relationships between tracks and artists, and albums and artists. Those relationships are managed via the `sptrack_artists` and `spalbum_artists` junction tables. The initial scope for this project was to simply track listening frequency. Counting hourly plays every time, client side, would be incredibly inefficient so a table with pre-counted hourly plays made sense. The creation of `spdailyplaystats` served that purpose. An important note about that table is that `hourly_plays` column is a Json array of 24 numbers for each hour of the day. This one table alone is enough to create an overall listening heatmap. Just grab each row in that table for the date range you want and your good to go.
 
@@ -556,54 +702,106 @@ That table was not enough to get a list of the most listened to artists or track
 
 Also, added common_album and common_artist tables to store information about the album that should be visually presented when displaying track information.
 
-<div><div data-component="SvgScroll" data-src="/images/projects/spotify/schema-first-relations.svg" data-width="800" data-height="1000" data-initial-scale="1.0" /></div>
+<div className="bg-slate-400">
+  <div data-component="SvgScroll" data-src="/images/projects/spotify/schema-first-relations.svg" data-width="800" data-height="1000" data-initial-scale="1.0" />
+</div>
+
+<br />
 
 ---
+
+<br />
 
 ## Performance and the Algorithm Realization
 
-I was asking AI all kinds of questions to help. It would throw out different code suggestions, table additions, indexing options, blah blah blah. None of them made any sense or really worked but I knew there had to be someway to do this efficiently. It felt obvious that data had to be precounted, but how....and that is when it hit me. Create different size "buckets" with precounted data for every artist and track.  For every year, month, and day, I would have precounted plays for every single artist and every single track I have ever listened to. Then when retreiving data real-time I could grab the biggest buckets first, followed by the next biggest, then only count the buckets for each day on the edges of the date range.
+I was asking AI all kinds of questions to help. It would throw out different code suggestions, table additions, indexing options, blah blah blah. None of them made any sense or really worked but I knew there had to be someway to do this efficiently. It felt obvious that data had to be precounted, but how....and that is when it hit me. Create different size "buckets" with precounted data for every artist and track.  For every year, month, and day, I can precounted plays for every single artist and every single track I have ever listened to. Then when retreiving data real-time I could grab the biggest buckets first, followed by the next biggest, then only count the buckets for each day on the edges of the date range.
+
+<img src="/images/projects/spotify/buckets.png" alt="Bucket Visualization" />
+
+<div data-component="CallOut" data-header="Bucket Example">
+
+Unbeknownst to me at the time, this is a common technique used in data warehousing and OLAP (Online Analytical Processing) systems. It is often referred to as "pre-aggregation" or "materialized views." The idea is to precompute and store aggregated data at different levels of granularity to optimize query performance.
+
+I have to admit, I'm impressed with myself when I create a complex solution that already exists and is widely used.
+
+</div>
 
 Below is the final DB schema. The `artiststat` and `trackstat` tables represented precounted stats for each artist and track for any given yearly, monthly, or daily bucket. The `yearlybucket`, `monthlybucket`, and `daybucket` tables containing. The `artiststat` and `trackstat` associated with a day bucket then included `hourly_plays.` Ideally, after using the largest possible buckets to determine the top artists and tracks I could then use the power of relational databases to quickly fetch all of the hourly plays for a specific artist or track.   
 
-<div><div data-component="SvgScroll" data-src="/images/projects/spotify/schema-full.svg" data-width="800" data-height="1000" data-initial-scale="1.0" /></div>
+<div className="bg-slate-400"><div data-component="SvgScroll" data-src="/images/projects/spotify/schema-full.svg" data-width="800" data-height="1000" data-initial-scale="1.2" /></div>
+
+<br />
 
 ---
 
-# Data Aggregation and Polling
-<span id="data-polling" name="Data Polling" data-toc></span>
+<br />
+
+# Data Upkeep and Aggregation
+<span id="data-polling" name="Data Upkeep" data-toc></span>
 
 This process took a lot of trial and error. I wiped tables regularly and started over more times than I would like to admit. The database structure described was derived after a significant number of iterations attempting to load this data into the database. I started with defining what my source of truth was then building outward from there.
 
-## The Source of truth
+<br />
+
+---
+
+<br />
+
+## The Source of Truth
 
 Spotify's recently played endpoint, `v1/me/player/recently-played`, provided all the data that I needed and I had already transformed all of my historical data to match what was returned from that endpoint. That data can be fed directly into the `spplayhistory` table. For new artists, tracks, or albums, I could create new records as needed after storing the data in `spplayhistory`. I also knew that I could only fetch the last 50 played tracks....I often listen to more than 50 songs in a single day. It was critical that I started doing this immediately and not to interfere with it once it was in place. As long as `spplayhistory` was regularly populated, the rest could be iteratively solved.
 
 - `getRecentlyPlayedFromSpotify()` fetches my recent play history from Spotify.
 - `ingestSpotifyPlays()` uses the data returned from `getRecentlyPlayedFromSpotify`
 
-For now I will say that I quickly set up a service so that these functions ran every 30 minutes. How I did that will be described soon.
+For now I will say that I quickly set up a service so that these functions ran every 30 minutes. I will describe how I did that in a later section.
 
 ```
 ##Fetching recently played from Spotify 
 #canCollapse
+/*
+ * Fetches recently played tracks from the Spotify API.
+ * Uses the timestamp of the last synced track to avoid duplicate ingestion.
+ */
 export const getRecentlyPlayedFromSpotify = async (): Promise<RawRecentlyPlayedResponse> => {
   try {
-    const { access_token } = await getAccessToken();  
-    const lastSync = await prisma.spplayhistory.findFirst({ orderBy: { played_at: 'desc' }, select: { played_at: true } });
-    const afterTimestamp = lastSync?.played_at instanceof Date ? lastSync.played_at.getTime() : 0;
+    // Retrieve a fresh access token
+    const { access_token } = await getAccessToken();
 
+    // Get the timestamp of the most recently played track in the database
+    const lastSync = await prisma.spplayhistory.findFirst({
+      orderBy: { played_at: 'desc' },
+      select: { played_at: true }
+    });
+
+    // Convert the timestamp to milliseconds for the Spotify API
+    const afterTimestamp = lastSync?.played_at instanceof Date
+      ? lastSync.played_at.getTime()
+      : 0;
+
+    // Construct the API URL with the 'after' parameter to fetch only new plays
     let url = `${RECENTLY_PLAYED_ENDPOINT}&after=${afterTimestamp}`;
-    
-    const response = await axios.get(url, { headers: { Authorization: `Bearer ${access_token}` } });
-  
-    if (response.status === 204 || response.status > 400 || Array.isArray(response.data) || !response.data.items) {
+
+    // Make the request to Spotify's recently played endpoint
+    const response = await axios.get(url, {
+      headers: { Authorization: `Bearer ${access_token}` }
+    });
+
+    // Handle cases where no new tracks are available or an error occurred
+    if (
+      response.status === 204 ||
+      response.status > 400 ||
+      Array.isArray(response.data) ||
+      !response.data.items
+    ) {
       console.warn('Recently played tracks empty or missing, error status:', response.status);
       return { status: response.status, data: [] };
     }
 
-    return { status: 200, data: response.data.items }; // raw Spotify items
+    // Return raw Spotify items if successful
+    return { status: 200, data: response.data.items };
   } catch (error) {
+    // Log and return error response
     console.error('Error fetching recently played tracks:', error);
     return { status: 500, data: [] };
   }
@@ -615,6 +813,11 @@ export const getRecentlyPlayedFromSpotify = async (): Promise<RawRecentlyPlayedR
 ```
 ##Formatting and ingesting the returned Spotify plays.
 #canCollapse
+/*
+// Ingests recently played Spotify tracks and updates the database.
+// Performs upserts for albums, tracks, artists, relationships, and play history.
+// Also triggers downstream updates like artist images and daily stats.
+*/
 export const ingestSpotifyPlays = async (): Promise<void> => {
   const response = await getRecentlyPlayedFromSpotify();
 
@@ -723,7 +926,7 @@ export const ingestSpotifyPlays = async (): Promise<void> => {
   // Fetch artist images and update common albums
   await Promise.all([
     updateArtistImages(Array.from(allArtistIds)),
-    optimizedAssignCommonAlbumUrls()
+    assignCommonAlbumUrls()
   ]);
 
   // Aggregate daily stats for the unique dates in the ingested plays
@@ -742,8 +945,11 @@ export const ingestSpotifyPlays = async (): Promise<void> => {
   console.log(`✅ Ingested ${items.length} plays and updated stats for ${uniqueDates.size} unique dates`);
 };
 ```
+<br />
 
 ---
+
+<br />
 
 ## Initial Table Population
 
@@ -761,26 +967,32 @@ Now I had a strong process for populating `spplayhistory`, `spalbum`, `sptrack`,
 ```
 ##Pushing Historical Play Details to DB
 #canCollapse
-async function pushPlayDetailsToDB() {                                    
-  var inputPath = path.join(directory, `tools/trackHistoryData/finalSpotifyTrackDetails.json`);
-  let trackDetails = await JSON.parse(fs.readFileSync(inputPath, 'utf-8'));
+/*
+// Pushes detailed Spotify track data into the database in manageable chunks.
+// Reads from the final consolidated track details file and ingests each chunk sequentially.
+*/
+async function pushPlayDetailsToDB() {
+  const inputPath = path.join(directory, `tools/trackHistoryData/finalSpotifyTrackDetails.json`);
+  const trackDetails = await JSON.parse(fs.readFileSync(inputPath, 'utf-8'));
 
   const CHUNK_SIZE = 400;
   let cursor = 0;
   let chunkNumber = 1;
 
   while (cursor < trackDetails.length) {
+    // Slice out the next chunk of track data
     const dataChunk = trackDetails.slice(cursor, cursor + CHUNK_SIZE);
 
-    log(`🚀 Ingesting chunk #${chunkNumber} with ${dataChunk.length} tracks @ ${new Date().toISOString()}`);
+    log(`Ingesting chunk #${chunkNumber} with ${dataChunk.length} tracks @ ${new Date().toISOString()}`);
 
-    try {await ingestSpotifyPlays(true, {status: 200, data: dataChunk }); }
-    catch (error) { log(`❌ Ingestion error in file chunk #${chunkNumber}: ${JSON.stringify(error)}`); }
+    // Ingest the current chunk into the database, throw an error if it fails
+    try { await ingestSpotifyPlays(true, { status: 200, data: dataChunk }); }
+    catch (error) { log(`Ingestion error in file chunk #${chunkNumber}: ${JSON.stringify(error)}`); }
 
     cursor += CHUNK_SIZE;
     chunkNumber++;
   }
-  
+
   log('All files processed.');
 }
 ```  
@@ -798,33 +1010,43 @@ While that created and ensured that my "source of truth" pipeline was operating,
 ```
 ##Bucket Creation Functions
 #canCollapse
+/*
+// Deletes all existing stats and bucket tables from the database.
+// Useful for resetting the ingestion pipeline before a full rebuild.
+*/
 export async function purgeBuckets() {
   const logPath = path.join(process.cwd(), 'ingestion.log');
 
-  log('🧨 Purging all stats and bucket tables...', logPath);
-  // Delete stats first
+  log('Purging all stats and bucket tables...', logPath);
+
   await prisma.artiststat.deleteMany({});
   await prisma.trackstat.deleteMany({});
   await prisma.daybucket.deleteMany({});
   await prisma.monthbucket.deleteMany({});
   await prisma.yearbucket.deleteMany({});
-  log('✅ All stats and bucket tables purged.', logPath);
+
+  log('All stats and bucket tables purged.', logPath);
 }
 
+/*
+// Rebuilds year, month, and day bucket tables based on play history.
+// Uses the first play event as the start date and builds buckets through 2030.
+*/
 export async function buildAllBuckets() {
   const logPath = path.join(process.cwd(), 'ingestion.log');
 
   // Use first play event as start date
   let start = new Date('2017-07-23T00:00:00.000Z');
   const firstPlay = await prisma.spplayhistory.findFirst({ orderBy: { played_at: 'asc' } });
-  if (firstPlay && firstPlay.played_at) {
+  if (firstPlay?.played_at) {
     const d = new Date(firstPlay.played_at);
     start = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
   }
+
   const end = new Date('2030-12-31T00:00:00.000Z');
+  log('Rebuilding all bucket tables...', logPath);
 
-  log('🔨 Rebuilding all bucket tables...', logPath);
-
+  
   // Year buckets
   const yearStarts = eachYearOfInterval({ start, end });
   const yearBucketInputs = yearStarts.map(yearStart => {
@@ -833,79 +1055,79 @@ export async function buildAllBuckets() {
     const range_end = new Date(Date.UTC(year, 11, 31, 23, 59, 59, 999));
     return { year, range_start, range_end };
   });
-  await prisma.yearbucket.createMany({ data: yearBucketInputs, skipDuplicates: true });
-  log(`✅ Created/confirmed ${yearBucketInputs.length} yearbucket rows`, logPath);
 
-  // Build year lookup
+  await prisma.yearbucket.createMany({ data: yearBucketInputs, skipDuplicates: true });
+  log(`Created/confirmed ${yearBucketInputs.length} yearbucket rows`, logPath);
+
   const yearRows = await prisma.yearbucket.findMany();
   const yearLookup = new Map<number, number>(yearRows.map(y => [y.year, y.id]));
 
   // Month buckets
   const monthStarts = eachMonthOfInterval({ start, end });
   const monthBucketInputs = [];
+
   for (const monthStart of monthStarts) {
     const year = monthStart.getUTCFullYear();
     const month = monthStart.getUTCMonth() + 1;
     const range_start = new Date(Date.UTC(year, month - 1, 1));
     const range_end = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
     const yearbucketid = yearLookup.get(year);
+
     if (!yearbucketid) {
-      log(`❌ Skipping monthbucket for ${year}-${month}: no yearbucket found`, logPath);
+      log(`Skipping monthbucket for ${year}-${month}: no yearbucket found`, logPath);
       continue;
     }
-    if (yearbucketid) {
-      monthBucketInputs.push({ yearbucketid, month, range_start, range_end });
-    } else {
-      log(`❌ Skipping monthbucket for ${year}-${month}: no yearbucket found`, logPath);
-    }
+
+    monthBucketInputs.push({ yearbucketid, month, range_start, range_end });
   }
+
   await prisma.monthbucket.createMany({ data: monthBucketInputs, skipDuplicates: true });
-  log(`✅ Created/confirmed ${monthBucketInputs.length} monthbucket rows`, logPath);
+  log(`Created/confirmed ${monthBucketInputs.length} monthbucket rows`, logPath);
 
-  // Build month lookup
   const monthRows = await prisma.monthbucket.findMany();
-  // key: `${year}-${month}`
   const monthLookup = new Map<string, number>(monthRows.map(m => [`${m.yearbucketid}-${m.month}`, m.id]));
-
-  // (Removed week bucket creation)
 
   // Day buckets
   const dayStarts = eachDayOfInterval({ start, end });
-  // Build a lookup for monthbucket by yearbucketid and month
   const monthRowsForDays = await prisma.monthbucket.findMany();
   const monthLookupForDays = new Map<string, number>(monthRowsForDays.map(m => [`${m.yearbucketid}-${m.month}`, m.id]));
+
   const dayBucketInputs = dayStarts.map(date => {
     const year = date.getUTCFullYear();
     const month = date.getUTCMonth() + 1;
-    // Find yearbucketid for this year
     const yearbucketid = yearLookup.get(year);
     const monthbucketid = monthLookupForDays.get(`${yearbucketid}-${month}`);
+
     return {
       start_date: startOfDay(date),
       bucket_scope: 'day',
       monthbucketid: monthbucketid!,
     };
   });
-  await prisma.daybucket.createMany({ data: dayBucketInputs, skipDuplicates: true });
-  log(`✅ Created/confirmed ${dayBucketInputs.length} daybucket rows`, logPath);
 
-  log('🎉 All bucket tables rebuilt.', logPath);
+  await prisma.daybucket.createMany({ data: dayBucketInputs, skipDuplicates: true });
+  log(`Created/confirmed ${dayBucketInputs.length} daybucket rows`, logPath);
+
+  log('All bucket tables rebuilt.', logPath);
 }
 
+/*
+// Links monthbucket rows to their corresponding yearbucket parents.
+// Ensures hierarchical integrity between bucket tables.
+*/
 export async function linkBucketHierarchy() {
   const logPath = path.join(process.cwd(), 'ingestion.log');
 
-  log('🔗 Linking bucket hierarchy...', logPath);
+  log('Linking bucket hierarchy...', logPath);
 
   const yearBuckets = await prisma.yearbucket.findMany();
   const monthBuckets = await prisma.monthbucket.findMany();
-  const dayBuckets = await prisma.daybucket.findMany();
 
-  // Link monthbucket → yearbucket
   for (const month of monthBuckets) {
     const parent = yearBuckets.find(y =>
       month.range_start >= y.range_start && month.range_end <= y.range_end
     );
+
     if (parent && month.yearbucketid !== parent.id) {
       await prisma.monthbucket.update({
         where: { id: month.id },
@@ -915,60 +1137,61 @@ export async function linkBucketHierarchy() {
     }
   }
 
-  // (Removed weekbucket linking)
-
-  log('✅ Bucket hierarchy linked via range containment', logPath);
+  log('Bucket hierarchy linked via range containment', logPath);
 }
 
+/*
+// Validates bucket date ranges and parent-child relationships.
+// Logs any inconsistencies or out-of-range entries.
+*/
 export async function validateBuckets() {
   const logPath = path.join(process.cwd(), 'ingestion.log');
 
-  log('🔎 Validating bucket hierarchy and date ranges...', logPath);
+  log('Validating bucket hierarchy and date ranges...', logPath);
 
-  // Define valid date range
   const validStart = new Date('2017-07-23T00:00:00.000Z');
   const validEnd = new Date('2030-12-31T23:59:59.999Z');
-
   let issues = 0;
 
-  // Check yearbucket date range
   const yearBuckets = await prisma.yearbucket.findMany();
   for (const year of yearBuckets) {
     if (year.range_start < validStart || year.range_end > validEnd) {
-      log(`❌ yearbucket ${year.id} out of range: ${year.range_start.toISOString()} - ${year.range_end.toISOString()}`);
+      log(`yearbucket ${year.id} out of range: ${year.range_start.toISOString()} - ${year.range_end.toISOString()}`);
       issues++;
     }
   }
 
-  // Check monthbucket → yearbucket and date range
   const monthBuckets = await prisma.monthbucket.findMany();
   for (const month of monthBuckets) {
     if (!month.yearbucketid) {
-      log(`❌ monthbucket ${month.id} missing yearbucketid`, logPath);
+      log(`monthbucket ${month.id} missing yearbucketid`, logPath);
       issues++;
     }
     if (month.range_start < validStart || month.range_end > validEnd) {
-      log(`❌ monthbucket ${month.id} out of range: ${month.range_start.toISOString()} - ${month.range_end.toISOString()}`, logPath);
+      log(`monthbucket ${month.id} out of range: ${month.range_start.toISOString()} - ${month.range_end.toISOString()}`, logPath);
       issues++;
     }
   }
 
-  // Check daybucket date range
   const dayBuckets = await prisma.daybucket.findMany();
   for (const day of dayBuckets) {
     if (day.start_date < validStart || day.start_date > validEnd) {
-      log(`❌ daybucket ${day.id} out of range: ${day.start_date.toISOString()}`, logPath);
+      log(`daybucket ${day.id} out of range: ${day.start_date.toISOString()}`, logPath);
       issues++;
     }
   }
 
-  if (issues === 0) {
-    log('✅ All bucket hierarchy links are valid.', logPath);
-  } else {
-    log(`⚠️ Validation complete: ${issues} issues found.`, logPath);
-  }
+  if (issues === 0) { log('All bucket hierarchy links are valid.', logPath); } 
+  else { log(`Validation complete: ${issues} issues found.`, logPath); }
+
 }
 ```
+
+<br />
+
+---
+
+<br />
 
 ## Aggregation
 
@@ -980,29 +1203,35 @@ As plays were ingested I had to aggregate total play counts for all appropriate 
 <br />
 
 ```
-##aggregateDailyStats(targetDate)
+##aggregateDailyStats(targetDate:)
 #canCollapse
+/*
+// Aggregates daily play statistics for a given target date.
+// Computes hourly play counts, top tracks and artists, and stores results in bucketed tables.
+*/
 export const aggregateDailyStats = async (targetDate: Date): Promise<void> => {
   const dateStr = targetDate.toISOString().split('T')[0];
   const start = new Date(`${dateStr}T00:00:00.000Z`);
   const end = new Date(`${dateStr}T23:59:59.999Z`);
   const weekday = start.toLocaleDateString('en-US', { weekday: 'short' });
 
-  // Delete existing daily play stats
+  // Delete existing daily play stats for this date
   await prisma.spdailyplaystats.deleteMany({ where: { date: start } });
 
-  // Fetch play history with track and artist info
+  // Fetch play history for the target date, including track and artist relationships.
   const plays = await prisma.spplayhistory.findMany({
     where: { played_at: { gte: start, lte: end } },
     include: { track: { include: { track_artists: true } } }
   });
 
+  // Initialize counters and hourly maps
   const hourlyPlays = Array(24).fill(0);
   const trackCounts = new Map<string, number>();
   const artistCounts = new Map<string, number>();
   const trackHourlyMap = new Map<string, number[]>();
   const artistHourlyMap = new Map<string, number[]>();
 
+  // Tally plays by hour, track, and artist.
   for (const play of plays) {
     const hour = new Date(play.played_at).getUTCHours();
     hourlyPlays[hour]++;
@@ -1020,15 +1249,17 @@ export const aggregateDailyStats = async (targetDate: Date): Promise<void> => {
     }
   }
 
-  // Create overall daily play stats
+  // Store overall daily play stats.
   await prisma.spdailyplaystats.create({ data: { date: start, weekday, hourly_plays: hourlyPlays } });
 
-  console.log(`✅ Overall stats created for ${dateStr}`);
+  console.log(`Overall stats created for ${dateStr}`);
 
-  // Find existing day bucket (daybuckets are pre-created up to 2030)
-  // Compare by date string to handle timezone differences
+  /*
+  // Find the corresponding daybucket for this date.
+  // Daybuckets should be pre-created up to 2030.
+  */
   const dayBucket = await prisma.daybucket.findFirst({
-    where: { 
+    where: {
       start_date: {
         gte: new Date(`${dateStr}T00:00:00.000Z`),
         lt: new Date(`${dateStr}T23:59:59.999Z`)
@@ -1036,19 +1267,18 @@ export const aggregateDailyStats = async (targetDate: Date): Promise<void> => {
     }
   });
 
-  if (!dayBucket) {
-    throw new Error(`Day bucket not found for ${dateStr}. Daybuckets should be pre-created up to 2030.`);
-  }
+  if (!dayBucket) { throw new Error(`Day bucket not found for ${dateStr}. Daybuckets should be pre-created up to 2030.`); }
 
-  // Create stats using individual upserts (matching updateBucketedStats approach)
+  // Upsert artist-level stats for the day.
   for (const [artist_id, count] of artistCounts.entries()) {
     await prisma.artiststat.upsert({
       where: { artist_id_stat_date: { artist_id, stat_date: start } },
       update: { count, hourly_plays: artistHourlyMap.get(artist_id), daybucketid: dayBucket.id, bucket_scope: 'day' },
       create: { artist_id, count, hourly_plays: artistHourlyMap.get(artist_id), stat_date: start, daybucketid: dayBucket.id, bucket_scope: 'day' }
-	});
+    });
   }
 
+  // Upsert track-level stats for the day.
   for (const [track_id, count] of trackCounts.entries()) {
     await prisma.trackstat.upsert({
       where: { track_id_stat_date: { track_id, stat_date: start } },
@@ -1057,14 +1287,14 @@ export const aggregateDailyStats = async (targetDate: Date): Promise<void> => {
     });
   }
 
-  console.log(`📦 Bucketed stats updated for ${dateStr} (daybucket: ${dayBucket.id})`);
+  console.log(`Bucketed stats updated for ${dateStr} (daybucket: ${dayBucket.id})`);
 };
 ```
 
 <br />
 
 ```
-## updateBucketedStats(dryRun: boolean = false)
+##updateBucketedStats(dryRun: boolean = false)
 #canCollapse
 export async function updateBucketedStats(dryRun: boolean = false) {
   const logPath = path.join(process.cwd(), 'ingestion.log');
@@ -1072,7 +1302,7 @@ export async function updateBucketedStats(dryRun: boolean = false) {
   log('🔄 Rebuilding all bucketed stats from raw play history...', logPath);
   log('ℹ️ Starting day bucket aggregation...', logPath);
 
-
+  // Aggregate stats for each day bucket
   const dayBuckets = await prisma.daybucket.findMany({});
   for (const day of dayBuckets) {
     log(`📅 Aggregating stats for daybucket ${day.id} (${day.start_date.toISOString()})`, logPath);
@@ -1098,6 +1328,7 @@ export async function updateBucketedStats(dryRun: boolean = false) {
     log(`🎨 Artist counts for daybucket ${day.id}: ${JSON.stringify(Array.from(artistCounts.entries()))}`, logPath);
     log(`🎵 Track counts for daybucket ${day.id}: ${JSON.stringify(Array.from(trackCounts.entries()))}`, logPath);
 
+    // Actually insert artist stats for every day bucket.
     for (const [artist_id, count] of artistCounts.entries()) {
       log(`⬆️ Upserting artiststat for artist ${artist_id} in daybucket ${day.id} (count: ${count})`, logPath);
       if (!dryRun) {
@@ -1109,6 +1340,7 @@ export async function updateBucketedStats(dryRun: boolean = false) {
       }
     }
 
+    // Actually insert track stats for every day bucket.
     for (const [track_id, count] of trackCounts.entries()) {
       log(`⬆️ Upserting trackstat for track ${track_id} in daybucket ${day.id} (count: ${count})`, logPath);
       if (!dryRun) {
@@ -1122,6 +1354,7 @@ export async function updateBucketedStats(dryRun: boolean = false) {
     log(`✅ Updated daybucket ${day.id} stats.`, logPath);
   }
 
+  // Aggregate stats for each month bucket
   log('ℹ️ Starting month bucket aggregation...', logPath);
   let monthBuckets = await prisma.monthbucket.findMany({ where: { id: { gte: 2801 } }, orderBy: { id: 'asc' } });
   await prisma.artiststat.updateMany({
@@ -1134,10 +1367,11 @@ export async function updateBucketedStats(dryRun: boolean = false) {
   });
 
   for (const month of monthBuckets) {
-
     log(`📆 Aggregating stats for monthbucket ${month.id} (${month.range_start.toISOString()})`, logPath);
+    
     const dayBuckets = await prisma.daybucket.findMany({ where: { monthbucketid: month.id } });
     const dayBucketIds = dayBuckets.map(db => db.id);
+    
     log(`🔎 Found ${dayBucketIds.length} daybuckets for monthbucket ${month.id}`, logPath);
     log(`🗓️ Daybucket dates for monthbucket ${month.id}: ${dayBuckets.map(db => db.start_date.toISOString()).join(', ')}`, logPath);
 
@@ -1175,9 +1409,10 @@ export async function updateBucketedStats(dryRun: boolean = false) {
     }));
     log(JSON.stringify(artistRows[0]), logPath);
 
+    // Actually insert artist stats for every month bucket. Done in batches for efficiency
     if (!dryRun && artistRows.length > 0) {
       await prisma.artiststat.createMany({ data: artistRows, skipDuplicates: true });
-      log(`[Prisma] Batch inserted trackstat for monthbucket=${month.id}, rows=${artistRows.length}`, logPath);
+      log(`[Prisma] Batch inserted artiststat for monthbucket=${month.id}, rows=${artistRows.length}`, logPath);
     }
 
     const trackRows = Array.from(trackMonthMap.values()).filter(t => t.monthbucketid === month.id).map(({ track_id, monthbucketid, count }) => ({
@@ -1187,6 +1422,8 @@ export async function updateBucketedStats(dryRun: boolean = false) {
       stat_date: month.range_start,
       monthbucketid
     }));
+
+    // Actually insert track stats for every month. Done in batches for efficiency
     if (!dryRun && trackRows.length > 0) {
       await prisma.trackstat.createMany({ data: trackRows, skipDuplicates: true });
       log(`[Prisma] Batch inserted trackstat for monthbucket=${month.id}, rows=${trackRows.length}`, logPath);
@@ -1198,7 +1435,7 @@ export async function updateBucketedStats(dryRun: boolean = false) {
   log(`🧹 Cleaned up yearbucketid for monthbucket ${month.id}`, logPath);
   }
 
-
+  // Aggregate stats for each yearbucket
   log('ℹ️ Starting year bucket aggregation...', logPath);
   const yearBuckets = await prisma.yearbucket.findMany({});
   for (const year of yearBuckets) {
@@ -1213,6 +1450,7 @@ export async function updateBucketedStats(dryRun: boolean = false) {
     for (const stat of artistStats) {
       artistCounts.set(stat.artist_id, (artistCounts.get(stat.artist_id) || 0) + stat.count);
     }    
+
     log(`🎨 Artist counts for yearbucket ${year.id}: ${JSON.stringify(Array.from(artistCounts.entries()))}`, logPath);
     
     const trackStats = await prisma.trackstat.findMany({ where: { monthbucketid: { in: monthIds }, bucket_scope: 'month' } });
@@ -1223,6 +1461,8 @@ export async function updateBucketedStats(dryRun: boolean = false) {
     }
 
     log(`🎵 Track counts for yearbucket ${year.id}: ${JSON.stringify(Array.from(trackCounts.entries()))}`, logPath);
+    
+    // Actually insert artist stats for every year bucket.
     for (const [artist_id, count] of artistCounts.entries()) {
       log(`⬆️ Upserting artiststat for artist ${artist_id} in yearbucket ${year.id} (count: ${count})`, logPath);
       if (!dryRun) {
@@ -1234,6 +1474,7 @@ export async function updateBucketedStats(dryRun: boolean = false) {
       }
     }
 
+    // Actually insert track stats for every year bucket.
     for (const [track_id, count] of trackCounts.entries()) {
       log(`⬆️ Upserting trackstat for track ${track_id} in yearbucket ${year.id} (count: ${count})`, logPath);
       if (!dryRun) {
@@ -1251,7 +1492,11 @@ export async function updateBucketedStats(dryRun: boolean = false) {
 }
 ```
 
+<br />
+
 ---
+
+<br />
 
 ## Routine Data Polling
 
@@ -1288,6 +1533,7 @@ app.prepare().then(() => {
   console.log(`Running in ${dev ? 'development' : 'production'} mode`);
   let isRunning = false;
 
+  // Calls the getSpotifyHistory API route to fetch recent plays and push them to the database.
   async function runSpotifyIngestion() {
     try {
       const response = await fetch(historyurl, { method: 'POST', headers: { 'x-cron-token': process.env.CRON_SECRET } })
@@ -1299,6 +1545,7 @@ app.prepare().then(() => {
     } catch (error) { console.error('❌ Error in scheduled task:', error); }
   }
 
+  // Calls the aggregateDailyStats API route to update daily stats for the last three days.
   async function aggregateDailyStats() {
     try {
       const response = await fetch(dailyurl, { method: 'POST', headers: { 'x-cron-token': process.env.CRON_SECRET } })
@@ -1310,7 +1557,10 @@ app.prepare().then(() => {
     } catch (error) { console.error('❌ Error in scheduled task:', error); }
   }
 
+  // Schedule tasks only in production mode
   if (!dev) {
+    // Call runSpotifyIngestion() to fetch recent plays and push them to the database.
+    // This is done very 30 minutes, as long as a prior job is not still running
     schedule('*/30 * * * *', async () => {
       if (isRunning) { console.warn(`⚠️ Skipping run — previous job still running`); return; }
 
@@ -1320,6 +1570,8 @@ app.prepare().then(() => {
       try { await runSpotifyIngestion(); } finally { isRunning = false; }
     });
 
+    // Call aggregateDailyStats() to update daily stats for the last three days.
+    // This is done every 6 hours to ensure stats are up to date.
     schedule('10 */6 * * *', async () => {
       console.log(`⏱️ Attempting daily stats aggregation at ${new Date().toISOString()}`);
       await aggregateDailyStats();
@@ -1349,25 +1601,47 @@ I thought I was almost there. The back end API route to fetch data was the most 
 - Random brain fries, where I just couldn't continue to process what was happening myself.
 - AI misdirecting me or writing code that was horribly wrong (admittedly AI also provided code that was solid and incredibly complex as well).
 - Having to take a shower, eat, feed my dog, and occasionally find a natural source of vitamin D delayed my progress too.
-- With a lot of caffeine, limited sleep, and my friends....ChatGPT, Copilot, and Claude this is what I came up with:
+- With a lot of caffeine, limited sleep, and my friends....ChatGPT, Copilot, and Claude we came up with a solution that worked well enough.
+
+Ideally, the front end calls the back end with a date range and the back end returns a series of objects that are used to render the heatmap. 
+
+- `topArtists[]` - This is an array of the top 10 artist objects for the date range.
+- `topTracks[]` - This is an array of the top 10 track objects for the date range.
+- `playFrequency[]` - Contains an item for every day in the date range. Each item has:
+  * `date` - The date in YYYY-MM-DD format.
+  * `weekday` - The short name of the weekday (e.g., 'Mon', 'Tue').
+  * `hourly_plays[]` - An array of 24 integers representing play counts for each hour of the day (0-23).
+- `artistHeatmaps[]` - Contains 10 objects identical to `playFrequency[]` for each of the top 10 artists.
+- `trackHeatMaps[]` - Contains 10 objects identical to `playFrequency[]` for each of the top 10 tracks.
 
 <br />
 
 ```
 ##getSpotifyStatsByDateRange(startDate, endDate)
 #canCollapse
-export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date): Promise<SpotifyDataResponseProps> => {
+/*
+ * Retrieves aggregated Spotify stats for a given date range.
+ * Includes top artists, top tracks, hourly play frequency, and heatmap data.
+ */
+export const getSpotifyStatsByDateRange = async (
+  startDate: Date,
+  endDate: Date
+): Promise<SpotifyDataResponseProps> => {
   try {
     const startTime = Date.now();
 
-    // Use raw SQL for much faster bucket-aware stats aggregation
+    /*
+    // Use raw SQL for fast bucket based aggregation.
+    // Fetch daily stats, top artists, and top tracks in parallel.
+    // A lot of help from AI to get these queries figured out, but these
+    // queries find the top artists and tracks efficiently.
+    */
     const [dailyStats, topArtistsRaw, topTracksRaw] = await Promise.all([
-      prisma.spdailyplaystats.findMany({ 
+      prisma.spdailyplaystats.findMany({
         where: { date: { gte: startDate, lte: endDate } },
         select: { date: true, weekday: true, hourly_plays: true }
       }),
-      
-      // Raw SQL for top artists - much faster than Prisma OR queries
+
       prisma.$queryRaw`
         SELECT 
           artist.artist_id,
@@ -1382,8 +1656,7 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
         ORDER BY total_count DESC
         LIMIT 10
       `,
-      
-      // Raw SQL for top tracks - much faster than Prisma OR queries  
+
       prisma.$queryRaw`
         SELECT 
           track.track_id,
@@ -1417,15 +1690,16 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
     ]);
 
     console.log(`Raw query completed in ${Date.now() - startTime}ms`);
- 
-    // Process the results from raw SQL queries
-    const playFrequency = dailyStats.map((stat) => ({
+
+    // Format daily play frequency data.
+    // Ensure every hour is represented, even if there were no plays.
+    const playFrequency = dailyStats.map(stat => ({
       date: stat.date.toISOString().substring(0, 10),
       weekday: stat.weekday,
       hourly_plays: Array.isArray(stat.hourly_plays) ? stat.hourly_plays : Array(24).fill(0)
     }));
 
-    // Format top artists from raw SQL results
+    // Format top artists from raw SQL results.
     const topArtists = (topArtistsRaw as any[]).map(row => ({
       artistId: row.artist_id,
       name: row.name || '',
@@ -1434,7 +1708,7 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
       count: Number(row.total_count)
     }));
 
-    // Format top tracks from raw SQL results  
+    // Format top tracks from raw SQL results.
     const topTracks = (topTracksRaw as any[]).map(row => ({
       trackId: row.track_id,
       isrc: row.isrc || '',
@@ -1460,7 +1734,7 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
 
     console.log(`Data processing completed in ${Date.now() - startTime}ms`);
 
-    // Get accurate metadata counts for all tracks/artists in date range
+    // Fetch metadata counts for tracks and artists in the date range.
     const [totalCountsRaw] = await Promise.all([
       prisma.$queryRaw`
         SELECT 
@@ -1481,20 +1755,24 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
     const totalArtistCount = Number(totalCounts.total_artist_count);
     const explicitCount = Number(totalCounts.explicit_count);
     const totalPlayCount = Number(totalCounts.total_play_count);
-    const percentExplicit = totalPlayCount > 0 ? parseFloat(((explicitCount / totalPlayCount) * 100).toFixed(1)) : 0.0;
+    const percentExplicit = totalPlayCount > 0
+      ? parseFloat(((explicitCount / totalPlayCount) * 100).toFixed(1))
+      : 0.0;
 
-    // Get heatmap data for top artists and tracks only (much more efficient)
+    /* Fetch heatmap data for the top artists and tracks.
+    // The bucket system is used to count the top artists and tracks 
+    // efficently then we can pull just the day bucket stats
+    */ for the top artists and tracks.
     let artistHeatmaps: HeatmapFrequencies[] = [];
     let trackHeatMaps: HeatmapFrequencies[] = [];
-    
+
     if (topArtists.length > 0 || topTracks.length > 0) {
       const topArtistIds = topArtists.map(a => a.artistId);
       const topTrackIds = topTracks.map(t => t.trackId);
-      
-      // Get detailed hourly data only for top items
+
       const [heatmapArtistStats, heatmapTrackStats] = await Promise.all([
         prisma.artiststat.findMany({
-          where: { 
+          where: {
             artist_id: { in: topArtistIds },
             stat_date: { gte: startDate, lte: endDate },
             bucket_scope: 'day'
@@ -1502,21 +1780,25 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
           select: { artist_id: true, stat_date: true, hourly_plays: true }
         }),
         prisma.trackstat.findMany({
-          where: { 
+          where: {
             track_id: { in: topTrackIds },
             stat_date: { gte: startDate, lte: endDate },
-            bucket_scope: 'day'  
+            bucket_scope: 'day'
           },
           select: { track_id: true, stat_date: true, hourly_plays: true }
         })
       ]);
 
-      // Format heatmaps efficiently
+      
+      /* This takes the aggregated data pulled from database  for each
+      // artist and prepares it for the front end. Ideally, it ensures
+      // every hour is represented, even if there weren't any plays for
+      */ a particular year, month, day.
       artistHeatmaps = heatmapArtistStats.map(stat => ({
         date: stat.stat_date.toISOString().split('T')[0],
         weekday: format(stat.stat_date, 'EEEE'),
-        hourly_plays: Array.isArray(stat.hourly_plays) && stat.hourly_plays.length === 24 
-          ? stat.hourly_plays 
+        hourly_plays: Array.isArray(stat.hourly_plays) && stat.hourly_plays.length === 24
+          ? stat.hourly_plays
           : Array(24).fill(0),
         artistId: stat.artist_id,
         trackId: undefined
@@ -1525,8 +1807,8 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
       trackHeatMaps = heatmapTrackStats.map(stat => ({
         date: stat.stat_date.toISOString().split('T')[0],
         weekday: format(stat.stat_date, 'EEEE'),
-        hourly_plays: Array.isArray(stat.hourly_plays) && stat.hourly_plays.length === 24 
-          ? stat.hourly_plays 
+        hourly_plays: Array.isArray(stat.hourly_plays) && stat.hourly_plays.length === 24
+          ? stat.hourly_plays
           : Array(24).fill(0),
         artistId: undefined,
         trackId: stat.track_id
@@ -1535,39 +1817,40 @@ export const getSpotifyStatsByDateRange = async (startDate: Date, endDate: Date)
 
     console.log(`Query completed in ${Date.now() - startTime}ms`);
 
-    return { 
-      status: 200, 
+    // Return final aggregated response.
+    return {
+      status: 200,
       data: {
         topArtists,
         topTracks,
         playFrequency,
         artistHeatmaps,
         trackHeatMaps,
-        meta: {
-          totalTrackCount,
-          totalArtistCount,
-          percentExplicit
-        }
+        meta: { totalTrackCount, totalArtistCount, percentExplicit }
       }
     };
   } catch (error) {
     console.error('Error in getSpotifyStatsByDateRange:', error);
-    return { 
-      status: 500, 
-      data: { 
-        topArtists: [], 
-        topTracks: [], 
-        playFrequency: [], 
-        artistHeatmaps: [], 
-        trackHeatMaps: [], 
-        meta: { totalTrackCount: 0, totalArtistCount: 0, percentExplicit: 0 } 
-      } 
+    return {
+      status: 500,
+      data: {
+        topArtists: [],
+        topTracks: [],
+        playFrequency: [],
+        artistHeatmaps: [],
+        trackHeatMaps: [],
+        meta: { totalTrackCount: 0, totalArtistCount: 0, percentExplicit: 0 }
+      }
     };
   }
 };
 ```
 
+<br />
+
 ---
+
+<br />
 
 # Deploying on Render
 <span id="deploying" name="Deploying" data-toc></span>
@@ -1577,30 +1860,31 @@ Previously, I have hosted projects on AWS. I've used EC2 instances, Lambda funct
 Over time I realized:
 - I was spending more time managing infrastructure than building actual applications.
 - It became more and more difficult to estimate costs, every small tidbit of processing, storage, or data transferring had an associated cost.
-- It was easy to make unrecoverable mistakes. Like when I installed my first NextJS application with a simple template on a t2.micro instance. The installation alone used so much of the instance's resources that it couldn't create a page file to migrate to a larger instance...I just had to start over.
+- It was easy to make unrecoverable mistakes.
 
 With that, I did some research and found Render.com. Render is a modern cloud platform that makes it easy to deploy web applications, APIs, and databases with minimal configuration. Whenever I read statements about how easy something is technically, I am always skeptical. But I gave them a try and was pleasently surprised.
 
+<br />
+
+---
+
+<br />
+
 ## Instance Creation
 
-<div className="grid grid-cols-2 gap-4">
-  <div>
+Once you have created an account get started by simply selecting New -> Web Service. 
 
-Once you have created an account get started by selecting New -> Web Service. After that, simply connect your GitHub or GitLab account and select a repository. Render automatically detects the type of application, in this case NextJS, and then fills in the typical build and start commands for you. Select an instance type, region, and enter your environment variables.
+Connect your GitHub or GitLab account and select a repository and Render automatically detects the type of application, in this case NextJS, and fills in the typical build and start commands for you. 
+
+Continue along and select an instance type, region, and enter your environment variables.
   
-  </div>
-  <div>
-    <img src="/images/projects/spotify/render-setup-1.webp" alt="Render Setup 0" width="100"/>
-  </div>
-</div>
-
 <img src="/images/projects/spotify/render-setup-2.webp" alt="Render Setup 2" />
 
 I started with a Starter instance as I didn't expect I'd require much for a profile site.
 
 <img src="/images/projects/spotify/render-setup-3.webp" alt="Render Setup 3" />
 
-Render gave me a generated domain, `profile-site-rt4b:10000`, to access the site immediately.I went ahead and added my own custom domain. Render gave me the specific DNS entries that I needed to configure with my DNS provider. Right within the Render dashboard was a link to documentation for what updating DNS records may look like depending on your DNS provider. A simply verification link was available to check for DNS propegation and once the record was verified...you'll see the green verified check mark! I added a test custom domain to demonstrate what I mean.
+Render gave me a generated domain, `profile-site-rt4b:10000`, to access the site immediately. I added my own custom domain and Render gave me the specific DNS entries that I needed to configure with my DNS provider. Right within the Render dashboard was a link to documentation for what updating DNS records may look like depending on your DNS provider. A simply verification link was available to check for DNS propegation and once the record was verified...you'll see the green verified check mark! I added a test custom domain to demonstrate what I mean.
 
 <img src="/images/projects/spotify/render-setup-6.webp" alt="Render Setup 6" />
 
@@ -1626,9 +1910,9 @@ As I was ingesting large sets of data over and over again I made use of the moni
 
 As iterated through the building of the yearbuckets, monthbuckets, and daybuckets I used the Top Queries table listed in the database metrics dashboard to identify which queries were taking the longest to execute and determine if/how I could optimize them.
 
-<img src="/images/projects/spotify/render-monitoring-1.webp" alt="Render Monitoring 1" width="600"/>
+<img src="/images/projects/spotify/render-monitoring-1.webp" alt="Render Monitoring 1" />
 
-## Final opinion on Render
+## Final Opinion on Render
 
 One gripe that I did have that didn't really fit into the other sections was that I knew what Node.js, Express, and NextJS were capable of. With that, Render's SEO game is strong! Whether I did a Google search, asked my inline AI coding assistant, or independent AI assistant for instructions for running an Express server alongside a NextJS application on Render EVERYTHING, and I mean EVERYTHING suggested I create a new Background Worker or Cron Job service within Render. Creating a cron job service is nearly identical to creating a web service, you select a repo, it auto populates most fields, but there are two differences.
 
@@ -1639,15 +1923,93 @@ Essentially, Render will build your code in a seperate container at the schedule
 
 Now, before you all think I am knocking Render, I'm not. Render doesn't stop you from getting in the weeds with your infrastructure if you want to. They also make it really easy to do what you need to do without the complications typically associated with more direct infrastructure management. Less time worrying about infrastructure and more time shipping code is exactly the value propisition that Render offers, and I am sold, they deliver that promise 100%. There are a slew of other features that I didn't even touch on like blueprints (their version of Infrastructure as Code), private links, log forwarding, metrics streaming, health check services, and a whole lot more. The next project I jump into that is more than just a profile site will definitely be hosted on Render and I look forward to more fully utilizing their service.
 
+<br />
+
 ---
+
+<br />
 
 # Rendering
 <span id="rendering" name="Rendering" data-toc></span>
 
 Wow, it took a lot of pre-work to get here. To that final magical moment where all of the peices come together and you see the result of your labor. Or...you don't and you go back and forth debugging for hours on end, I'd like to think my code always works first time around, but I digress. Rendering turned out to be the easiest part of this entire project (except for deploying on Render, that was much easier actually).
 
+Before I jump into this, I will disclose that me and CSS are mortal enemies...when me and CSS have to work together it can get real messy, please don't judge my CSS too harshly. On a serious note, I intend to make my CSS much more modular and thematic. I actually need to do it for the entire site, but until then, a whole lot of inline tailwind CSS it is.
+
+There are a lot of pieces that use the Spotify data pulled from the backend, but the real meat and potatoes of this post is the HeatMap component.
+
+The heatmap component takes three props `Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps)` where each map is formatted as `Map<string, Map<string, number[]>>()`.
+
+- `hourlyMap` is a Map object where the key is the weekday (e.g., 'Mon', 'Tue') and the value is an hour label and an array of 24 integers representing play counts for each hour of that day.
+- `weekdayMap` is a Map object where the key is the week (e.g., '2023-W01', '2023-W02') and the value is a day label and an array of 7 integers representing play counts for each day of that week.
+- `monthlyMap` is a Map object where the key is the year (e.g., 2023, 2024) and the value is a month label and an array of 12 integers representing play counts for each month of that year (0-11).
+
+This is done for the overall play frequency heatmap and for each of the top 10 artists and tracks. Once those maps are created that can be passed to the heatmap component to be rendered.
+
+<br />
+
 ```
-## Heatmap Component
+##Data Preparation
+#canCollapse
+data.playFrequency?.forEach(({ date, hourly_plays }: HeatMapProps) => {
+  if (!Array.isArray(hourly_plays)) return;
+  const parsedDate = new Date(date);
+  if (isNaN(parsedDate.getTime())) return;
+
+  const year = getYear(parsedDate);
+  const week = getISOWeek(parsedDate);
+  const weekday = format(parsedDate, 'EEEE');
+  const weekKey = `${year}-W${week}`;
+
+  if (!hourlyMap.has(weekKey)) hourlyMap.set(weekKey, new Map());
+  const weekMap = hourlyMap.get(weekKey)!;
+
+  if (!weekMap.has(weekday)) weekMap.set(weekday, Array(24).fill(0));
+  const bucket = weekMap.get(weekday)!;
+
+  hourly_plays.forEach((count, hour) => {
+    bucket[hour] += count;
+  });
+});
+
+const weekdayMap = new Map<string, { start: Date; counts: (number | null)[] }>();
+data.playFrequency.forEach(({ date, hourly_plays }: HeatMapProps) => {
+  const parsedDate = new Date(date);
+  if (isNaN(parsedDate.getTime()) || !Array.isArray(hourly_plays)) return;
+  const d = startOfDay(parsedDate);
+  const weekStart = startOfWeek(d, { weekStartsOn: 0 });
+  const label = `${format(weekStart, "MMM d ''yy")}`;
+  const weekday = d.getDay();
+  const totalPlays = hourly_plays
+    .filter((count) => typeof count === 'number')
+    .reduce((a, b) => a + b, 0);
+
+  if (!weekdayMap.has(label)) { weekdayMap.set(label, { start: weekStart, counts: Array(7).fill(null) }); }
+
+  const counts = weekdayMap.get(label)!.counts;
+  counts[weekday] = (counts[weekday] ?? 0) + totalPlays;
+});
+
+const monthlyMap = new Map<string, (number | null)[]>();
+data.playFrequency.forEach(({ date, hourly_plays }: HeatMapProps) => {
+  const d = new Date(date);
+  const year = d.getFullYear().toString();
+  const monthIndex = d.getMonth(); // 0 = Jan, 11 = Dec
+
+  const totalPlays = hourly_plays.reduce((a, b) => a + b, 0);
+
+  if (!monthlyMap.has(year)) { 
+    monthlyMap.set(year, Array(12).fill(null)); 
+  }
+  if (monthlyMap.get(year)) { 
+    monthlyMap.get(year)![monthIndex] = (monthlyMap.get(year)![monthIndex] ?? 0) + totalPlays; 
+  }
+});
+```
+<br />
+
+```
+##Heatmap Component
 #canCollapse
 import clsx from 'clsx';
 import React, { useId, useState } from 'react';
@@ -2056,7 +2418,11 @@ const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapD
 export default Heatmap;
 ```
 
+<br />
+
 ---
+
+<br />
 
 # Lessons & Bloopers
 <span id="lessons-bloopers" name="Lessons & Bloopers" data-toc></span>
@@ -2109,7 +2475,7 @@ const [artistStats, trackStats] = await Promise.all([
 
 This code gave me an opportunity to see how responsive Render's alerting services were, and I can tell you that they are very responsive. This bit of code would bring down the Starter instance and small database I began with almost instantly.
 
-## Double wrapped
+## Double Wrapped
 
 My `src/pages/api` routes return data wrapped in a standard response object like this:
 
@@ -2164,7 +2530,11 @@ Or, when your AI assistance is convinced that they know...
 <img src="/images/projects/spotify/ai-persistance-2.webp" alt="AI Persistance Example 2" width="600"/>
 <img src="/images/projects/spotify/ai-persistance-3.webp" alt="AI Persistance Example 3" width="600"/>
 
+<br />
+
 ---
+
+<br />
 
 # Future Enhancements
 <span id="future-enhancements" name="Future Enhancements" data-toc></span>

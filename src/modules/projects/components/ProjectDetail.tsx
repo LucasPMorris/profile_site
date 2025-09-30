@@ -24,6 +24,7 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
           <div className="hidden lg:block"><TableOfContents content={content || ''} title={title} mode="floating" /></div> 
           
           {/* Project Content */}
+          <div className="relative"></div>
           <div className='space-y-8 project-content-start'>
             <div className='flex flex-col items-start justify-between gap-5 sm:flex-row lg:flex-row lg:items-center'>
               <div className='flex flex-wrap items-center gap-2'>
