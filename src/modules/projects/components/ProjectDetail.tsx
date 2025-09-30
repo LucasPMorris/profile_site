@@ -29,35 +29,33 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
       
       {/* Project Content Container */}
       <div className="w-full">
-        <div className="max-w-none sm:max-w-7xl mx-auto">
-          <div className='space-y-8 project-content-start'>
-            <div className='flex flex-col items-start justify-between gap-5 sm:flex-row lg:flex-row lg:items-center'>
-              <div className='flex flex-wrap items-center gap-2'>
-                <span className='mb-1 text-[15px] text-neutral-800 dark:text-neutral-300'>Tech Stack :</span>
-                <div className='flex flex-wrap items-center gap-3'>
-                  {stacksArray?.map((stack: string, index: number) => ( 
-                    <div key={index}>
-                      <Tooltip title={stack}>{STACKS[stack]}</Tooltip>
-                    </div> 
-                  ))}
-                </div>
+        <div className='space-y-8 project-content-start'>
+          <div className='flex flex-col items-start justify-between gap-5 sm:flex-row lg:flex-row lg:items-center'>
+            <div className='flex flex-wrap items-center gap-2'>
+              <span className='mb-1 text-[15px] text-neutral-800 dark:text-neutral-300'>Tech Stack :</span>
+              <div className='flex flex-wrap items-center gap-3'>
+                {stacksArray?.map((stack: string, index: number) => ( 
+                  <div key={index}>
+                    <Tooltip title={stack}>{STACKS[stack]}</Tooltip>
+                  </div> 
+                ))}
               </div>
-              <ProjectLink title={title} link_demo={link_demo} link_github={link_github} />
             </div>
-            <Image 
-              src={image || '/placeholder.jpg'} 
-              width={800} 
-              height={400} 
-              sizes="(max-width: 640px) 100vw, (max-width: 1200px) 80vw, 1200px"
-              alt={title} 
-              className='w-full h-auto hover:scale-105' 
-            />
-            {content && (
-              <div className='mt-5 space-y-5 leading-[1.8] dark:text-neutral-300'>
-                <MDXComponent>{content}</MDXComponent>
-              </div>
-            )}
+            <ProjectLink title={title} link_demo={link_demo} link_github={link_github} />
           </div>
+          <Image 
+            src={image || '/placeholder.jpg'} 
+            width={800} 
+            height={400} 
+            sizes="(max-width: 640px) 100vw, (max-width: 1200px) 80vw, 1200px"
+            alt={title} 
+            className='w-full h-auto hover:scale-105' 
+          />
+          {content && (
+            <div className='mt-5 space-y-5 leading-[1.8] dark:text-neutral-300'>
+              <MDXComponent>{content}</MDXComponent>
+            </div>
+          )}
         </div>
       </div>
     </div>
