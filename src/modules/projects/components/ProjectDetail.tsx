@@ -28,17 +28,11 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
       {hasMounted && (
         <>
           {isMobile && (
-            <div className="mb-4 border-2 border-green-500 p-2">
-              <div className="text-green-600 text-xs mb-2">MOBILE TOC ACTIVE</div>
-              <TableOfContents content={content || ''} title={title} mode="mobile" />
-            </div>
+            <TableOfContents content={content || ''} title={title} mode="mobile" />
           )}
           
           {!isMobile && (
-            <div className="border-2 border-red-500 p-2">
-              <div className="text-red-600 text-xs mb-2">DESKTOP TOC ACTIVE</div>
-              <TableOfContents content={content || ''} title={title} mode="floating" />
-            </div>
+            <TableOfContents content={content || ''} title={title} mode="floating" />
           )}
         </>
       )}
