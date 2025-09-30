@@ -25,6 +25,13 @@ const ProjectsPage: NextPage<ProjectsPageProps> = ({ projects }) => {
       <NextSeo title={`${PAGE_TITLE} - Lucas Morris`} />
       <Container data-aos='fade-up'>
         <PageHeading title={PAGE_TITLE} description={PAGE_DESCRIPTION} />
+        <div className="bg-red-500 sm:bg-blue-500 md:bg-green-500 lg:bg-yellow-500 xl:bg-purple-500 p-4 text-white">
+  <div className="block sm:hidden">Mobile (red)</div>
+  <div className="hidden sm:block md:hidden">Small (blue)</div>
+  <div className="hidden md:block lg:hidden">Medium (green)</div>
+  <div className="hidden lg:block xl:hidden">Large (yellow)</div>
+  <div className="hidden xl:block">XL (purple)</div>
+</div>
         <Projects projects={projects.slice(0, visibleProjects)} loadMore={loadMore} hasMore={hasMore} />
       </Container>
     </>

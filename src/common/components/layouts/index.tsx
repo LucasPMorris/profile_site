@@ -17,12 +17,13 @@ const Layout = ({ children }: LayoutProps) => {
   const { resolvedTheme } = useTheme();
   const hasMounted = useHasMounted();
   const { width } = useWindowSize();
-  const isMobile = width < 480;
+  const isMobile = width < 640; // Changed from 480 to 640 to match Tailwind's sm breakpoint
   const isDarkTheme = hasMounted && (resolvedTheme === 'dark' || resolvedTheme === 'system');
 
   const router = useRouter();
   const pageName = router.pathname.split('/')[1];
   const isFullPageHeader = pageName === 'playground' || pageName === 'blog' || router.pathname.startsWith('/blog/') || router.pathname.startsWith('/snippets/') || router.pathname.startsWith('/projects/');
+  
   const isShowChatButton = pageName !== 'guestbook';
 
   return (
@@ -34,10 +35,16 @@ const Layout = ({ children }: LayoutProps) => {
           <div className={clsx('mx-auto max-w-6xl flex flex-col justify-between', isDarkTheme ? 'dark:text-darkText' : '' )} style={{ minHeight: '100vh' }}>
             {isFullPageHeader ? 
               (<div className='flex flex-col xl:pb-8'>
-                <HeaderTop /><main className='transition-all duration-300 flex-grow'>{children}</main>
+                <HeaderTop />
+                <main className='transition-all duration-300 flex-grow w-full px-4 sm:px-6 lg:px-8'>
+                  {children}
+                </main>
               </div>) 
               : (<div className='flex flex-col lg:flex-row lg:gap-2 lg:py-4 xl:pb-8 flex-grow'>
-                <HeaderSidebar /><main className='max-w-[915px] transition-all duration-300 lg:w-4/5 flex-grow'>{children}</main>
+                <HeaderSidebar />
+                <main className='max-w-full sm:max-w-[915px] transition-all duration-300 lg:w-4/5 flex-grow px-4 sm:px-6 lg:px-8'>
+                  {children}
+                </main>
               </div>)}
           </div>
         </div>
