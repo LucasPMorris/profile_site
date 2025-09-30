@@ -23,9 +23,7 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
         )}
         
         {/* Floating TOC for Desktop - only render on desktop */}
-        {!isMobile && (
-          <TableOfContents content={content || ''} title={title} mode="floating" />
-        )}
+        {!isMobile && ( <TableOfContents content={content || ''} title={title} mode="floating" /> )}
         
         {/* Project Content */}
         <div className='space-y-8 project-content-start'>
