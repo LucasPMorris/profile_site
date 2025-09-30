@@ -26,7 +26,7 @@ export const TableOfContents = ({ content, title = "Contents", showMobile = true
   }, [content]);
 
   if (tableOfContents.length === 0) { return null; }
-
+  if (mode === 'mobile') { return showMobile ? <InlineTOC content={content} tableOfContents={tableOfContents} title={title} /> : null; }
   if (mode === 'inline') { return <InlineTOC content={content} tableOfContents={tableOfContents} title={title} />; }
   if (mode === 'floating') { return <FloatingTOC content={content} tableOfContents={tableOfContents} title={title} />; }
 
