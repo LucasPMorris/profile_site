@@ -14,7 +14,7 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
   const { data: viewsData } = useSWR(`/api/views?slug=${slug}&type=project`, fetcher);
   const stacksArray = stacks ? stacks.split(',').map(s => s.trim()) : [];
   const hasMounted = useHasMounted();
-  const isMobile = useIsMobile(); // This properly handles state updates
+  const isMobile = useIsMobile();
 
   console.log('ProjectDetail Debug:', { 
     hasMounted, 
@@ -25,20 +25,15 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
   return (
     <div className="w-full">
       {/* TOC - Now with proper state management */}
-      {hasMounted && (
-        <>
-          {isMobile && (
-            <TableOfContents content={content || ''} title={title} mode="mobile" />
-          )}
-          
-          {!isMobile && (
-            <TableOfContents content={content || ''} title={title} mode="floating" />
-          )}
-        </>
+      {!isMobile && (
+        <TableOfContents content={content || ''} title={title} mode="floating" />
       )}
       
       {/* Project Content Container */}
       <div className="w-full">
+        {isMobile && (
+          <TableOfContents content={content || ''} title={title} mode="mobile" />
+        )}
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className='space-y-8 project-content-start'>
             <div className='flex flex-col items-start justify-between gap-5 sm:flex-row lg:flex-row lg:items-center'>

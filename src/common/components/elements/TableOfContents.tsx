@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { FloatingTOC } from './FloatingTOC';
 import { InlineTOC } from './InlineTOC';
+import { MobileTOC } from './MobileTOC';
 
 interface TocItem { id: string; title: string; line: number; originalTitle: string; level: number; }
 interface TableOfContentsProps { content: string; title?: string; showMobile?: boolean; mode?: 'inline' | 'floating' | 'mobile'; }
@@ -26,7 +27,7 @@ export const TableOfContents = ({ content, title = "Contents", showMobile = true
   }, [content]);
 
   if (tableOfContents.length === 0) { return null; }
-  if (mode === 'mobile') { return showMobile ? <InlineTOC content={content} tableOfContents={tableOfContents} title={title} /> : null; }
+  if (mode === 'mobile') { return <MobileTOC content={content} title={title} />; }
   if (mode === 'inline') { return <InlineTOC content={content} tableOfContents={tableOfContents} title={title} />; }
   if (mode === 'floating') { return <FloatingTOC content={content} tableOfContents={tableOfContents} title={title} />; }
 
