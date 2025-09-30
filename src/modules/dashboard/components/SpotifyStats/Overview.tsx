@@ -74,7 +74,7 @@ const Overview = ({ spotifyStats, hourlyMap, sortedWeekdays, weekdayMap, monthly
           )}
         </div>
         <div className='col-span-4'>
-          <Heatmap hourlyMap={hourlyMap} sortedWeekdays={sortedWeekdays} weekdayMap={weekdayMap} monthlyMap={monthlyMap} maxPlays={maxPlays} />
+          <Heatmap hourlyMap={hourlyMap} weekdayMap={weekdayMap} monthlyMap={monthlyMap} maxPlays={maxPlays} />
         </div>
         <div className='md:col-span-1 flex flex-col gap-4'>
           <Card className='flex flex-col space-y-1 rounded-xl px-4 py-3 border border-neutral-400 bg-neutral-100 dark:border-neutral-900'>

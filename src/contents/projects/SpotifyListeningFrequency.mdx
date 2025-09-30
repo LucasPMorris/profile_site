@@ -2041,7 +2041,7 @@ const heatmapResponsiveStyle = `
  * - Daily: Week-by-week view showing daily totals
  * - Monthly: Year-by-year view showing monthly totals
  */
-const Heatmap = ({ hourlyMap, sortedWeekdays, weekdayMap, monthlyMap }: HeatmapDisplayProps) => {
+const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => {
   // State for switching between time resolutions
   const [resolution, setResolution] = useState<'Hourly' | 'Daily' | 'Monthly'>('Hourly');
   
