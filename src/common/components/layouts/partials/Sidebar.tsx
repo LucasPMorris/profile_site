@@ -7,8 +7,11 @@ import ThemeSwitcher from '../../elements/ThemeSwitcher';
 import Navigation from '../../sidebar/Navigation';
 import Profile from '../../sidebar/Profile';
 
+import { useRef } from 'react';
+
 const Sidebar = () => {
-  const isMobile = useIsMobile();
+  const ref = useRef<HTMLElement>(null!) as React.RefObject<HTMLElement>;
+  const isMobile = useIsMobile(ref);
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -19,15 +22,11 @@ const Sidebar = () => {
     
     window.addEventListener('scroll', handleScroll);
     return () => { window.removeEventListener('scroll', handleScroll); };
-
   }, []);
 
   return (
-    <div
-      id='sidebar'
-      // className='flex flex-col space-y-6 transition-all duration-300 lg:py-8'
-      className='sticky top-0 z-10 flex flex-col space-y-6 transition-all duration-300 lg:py-6'
-    >
+    // <div id='sidebar' className='flex flex-col space-y-6 transition-all duration-300 lg:py-8'>
+    <div id='sidebar' className='sticky top-0 z-20 flex flex-col space-y-6 transition-all duration-300 lg:py-6'>
       <Profile isScrolled={isScrolled} />
       {!isMobile && (
         <div className='space-y-3'>

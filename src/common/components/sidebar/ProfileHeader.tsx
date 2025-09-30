@@ -4,17 +4,13 @@ import { MdVerified as VerifiedIcon } from 'react-icons/md';
 
 import Image from 'next/image';
 
-interface ProfileHeaderProps {
-  expandMenu: boolean;
-  imageSize: number;
-  isScrolled?: boolean;
-}
+interface ProfileHeaderProps { expandMenu: boolean; }
 
-const ProfileHeader = ({ expandMenu, imageSize }: ProfileHeaderProps) => {
+const ProfileHeader = ({ expandMenu }: ProfileHeaderProps) => {
   return (
     <div
       className={clsx( 'flex w-full flex-grow items-center gap-4 lg:flex-col lg:items-start lg:gap-0.5 lg:px-2', expandMenu && 'flex-col !items-start' )}>
-      <Image src='/images/luke_avatar.png' alt='Lucas Morris' width={expandMenu ? 80 : imageSize} height={expandMenu ? 80 : imageSize} className='rounded-full rotate-3 dark:border-neutral-600 lg:hover:scale-105' />
+      <Image src='/images/luke_avatar.png' alt='Lucas Morris' width={60} height={60} className='rounded-full rotate-3 dark:border-neutral-600 lg:hover:scale-105' />
       <>
         <div className='mt-1 flex items-center gap-2 lg:mt-4'>
           <Link href='/' passHref> <h2 className='flex-grow  text-lg font-medium lg:text-xl'>Lucas Morris</h2></Link>

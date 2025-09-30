@@ -9,12 +9,16 @@ import useSWR from 'swr';
 import { fetcher } from '@/services/fetcher';
 import useHasMounted from '@/common/hooks/useHasMounted';
 import useIsMobile from '@/common/hooks/useIsMobile'; // Use your existing hook
+import { MobileTOC } from '@/common/components/elements/MobileTOC';
+import { useRef } from 'react';
 
 const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, slug }: ProjectItemProps) => {
   const { data: viewsData } = useSWR(`/api/views?slug=${slug}&type=project`, fetcher);
   const stacksArray = stacks ? stacks.split(',').map(s => s.trim()) : [];
   const hasMounted = useHasMounted();
-  const isMobile = useIsMobile();
+
+  const ref = useRef<HTMLElement>(null!);
+  const isMobile = useIsMobile(ref);
 
   console.log('ProjectDetail Debug:', { 
     hasMounted, 
@@ -25,46 +29,21 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
   return (
     <div className="flex max-w-7xl mx-auto gap-6">
       {/* TOC - Now with proper state management */}
-      {!isMobile && (
-        <TableOfContents content={content || ''} title={title} mode="floating" />
-      )}
+      {!isMobile && ( <TableOfContents content={content || ''} title={title} mode="floating" /> )}
       
       {/* Project Content Container */}
-        <main className="w-full px-4 sm:px-6 lg:px-8">
-          {isMobile && (
-            <TableOfContents content={content || ''} title={title} mode="mobile" />
-          )}
+      <main className="w-full px-4 sm:px-6 lg:px-8">
+        {isMobile && ( <MobileTOC content={content || ''} title={title} /> )}
+
           <div className='space-y-8 project-content-start'>
+
             <div className='flex flex-col items-start justify-between gap-5 sm:flex-row lg:flex-row lg:items-center'>
-              <div className='flex flex-wrap items-center gap-2'>
-                <span className='mb-1 text-[15px] text-neutral-800 dark:text-neutral-300'>Tech Stack :</span>
-                <div className='flex flex-wrap items-center gap-3'>
-                  {stacksArray?.map((stack: string, index: number) => ( 
-                    <div key={index}>
-                      <Tooltip title={stack}>{STACKS[stack]}</Tooltip>
-                    </div> 
-                  ))}
-                </div>
-              </div>
+              <div className='flex flex-wrap items-center gap-2'><span className='mb-1 text-[15px] text-neutral-800 dark:text-neutral-300'>Tech Stack :</span><div className='flex flex-wrap items-center gap-3'>{stacksArray?.map((stack: string, index: number) => ( <div key={index}><Tooltip title={stack}>{STACKS[stack]}</Tooltip></div> ))}</div></div>
               <ProjectLink title={title} link_demo={link_demo} link_github={link_github} />
             </div>
             
-            <div className="w-full">
-              <Image 
-                src={image || '/placeholder.jpg'} 
-                width={800} 
-                height={400} 
-                sizes="(max-width: 640px) 100vw, (max-width: 1200px) 80vw, 1200px"
-                alt={title} 
-                className='w-full h-auto hover:scale-105' 
-              />
-            </div>
-            
-            {content && (
-              <div className='mt-5 space-y-5 leading-[1.8] dark:text-neutral-300 w-full'>
-                <MDXComponent>{content}</MDXComponent>
-              </div>
-            )}
+            <div className="w-full"><Image src={image || '/placeholder.jpg'} width={800} height={400} sizes="(max-width: 640px) 100vw, (max-width: 1200px) 80vw, 1200px" alt={title} className='w-full h-auto hover:scale-105' /></div>
+            {content && (<div className='mt-5 space-y-5 leading-[1.8] dark:text-neutral-300 max-w-full min-w-[500px]'><MDXComponent>{content}</MDXComponent></div>)}
           </div>
         </main>
       </div>
