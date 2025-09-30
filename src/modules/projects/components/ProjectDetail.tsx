@@ -23,18 +23,17 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
   });
 
   return (
-    <div className="w-full">
+    <div className="flex max-w-7xl mx-auto gap-6">
       {/* TOC - Now with proper state management */}
       {!isMobile && (
         <TableOfContents content={content || ''} title={title} mode="floating" />
       )}
       
       {/* Project Content Container */}
-      <div className="w-full">
-        {isMobile && (
-          <TableOfContents content={content || ''} title={title} mode="mobile" />
-        )}
-        <div className="w-full px-4 sm:px-6 lg:px-8">
+        <main className="w-full px-4 sm:px-6 lg:px-8">
+          {isMobile && (
+            <TableOfContents content={content || ''} title={title} mode="mobile" />
+          )}
           <div className='space-y-8 project-content-start'>
             <div className='flex flex-col items-start justify-between gap-5 sm:flex-row lg:flex-row lg:items-center'>
               <div className='flex flex-wrap items-center gap-2'>
@@ -67,9 +66,8 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
               </div>
             )}
           </div>
-        </div>
+        </main>
       </div>
-    </div>
   );
 };
 
