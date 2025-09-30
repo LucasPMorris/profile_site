@@ -8,37 +8,60 @@ import ProjectLink from './ProjectLink';
 import useSWR from 'swr';
 import { fetcher } from '@/services/fetcher';
 import useHasMounted from '@/common/hooks/useHasMounted';
-import { useWindowSize } from 'usehooks-ts';
+import { useState, useEffect } from 'react';
 
 const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, slug }: ProjectItemProps) => {
   const { data: viewsData } = useSWR(`/api/views?slug=${slug}&type=project`, fetcher);
   const stacksArray = stacks ? stacks.split(',').map(s => s.trim()) : [];
   const hasMounted = useHasMounted();
-  const { width } = useWindowSize();
-  
-  // Debug logs
-  console.log('ProjectDetail Debug:', { hasMounted, width, isMobile: width < 640 });
-  
-  {hasMounted && (
-    <div className="bg-red-500 text-white p-2 mb-4">
-      Debug: hasMounted={String(hasMounted)}, width={width}, isMobile={String(width < 640)}
-    </div>
-  )}
+  const [viewportWidth, setViewportWidth] = useState(0);
+
+  useEffect(() => {
+    const updateViewportWidth = () => {
+      // Use window.innerWidth for CSS viewport width, not screen width
+      setViewportWidth(window.innerWidth);
+      console.log('Viewport Debug:', {
+        innerWidth: window.innerWidth,
+        screenWidth: window.screen.width,
+        devicePixelRatio: window.devicePixelRatio
+      });
+    };
+
+    if (typeof window !== 'undefined') {
+      updateViewportWidth();
+      window.addEventListener('resize', updateViewportWidth);
+      return () => window.removeEventListener('resize', updateViewportWidth);
+    }
+  }, []);
+
+  const isMobile = viewportWidth < 640;
+
+  console.log('ProjectDetail Debug:', { 
+    hasMounted, 
+    viewportWidth, 
+    isMobile,
+    screenWidth: typeof window !== 'undefined' ? window.screen.width : 'N/A'
+  });
 
   return (
     <div className="w-full">
-      {/* Always render TOC after mount, but choose mode based on width */}
+      {/* Debug info */}
+      {hasMounted && (
+        <div className="bg-blue-500 text-white p-2 mb-4 text-xs">
+          Viewport: {viewportWidth}px | Screen: {typeof window !== 'undefined' ? window.screen.width : 'N/A'}px | Mobile: {String(isMobile)}
+        </div>
+      )}
+
+      {/* TOC Rendering */}
       {hasMounted && (
         <>
-          {/* Mobile TOC */}
-          {width < 640 && (
+          {isMobile && (
             <div className="mb-4">
               <TableOfContents content={content || ''} title={title} mode="mobile" />
             </div>
           )}
           
-          {/* Floating TOC for Desktop */}
-          {width >= 640 && (
+          {!isMobile && (
             <TableOfContents content={content || ''} title={title} mode="floating" />
           )}
         </>
