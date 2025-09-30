@@ -95,7 +95,8 @@ const CodePlayground = ({ id = undefined, mode = 'javascript',
   onCloseFullScreen,
 }: CodePlaygroundProps) => {
   const editorRef = useRef<ImperativePanelHandle>(null);
-  const isMobile = useIsMobile();
+  const ref = useRef<HTMLElement>(null as unknown as HTMLElement);
+  const isMobile = useIsMobile(ref as React.RefObject<HTMLElement>);
   const playgroundCtx = usePlaygroundContext();
 
   useEffect(() => {

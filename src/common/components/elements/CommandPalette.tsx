@@ -2,7 +2,7 @@ import { Combobox, Dialog, Transition } from '@headlessui/react';
 import clsx from 'clsx';
 import { useRouter } from 'next/router';
 import { useTheme } from 'next-themes';
-import { Fragment, useContext, useEffect, useState } from 'react';
+import { Fragment, useContext, useEffect, useRef, useState } from 'react';
 import {
   BiMoon as DarkModeIcon,
   BiSearch as SearchIcon,
@@ -43,7 +43,8 @@ const CommandPalette = () => {
   const [aiFinished, setAiFinished] = useState(false);
 
   const router = useRouter();
-  const isMobile = useIsMobile();
+  const ref = useRef<HTMLElement>(null as unknown as HTMLElement);
+  const isMobile = useIsMobile(ref);
   const { isOpen, setIsOpen } = useContext(CommandPaletteContext);
   const { resolvedTheme, setTheme } = useTheme();
   const queryDebounce = useDebounce(query, 500);

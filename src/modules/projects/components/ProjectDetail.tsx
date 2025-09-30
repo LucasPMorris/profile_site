@@ -20,12 +20,6 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
   const ref = useRef<HTMLElement>(null!);
   const isMobile = useIsMobile(ref);
 
-  console.log('ProjectDetail Debug:', { 
-    hasMounted, 
-    isMobile,
-    timestamp: Date.now() // Add timestamp to see when this runs
-  });
-
   return (
     <div className="flex max-w-7xl mx-auto gap-6">
       {/* TOC - Now with proper state management */}

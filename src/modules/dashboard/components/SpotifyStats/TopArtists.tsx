@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FaPlayCircle } from 'react-icons/fa';
 import useIsMobile from '@/common/hooks/useIsMobile';
 import Image from 'next/image';
@@ -8,7 +8,8 @@ interface TopArtistsProps { spotifyStats: any[]; selectedArtistId: string | null
 
 const TopArtists = ({ spotifyStats, selectedArtistId, onArtistSelect }: TopArtistsProps) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const isMobile = useIsMobile();
+  const ref = useRef<HTMLElement>(null as unknown as HTMLElement);
+  const isMobile = useIsMobile(ref as React.RefObject<HTMLElement>);
   const [showArrows, setShowArrows] = useState(true);
 
   useEffect(() => {

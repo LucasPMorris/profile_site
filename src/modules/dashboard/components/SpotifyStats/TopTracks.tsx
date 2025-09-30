@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import clsx from 'clsx';
 import useIsMobile from '@/common/hooks/useIsMobile';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaPlayCircle } from 'react-icons/fa';
 const fallback = '/spotify-icon.svg';
 
@@ -9,7 +9,8 @@ interface TopTracksProps { spotifyStats: any[]; selectedTrackId: string | null; 
 
 const TopTracks = ({ spotifyStats, selectedTrackId, onTrackSelect }: TopTracksProps) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const isMobile = useIsMobile();
+  const ref = useRef<HTMLElement>(null as unknown as HTMLElement);
+  const isMobile = useIsMobile(ref as React.RefObject<HTMLElement>);
   const [showArrows, setShowArrows] = useState(true);
   
   useEffect(() => {
