@@ -47,10 +47,10 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
         <TableOfContents content={content || ''} title={title} mode='mobile'/>
       </div>
       
-      {/* Floating TOC - Only on desktop */}
+      {/* Floating TOC - Only on desktop
       <div className="hidden lg:block">
         <TableOfContents content={content || ''} title={title} mode='floating'/>
-      </div>
+      </div> */}
       
       {/* Main Content Container - Full width on mobile */}
       <div className="w-full px-4 sm:px-6 lg:px-8">
