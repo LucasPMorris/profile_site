@@ -7,7 +7,7 @@ import { TableOfContents } from '@/common/components/elements/TableOfContents';
 import ProjectLink from './ProjectLink';
 import useSWR from 'swr';
 import { fetcher } from '@/services/fetcher';
-import { useIsMobile } from '@/common/hooks/useIsMobile';
+import useIsMobile from '@/common/hooks/useIsMobile';
 
 const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, slug }: ProjectItemProps) => {
   const { data: viewsData } = useSWR( `/api/views?slug=${slug}&type=project`, fetcher );
@@ -23,14 +23,14 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
         <div className="relative">
           {/* Floating TOC for Desktop - positioned relative to this container */}
             {/* Show floating TOC only if window width >= x (e.g., 1024px) */}
-            {typeof window !== 'undefined' && window.innerWidth >= 1024 && (
+            {typeof window !== 'undefined' && window.innerWidth >= 1024 && !useIsMobile() && (
             <div>
               <TableOfContents content={content || ''} title={title} mode="floating" />
             </div>
             )}
           
-          {/* Project Content */}
-          <div className="relative"></div>
+        {/* Project Content */}
+        <div className="relative"></div>
           <div className='space-y-8 project-content-start'>
             <div className='flex flex-col items-start justify-between gap-5 sm:flex-row lg:flex-row lg:items-center'>
               <div className='flex flex-wrap items-center gap-2'>
