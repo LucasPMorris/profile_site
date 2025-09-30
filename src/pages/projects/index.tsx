@@ -21,6 +21,7 @@ const ProjectsPage: NextPage<ProjectsPageProps> = ({ projects }) => {
 
   return (
     <>
+      {/* TODO: Update so that SEO with Cover Image Unfurl works */}
       <NextSeo title={`${PAGE_TITLE} - Lucas Morris`} />
       <Container data-aos='fade-up'>
         <PageHeading title={PAGE_TITLE} description={PAGE_DESCRIPTION} />
