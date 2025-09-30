@@ -18,9 +18,7 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
     <div className="w-full relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Mobile TOC */}
-        {isMobile && (
-          <TableOfContents content={content || ''} title={title} mode="mobile" />
-        )}
+        {isMobile && ( <TableOfContents content={content || ''} title={title} mode="mobile" /> )}
         
         {/* Floating TOC for Desktop - only render on desktop */}
         {!isMobile && ( <TableOfContents content={content || ''} title={title} mode="floating" /> )}
