@@ -29,7 +29,7 @@ const Projects = ({ projects, loadMore, hasMore }: ProjectsComponentProps) => {
 
   return (
     <InfiniteScroll dataLength={filteredProjects.length} next={loadMore} hasMore={hasMore} loader={<h4>Loading...</h4>} style={{ overflow: 'hidden' }}>
-      <div className='grid gap-5 px-1 pt-2 sm:grid-cols-2'>
+      <div className='grid grid-cols-1 gap-5 px-1 pt-2 sm:grid-cols-2'>
         {filteredProjects.map((project, index) => (
           <motion.div key={index} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: index * 0.1 }} >
             <ProjectCard {...project} />
