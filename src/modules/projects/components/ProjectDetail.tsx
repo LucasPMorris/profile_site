@@ -19,7 +19,7 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
   useEffect(() => {
     const updateViewportWidth = () => {
       // Use window.innerWidth for CSS viewport width, not screen width
-      setViewportWidth(window.innerWidth);
+      setViewportWidth(window.screen.width);
       console.log('Viewport Debug:', {
         innerWidth: window.innerWidth,
         screenWidth: window.screen.width,
