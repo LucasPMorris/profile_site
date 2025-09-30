@@ -47,14 +47,14 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
         <TableOfContents content={content || ''} title={title} mode='mobile'/>
       </div>
       
-      Floating TOC - Only on desktop
+      {/* Floating TOC - Only on desktop */}
       <div className="hidden lg:block">
         <TableOfContents content={content || ''} title={title} mode='floating'/>
       </div>
       
       {/* Main Content Container - Full width on mobile */}
-      <div className="w-full px-4 sm:px-6 lg:px-8">
-        {/* <div className="max-w-none sm:max-w-7xl mx-auto"> */}
+      {/* <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="max-w-none sm:max-w-7xl mx-auto">  */}
           {/* Project Content */}
           <div className='space-y-8 project-content-start'>
             <div className='flex flex-col items-start justify-between gap-5 sm:flex-row lg:flex-row lg:items-center'>
@@ -84,9 +84,9 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
               </div>
             )}
           </div>
-        {/* </div> */}
-      </div>
-    </div>
+        </div>
+    //   </div>
+    // </div>
   );
 };
 
