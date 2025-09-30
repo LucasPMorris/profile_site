@@ -7,6 +7,7 @@ import { TableOfContents } from '@/common/components/elements/TableOfContents';
 import ProjectLink from './ProjectLink';
 import useSWR from 'swr';
 import { fetcher } from '@/services/fetcher';
+import { useIsMobile } from '@/common/hooks/useIsMobile';
 
 const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, slug }: ProjectItemProps) => {
   const { data: viewsData } = useSWR( `/api/views?slug=${slug}&type=project`, fetcher );
@@ -16,12 +17,17 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
     <div className="w-full relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Mobile TOC */}
-        <TableOfContents content={content || ''} title={title} mode="mobile" />
+        {useIsMobile() && ( <TableOfContents content={content || ''} title={title} mode="mobile" /> )}
         
         {/* Project Content Container with Floating TOC */}
         <div className="relative">
           {/* Floating TOC for Desktop - positioned relative to this container */}
-          <div className="hidden lg:block"><TableOfContents content={content || ''} title={title} mode="floating" /></div> 
+            {/* Show floating TOC only if window width >= x (e.g., 1024px) */}
+            {typeof window !== 'undefined' && window.innerWidth >= 1024 && (
+            <div>
+              <TableOfContents content={content || ''} title={title} mode="floating" />
+            </div>
+            )}
           
           {/* Project Content */}
           <div className="relative"></div>
