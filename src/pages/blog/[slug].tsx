@@ -38,7 +38,7 @@ const BlogDetailPage: NextPage<BlogDetailPageProps> = ({ post }) => {
           type: 'article',
           article: { publishedTime: post?.date, modifiedTime: post?.date, authors: ['Lucas Morris', 'LucasPMorris'] },
           url: canonicalUrl,
-          images: [ { url: post?.featured_image_url } ],
+          images: [ { url: `https://lucas.untethered4life.com${post?.featured_image_url}`} ],
           siteName: 'Blog by Lucas Morris',
         }}
       />

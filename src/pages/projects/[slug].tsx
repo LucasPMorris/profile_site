@@ -16,7 +16,7 @@ const ProjectsDetailPage: NextPage<ProjectsDetailPageProps> = ({ project }) => {
   const PAGE_TITLE = project?.title;
   const PAGE_DESCRIPTION = project?.description;
 
-  const canonicalUrl = `https://lucas.untethered4life.com/project/${project?.slug}`;
+  const canonicalUrl = `https://lucas.untethered4life.com/projects/${project?.slug}`;
   const incrementViews = async () => { await axios.post(`/api/views?&slug=${project?.slug}&type=project`); };
 
   useEffect(() => {
@@ -33,7 +33,7 @@ const ProjectsDetailPage: NextPage<ProjectsDetailPageProps> = ({ project }) => {
         openGraph={{
           type: 'article',
           article: { publishedTime: project?.updated_at.toString(), modifiedTime: project?.updated_at.toString(), authors: ['Lucas Morris'] },
-          url: canonicalUrl, images: [ { url: project?.image } ], siteName: 'Projects by Lucas Morris' 
+          url: canonicalUrl, images: [ { url: `https://lucas.untethered4life.com${project?.image}`} ], siteName: 'Projects by Lucas Morris'
         }}
       />
       <Container data-aos='fade-up'>
@@ -54,3 +54,32 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
   return { props: { project: JSON.parse(JSON.stringify(response)) } };
 };
+
+
+// RY: moved from SSG to SSR since data updated frequently from DB
+// export const getStaticProps: GetStaticProps = async ({ params }) => {
+//   const response = await prisma.projects.findUnique({
+//     where: {
+//       slug: String(params?.slug),
+//     },
+//   });
+
+//   return {
+//     props: {
+//       project: JSON.parse(JSON.stringify(response)),
+//     },
+//     revalidate: 10,
+//   };
+// };
+
+// export const getStaticPaths: GetStaticPaths = async () => {
+//   const response = await prisma.projects.findMany();
+//   const paths = response.map((project) => ({
+//     params: { slug: project.slug },
+//   }));
+
+//   return {
+//     paths,
+//     fallback: false,
+//   };
+// };

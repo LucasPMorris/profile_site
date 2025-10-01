@@ -19,10 +19,6 @@ const useIsMobile = (ref: React.RefObject<HTMLElement>) => {
   const [isMobile, setIsMobile] = useState(false);
 
   useLayoutEffect(() => {
-    console.log("useIsMobile Debug: ref.current =", ref);
-    console.log("useIsMobile Debug: window.innerWidth =", window.innerWidth);
-    console.log("useIsMobile Debug: window.screen.width =", window.screen.width);
-
     if (!ref || !ref.current) {
       setIsMobile(window.innerWidth < MOBILE_WIDTH);
       return;
