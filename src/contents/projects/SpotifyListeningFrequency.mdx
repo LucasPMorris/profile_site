@@ -3,7 +3,7 @@ id: 1
 title: 'Spotify Usage Heatmap'
 stacks: ['JavaScript', 'TypeScript', 'Node.js', 'React', 'Next.js', 'PostgreSQL', 'Prisma', 'TailwindCSS']
 slug: 'spotify-usage-heatmap'
-image: 'https://lucas.untethered4life.com//images/projects/spotify/spotify-heatmap-banner.png'
+image: 'https://lucas.untethered4life.com/images/projects/spotify/spotify-heatmap-banner.png'
 link_demo: 'https://lucas.untethered4life.com/dashboard'
 link_github: 'https://lucas.untethered4life.com/dashboard'
 created_at: '2025-09-25'
@@ -27,7 +27,7 @@ In this article I will describe:
   <br />
 
   Everything I commit to has becomes a part of who I am. But those things do not define me.
-  
+
   `export interface Luke { any }`
 
   I know that there are many things to fix amongst this work in progress, it is on my agenda (the layout on mobile will be resolved soon, please check it out on a desktop in the meantime, I have to go get sleep).
@@ -47,7 +47,7 @@ In this article I will describe:
 
 I started by sampling data returned from the Spotify API. I used [Insomnia](https://insomnia.rest/) to make REST API calls to Spotify and view the returned data. I find that Insomnia has a cleaner interface than Postman and is easier to use for simple API calls, I know, probably an unpopular opinion. Anyway...to get started you have to:
 
-- Create a [Spotify Developer account](https://developer.spotify.com/) and register an application. 
+- Create a [Spotify Developer account](https://developer.spotify.com/) and register an application.
 - Obtain necessary token to make API calls. I don't cover that here, the steps for obtaining a Spotify auth token can be found [HERE](https://developer.spotify.com/documentation/web-api/tutorials/code-flow).
 - Call the Spotify `v1/me/player/recently-played` API using Insomnia.
 
@@ -69,7 +69,7 @@ curl --request GET \
 #canCollapse
 #language-json
 {
-"played_at": "2025-08-29T00:00:27.043Z",  
+"played_at": "2025-08-29T00:00:27.043Z",
 "context": {
 	"type": "playlist",
 	"external_urls": {
@@ -78,7 +78,7 @@ curl --request GET \
 	"href": "https://api.spotify.com/v1/playlists/4gowSSvFaSz8Auzizrjkyw",
 	"uri": "spotify:playlist:4gowSSvFaSz8Auzizrjkyw"
 },
-"track": {		
+"track": {
 	"album": {
 	  "album_type": "album",
 	  "artists": [
@@ -176,7 +176,7 @@ curl --request GET \
 
 ## Initial Database Setup
 
-This allowed me to jump into the design of the database schema. Keeping it simple initially, I started with unique tables for tracks, artists, albums, and play history. I stripped away any fields I didn't want to use. 
+This allowed me to jump into the design of the database schema. Keeping it simple initially, I started with unique tables for tracks, artists, albums, and play history. I stripped away any fields I didn't want to use.
 - `sptrack` - Table to store details about each Spotify track that I have listened to.
 - `spartist` - Table to store details about each Spotify artist that I have listened to.
 - `spalbum` - Table to store details about each Spotify album that I have listened to.
@@ -184,12 +184,12 @@ This allowed me to jump into the design of the database schema. Keeping it simpl
 
 I included some very simple relationships defined between the tables. While this was a good start, I knew that I would need to iterate on this design a great deal before it could would be a performant and efficient way to store and retrieve my listening history.
 
-<div className="flex flex-col lg:flex-row gap-5">  
+<div className="flex flex-col lg:flex-row gap-5">
 
-  <img src="/images/projects/spotify/sptrack-block-first.svg" width="250" alt="Table Diagram - sptrack" />
-  <img src="/images/projects/spotify/spartist-block-first.svg" width="250" alt="Table Diagram - spartist" />
-  <img src="/images/projects/spotify/spalbum-block-first.svg" width="250" alt="Table Diagram - spalbum" />
-  <img src="/images/projects/spotify/spplayhistory-block-end.svg" width="250" alt="Table Diagram - spplayhistory" />
+  <img src="/images/projects/spotify/sptrack-block-first.svg" width="250" height="443" alt="Table Diagram - sptrack" />
+  <img src="/images/projects/spotify/spartist-block-first.svg" width="250" height="286" alt="Table Diagram - spartist" />
+  <img src="/images/projects/spotify/spalbum-block-first.svg" width="250" height="286" alt="Table Diagram - spalbum" />
+  <img src="/images/projects/spotify/spplayhistory-block-end.svg" width="250" height="200" alt="Table Diagram - spplayhistory" />
 
 </div>
 
@@ -199,7 +199,7 @@ I included some very simple relationships defined between the tables. While this
   On request Spotify will send you all of your data with a notice that it may take up to 30 days to process.
 </div>
 
-I submitted a request for my data and, despite the 30 day notice, I received an email with a link to download it within a week. The data included 4 JSON files containing roughly 2 years of my Spotify listening history each. 
+I submitted a request for my data and, despite the 30 day notice, I received an email with a link to download it within a week. The data included 4 JSON files containing roughly 2 years of my Spotify listening history each.
   - The files were ~47MB and contained just over 60,000 records.
   - I anticipated that data would be in a similar format to the Spotify API, but it was different and missing a lot of details.
 
@@ -464,11 +464,11 @@ function getTrackIdListFromHistory(history: any[]) {
 
 ## Enriching the Data
 
-Enriching the data would require that I call the Spotify API over 1200 times! 
+Enriching the data would require that I call the Spotify API over 1200 times!
 
-- Open each `spotifyTrackIdList${count}.json` file. 
+- Open each `spotifyTrackIdList${count}.json` file.
 - Make REST API calls to Spotify's `/v1/tracks?${trackIdList}` endpoint to acquire the additional details for every track.
-- Write the returned JSON data to file. 
+- Write the returned JSON data to file.
 
 <div data-component="CallOut" data-header="Coding Tips">
 
@@ -602,7 +602,7 @@ async function joinFiles() {
 - Essentially this adds one more nested level of JSON for the track information with the `played_at` key value at the root.
 - Which would look like this: `{ "played_at": "2017-07-27T00:56:06Z", "track": {...} }, { "played_at": "2017-07-27T00:57:32Z", "track": {...} }`
 - While this, likely unnecessarily, duplicated a lot of data...I knew that it would be in the same format that future calls to the Spotify API would returns.
- 
+
 ```
 ## Merge Track Details and Play History
 #canCollapse
@@ -628,7 +628,7 @@ jq -s '
             "album": {
               "id": .detail.album.id,
               "name": .detail.album.name,
-              "release_date": .detail.album.release_date, 
+              "release_date": .detail.album.release_date,
               "images": (.detail.album.images // null),
               "artists": (
                 .detail.album.artists // [] | map({
@@ -703,9 +703,9 @@ Also, added common_album and common_artist tables to store information about the
 
 <br />
 
-## Performance and the Algorithm Realization
+## Performance and Realizing the Algorithm
 
-I was asking AI all kinds of questions to help. It would throw out different code suggestions, table additions, indexing options, blah blah blah. None of them made any sense or really worked but I knew there had to be someway to do this efficiently. It felt obvious that data had to be precounted, but how....and that is when it hit me. Create different size "buckets" with precounted data for every artist and track.  For every year, month, and day, I can precounted plays for every single artist and every single track I have ever listened to. Then when retreiving data real-time I could grab the biggest buckets first, followed by the next biggest, then only count the buckets for each day on the edges of the date range.
+I was asking AI all kinds of questions to help. It would throw out different code suggestions, table additions, indexing options, blah blah blah. None of them made any sense or really worked but I knew there had to be someway to do this efficiently. It felt obvious that data had to be precounted, but how....and that is when it hit me. Create different size "buckets" with precounted data for every artist and track.  For every year, month, and day, I can precount plays for every individual artist and every individual track I have ever listened to. That way, when retreiving data real-time, I could grab the biggest buckets first, followed by the next biggest, then only count the buckets for each day on the edges of the date range.
 
 <img src="/images/projects/spotify/buckets.png" alt="Bucket Visualization" />
 
@@ -717,7 +717,7 @@ I have to admit, I'm impressed with myself when I create a complex solution that
 
 </div>
 
-Below is the final DB schema. The `artiststat` and `trackstat` tables represented precounted stats for each artist and track for any given yearly, monthly, or daily bucket. The `yearlybucket`, `monthlybucket`, and `daybucket` tables containing. The `artiststat` and `trackstat` associated with a day bucket then included `hourly_plays.` Ideally, after using the largest possible buckets to determine the top artists and tracks I could then use the power of relational databases to quickly fetch all of the hourly plays for a specific artist or track.   
+Below is the final DB schema. The `artiststat` and `trackstat` tables represented precounted stats for each artist and track for any given yearly, monthly, or daily bucket. The `yearlybucket`, `monthlybucket`, and `daybucket` tables containing. The `artiststat` and `trackstat` associated with a day bucket then included `hourly_plays.` Ideally, after using the largest possible buckets to determine the top artists and tracks I could then use the power of relational databases to quickly fetch all of the hourly plays for a specific artist or track.
 
 <div className="bg-slate-400"><div data-component="SvgScroll" data-src="/images/projects/spotify/schema-full.svg" data-width="800" data-height="1000" data-initial-scale="1.2" /></div>
 
@@ -748,7 +748,7 @@ Spotify's recently played endpoint, `v1/me/player/recently-played`, provided all
 For now I will say that I quickly set up a service so that these functions ran every 30 minutes. I will describe how I did that in a later section.
 
 ```
-##Fetching recently played from Spotify 
+##Fetching recently played from Spotify
 #canCollapse
 /*
  * Fetches recently played tracks from the Spotify API.
@@ -797,7 +797,7 @@ export const getRecentlyPlayedFromSpotify = async (): Promise<RawRecentlyPlayedR
     return { status: 500, data: [] };
   }
 };
-``` 
+```
 
 <br/>
 
@@ -852,7 +852,7 @@ export const ingestSpotifyPlays = async (): Promise<void> => {
     // Collect artist data and relationships
     for (const artist of [...track.artists, ...track.album.artists]) {
       allArtistIds.add(artist.id);
-      
+
       artistUpserts.push({
         where: { artist_id: artist.id },
         update: { name: artist.name, artist_url: artist.external_urls.spotify },
@@ -887,7 +887,7 @@ export const ingestSpotifyPlays = async (): Promise<void> => {
   // Execute all operations in a transaction for better performance
   await prisma.$transaction(async (tx) => {
     const batchSize = 50;
-    
+
     // Albums
     for (let i = 0; i < albumUpserts.length; i += batchSize) {
       const batch = albumUpserts.slice(i, i + batchSize);
@@ -986,7 +986,7 @@ async function pushPlayDetailsToDB() {
 
   log('All files processed.');
 }
-```  
+```
 
 <br />
 
@@ -1037,7 +1037,7 @@ export async function buildAllBuckets() {
   const end = new Date('2030-12-31T00:00:00.000Z');
   log('Rebuilding all bucket tables...', logPath);
 
-  
+
   // Year buckets
   const yearStarts = eachYearOfInterval({ start, end });
   const yearBucketInputs = yearStarts.map(yearStart => {
@@ -1172,7 +1172,7 @@ export async function validateBuckets() {
     }
   }
 
-  if (issues === 0) { log('All bucket hierarchy links are valid.', logPath); } 
+  if (issues === 0) { log('All bucket hierarchy links are valid.', logPath); }
   else { log(`Validation complete: ${issues} issues found.`, logPath); }
 
 }
@@ -1188,7 +1188,7 @@ export async function validateBuckets() {
 
 As plays were ingested I had to aggregate total play counts for all appropriate buckets, creating new `artiststat` and `trackstat` records. For example, if I fetched music I listened to on 9/28/2025 I'd need to update the yearly bucket for 2025, the monthly bucket for September of 2025, and the daily bucket for 9/28/2025. Updating those buckets would include creating (or updating) artiststat and trackstat records for every artist and track associated with those buckets. There were two steps to this, aggregating historical data and aggregating new data. I could restart this process as much as I needed because the source of truth, `spplayhistory`, was accurate and being updated regularly every 30 minutes.
 
-- `updateBucketedStats(dryRun: boolean = false)` This function would go through the entire `spplayhistory` table and create aggregate counts for every bucket, every artist, and every track. I used a dryRun flag so that I could log random items as it went to validate what was happening before I actually added a bunch of data to the database. 
+- `updateBucketedStats(dryRun: boolean = false)` This function would go through the entire `spplayhistory` table and create aggregate counts for every bucket, every artist, and every track. I used a dryRun flag so that I could log random items as it went to validate what was happening before I actually added a bunch of data to the database.
 - `aggregateDailyStats(targetDate: Date)` This function aggregates data for a specific date. In my case I call it every 6 hours for the last three days. I chose three days to account for possible errors during previous runs, possible time zone issues, and if I realized during development I had to aggregate differently.
 
 <br />
@@ -1338,7 +1338,7 @@ export async function updateBucketedStats(dryRun: boolean = false) {
         await prisma.trackstat.upsert({
           where: { track_id_stat_date: { track_id, stat_date: day.start_date } },
           update: { count, hourly_plays: hourlyTrackPlays.get(track_id), daybucketid: day.id, bucket_scope: 'day' },
-          create: { track_id, count,hourly_plays: hourlyTrackPlays.get(track_id), stat_date: day.start_date, daybucketid: day.id, bucket_scope: 'day' }, 
+          create: { track_id, count,hourly_plays: hourlyTrackPlays.get(track_id), stat_date: day.start_date, daybucketid: day.id, bucket_scope: 'day' },
         });
       }
     }
@@ -1359,10 +1359,10 @@ export async function updateBucketedStats(dryRun: boolean = false) {
 
   for (const month of monthBuckets) {
     log(`📆 Aggregating stats for monthbucket ${month.id} (${month.range_start.toISOString()})`, logPath);
-    
+
     const dayBuckets = await prisma.daybucket.findMany({ where: { monthbucketid: month.id } });
     const dayBucketIds = dayBuckets.map(db => db.id);
-    
+
     log(`🔎 Found ${dayBucketIds.length} daybuckets for monthbucket ${month.id}`, logPath);
     log(`🗓️ Daybucket dates for monthbucket ${month.id}: ${dayBuckets.map(db => db.start_date.toISOString()).join(', ')}`, logPath);
 
@@ -1430,29 +1430,29 @@ export async function updateBucketedStats(dryRun: boolean = false) {
   log('ℹ️ Starting year bucket aggregation...', logPath);
   const yearBuckets = await prisma.yearbucket.findMany({});
   for (const year of yearBuckets) {
-    
+
     log(`📅 Aggregating stats for yearbucket ${year.id} (${year.range_start.toISOString()})`, logPath);
     const months = await prisma.monthbucket.findMany({ where: { yearbucketid: year.id } });
     const monthIds = months.map(mb => mb.id);
-    
+
     log(`🔎 Found ${monthIds.length} monthbuckets for yearbucket ${year.id}`, logPath);
     const artistStats = await prisma.artiststat.findMany({ where: { monthbucketid: { in: monthIds }, bucket_scope: 'month' } });
     const artistCounts = new Map<string, number>();
     for (const stat of artistStats) {
       artistCounts.set(stat.artist_id, (artistCounts.get(stat.artist_id) || 0) + stat.count);
-    }    
+    }
 
     log(`🎨 Artist counts for yearbucket ${year.id}: ${JSON.stringify(Array.from(artistCounts.entries()))}`, logPath);
-    
+
     const trackStats = await prisma.trackstat.findMany({ where: { monthbucketid: { in: monthIds }, bucket_scope: 'month' } });
     const trackCounts = new Map<string, number>();
-    
+
     for (const stat of trackStats) {
       trackCounts.set(stat.track_id, (trackCounts.get(stat.track_id) || 0) + stat.count);
     }
 
     log(`🎵 Track counts for yearbucket ${year.id}: ${JSON.stringify(Array.from(trackCounts.entries()))}`, logPath);
-    
+
     // Actually insert artist stats for every year bucket.
     for (const [artist_id, count] of artistCounts.entries()) {
       log(`⬆️ Upserting artiststat for artist ${artist_id} in yearbucket ${year.id} (count: ${count})`, logPath);
@@ -1498,7 +1498,7 @@ Okay, so I have created the functions to ingest data, populate the database, and
 - Within `server.js` there are two cron jobs
   * 1) Runs every 30 minutes to ingest new Spotify history
   * 2) Runs every 6 hours to aggregate daily stats for the last three days.
-- Built safeguards for dev mode to prevent overlapping executions. 
+- Built safeguards for dev mode to prevent overlapping executions.
 
 <br />
 
@@ -1507,7 +1507,7 @@ Okay, so I have created the functions to ingest data, populate the database, and
 #canCollapse
 import express from 'express';
 import next from 'next';
-import { schedule } from 'node-cron'; 
+import { schedule } from 'node-cron';
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -1529,10 +1529,10 @@ app.prepare().then(() => {
     try {
       const response = await fetch(historyurl, { method: 'POST', headers: { 'x-cron-token': process.env.CRON_SECRET } })
       const data = await response.json();
-      
+
       if (!response.ok) { throw new Error(`HTTP ${response.status}: `, data); }
       console.log('✅ Scheduled spotify ingestion response:', data);
-    
+
     } catch (error) { console.error('❌ Error in scheduled task:', error); }
   }
 
@@ -1541,10 +1541,10 @@ app.prepare().then(() => {
     try {
       const response = await fetch(dailyurl, { method: 'POST', headers: { 'x-cron-token': process.env.CRON_SECRET } })
       const data = await response.json();
-      
+
       if (!response.ok) { throw new Error(`HTTP ${response.status}: `, JSON.stringify(data)); }
       console.log('✅ Scheduled aggregate daily stats response:', data);
-    
+
     } catch (error) { console.error('❌ Error in scheduled task:', error); }
   }
 
@@ -1556,7 +1556,7 @@ app.prepare().then(() => {
       if (isRunning) { console.warn(`⚠️ Skipping run — previous job still running`); return; }
 
       isRunning = true;
-      
+
       console.log(`⏱️ Attempting data ingestion at ${new Date().toISOString()}`);
       try { await runSpotifyIngestion(); } finally { isRunning = false; }
     });
@@ -1567,14 +1567,14 @@ app.prepare().then(() => {
       console.log(`⏱️ Attempting daily stats aggregation at ${new Date().toISOString()}`);
       await aggregateDailyStats();
     });
-  } 
+  }
 
   server.all('*', (req, res) => { return handle(req, res); });
   server.listen(port, (err) => {
     if (err) throw err;
     console.log(`> Ready on ${domain}`);
   });
-}); 
+});
 ```
 
 <br />
@@ -1594,7 +1594,7 @@ I thought I was almost there. The back end API route to fetch data was the most 
 - Having to take a shower, eat, feed my dog, and occasionally find a natural source of vitamin D delayed my progress too.
 - With a lot of caffeine, limited sleep, and my friends....ChatGPT, Copilot, and Claude we came up with a solution that worked well enough.
 
-Ideally, the front end calls the back end with a date range and the back end returns a series of objects that are used to render the heatmap. 
+Ideally, the front end calls the back end with a date range and the back end returns a series of objects that are used to render the heatmap.
 
 - `topArtists[]` - This is an array of the top 10 artist objects for the date range.
 - `topTracks[]` - This is an array of the top 10 track objects for the date range.
@@ -1634,7 +1634,7 @@ export const getSpotifyStatsByDateRange = async (
       }),
 
       prisma.$queryRaw`
-        SELECT 
+        SELECT
           artist.artist_id,
           artist.name,
           artist.image_url,
@@ -1649,7 +1649,7 @@ export const getSpotifyStatsByDateRange = async (
       `,
 
       prisma.$queryRaw`
-        SELECT 
+        SELECT
           track.track_id,
           track.title,
           track.isrc,
@@ -1673,7 +1673,7 @@ export const getSpotifyStatsByDateRange = async (
         LEFT JOIN sptrackartist ta ON track.track_id = ta.track_id
         LEFT JOIN spartist ar ON ta.artist_id = ar.artist_id
         WHERE ts.stat_date >= ${startDate} AND ts.stat_date <= ${endDate}
-        GROUP BY track.track_id, track.title, track.isrc, track.song_url, track.explicit, track.release_date, track.album_id, 
+        GROUP BY track.track_id, track.title, track.isrc, track.song_url, track.explicit, track.release_date, track.album_id,
                  album.name, album.image_url, album.release_date, common_album.album_id, common_album.name, common_album.image_url, common_album.release_date
         ORDER BY total_count DESC
         LIMIT 10
@@ -1728,7 +1728,7 @@ export const getSpotifyStatsByDateRange = async (
     // Fetch metadata counts for tracks and artists in the date range.
     const [totalCountsRaw] = await Promise.all([
       prisma.$queryRaw`
-        SELECT 
+        SELECT
           COUNT(DISTINCT track.track_id) as total_track_count,
           COUNT(DISTINCT artist.artist_id) as total_artist_count,
           COALESCE(SUM(CASE WHEN track.explicit = true THEN stat.count ELSE 0 END), 0) as explicit_count,
@@ -1751,7 +1751,7 @@ export const getSpotifyStatsByDateRange = async (
       : 0.0;
 
     /* Fetch heatmap data for the top artists and tracks.
-    // The bucket system is used to count the top artists and tracks 
+    // The bucket system is used to count the top artists and tracks
     // efficently then we can pull just the day bucket stats
     */ for the top artists and tracks.
     let artistHeatmaps: HeatmapFrequencies[] = [];
@@ -1780,7 +1780,7 @@ export const getSpotifyStatsByDateRange = async (
         })
       ]);
 
-      
+
       /* This takes the aggregated data pulled from database  for each
       // artist and prepares it for the front end. Ideally, it ensures
       // every hour is represented, even if there weren't any plays for
@@ -1846,7 +1846,7 @@ export const getSpotifyStatsByDateRange = async (
 # Deploying on Render
 <span id="deploying" name="Deploying" data-toc></span>
 
-Previously, I have hosted projects on AWS. I've used EC2 instances, Lambda functions, S3 buckets, RDS databases, and a host of other AWS services. When I first started using AWS I geeked out on all the different things that you could do. 
+Previously, I have hosted projects on AWS. I've used EC2 instances, Lambda functions, S3 buckets, RDS databases, and a host of other AWS services. When I first started using AWS I geeked out on all the different things that you could do.
 
 Over time I realized:
 - I was spending more time managing infrastructure than building actual applications.
@@ -1863,12 +1863,12 @@ With that, I did some research and found Render.com. Render is a modern cloud pl
 
 ## Instance Creation
 
-Once you have created an account get started by simply selecting New -> Web Service. 
+Once you have created an account get started by simply selecting New -> Web Service.
 
-Connect your GitHub or GitLab account and select a repository and Render automatically detects the type of application, in this case NextJS, and fills in the typical build and start commands for you. 
+Connect your GitHub or GitLab account and select a repository and Render automatically detects the type of application, in this case NextJS, and fills in the typical build and start commands for you.
 
 Continue along and select an instance type, region, and enter your environment variables.
-  
+
 <img src="/images/projects/spotify/render-setup-2.webp" alt="Render Setup 2" />
 
 I started with a Starter instance as I didn't expect I'd require much for a profile site.
@@ -1891,7 +1891,7 @@ I had never used their services before, and it took roughly 10 minutes to build 
 
 Because I connected my GitHub repository to Render, every time I push to the main branch it automatically triggers a new build and deployment. Render provides a detailed build log so you can see exactly what is happening during the build process. By navigating to the Events tab for your service you can see the status of each deployment. Each row includes a link to the build logs, a link to the exact commit that triggered the deployment, debug logs if needed, and the ability to rollback to a previous deployment if something else went wrong.
 
-Now I did have a few hiccups with the Starter instances. Once I got into the thick of this Spotify Heatmap project I quickly realized that the Starter instances for the web service and database were not going to cut it. With a few clicks and a couple minutes, I was able to scale up to a Standard instance for both the web service and the database with not additional work required from me. Also, Render uses fairly aggressive caching for builds, so after the initial build subsequent builds were very quick but my changes wouldn't show up. A handful of times I had to clear the build cache and re-deploy....but again, this was very easy to accomplish. I didn't have to bury myself in multiple nested levels of documentation or do any sort of exhaustive debugging to figure out what was going  happening. 
+Now I did have a few hiccups with the Starter instances. Once I got into the thick of this Spotify Heatmap project I quickly realized that the Starter instances for the web service and database were not going to cut it. With a few clicks and a couple minutes, I was able to scale up to a Standard instance for both the web service and the database with not additional work required from me. Also, Render uses fairly aggressive caching for builds, so after the initial build subsequent builds were very quick but my changes wouldn't show up. A handful of times I had to clear the build cache and re-deploy....but again, this was very easy to accomplish. I didn't have to bury myself in multiple nested levels of documentation or do any sort of exhaustive debugging to figure out what was going  happening.
 
 Everything I needed to do was a few clicks, literally.
 
@@ -1910,7 +1910,7 @@ One gripe that I did have that didn't really fit into the other sections was tha
 - You enter a cron expression.
 - The cost is converted from a monthly rate to a per minute rate.
 
-Essentially, Render will build your code in a seperate container at the scheduled time and run it. However, I already had a Node service running where I was paying for dedicated resources monthly and I didn't want to pay for two separate instances. I wanted to leverage the existing instance that I was already paying for. 
+Essentially, Render will build your code in a seperate container at the scheduled time and run it. However, I already had a Node service running where I was paying for dedicated resources monthly and I didn't want to pay for two separate instances. I wanted to leverage the existing instance that I was already paying for.
 
 Now, before you all think I am knocking Render, I'm not. Render doesn't stop you from getting in the weeds with your infrastructure if you want to. They also make it really easy to do what you need to do without the complications typically associated with more direct infrastructure management. Less time worrying about infrastructure and more time shipping code is exactly the value propisition that Render offers, and I am sold, they deliver that promise 100%. There are a slew of other features that I didn't even touch on like blueprints (their version of Infrastructure as Code), private links, log forwarding, metrics streaming, health check services, and a whole lot more. The next project I jump into that is more than just a profile site will definitely be hosted on Render and I look forward to more fully utilizing their service.
 
@@ -1989,11 +1989,11 @@ data.playFrequency.forEach(({ date, hourly_plays }: HeatMapProps) => {
 
   const totalPlays = hourly_plays.reduce((a, b) => a + b, 0);
 
-  if (!monthlyMap.has(year)) { 
-    monthlyMap.set(year, Array(12).fill(null)); 
+  if (!monthlyMap.has(year)) {
+    monthlyMap.set(year, Array(12).fill(null));
   }
-  if (monthlyMap.get(year)) { 
-    monthlyMap.get(year)![monthIndex] = (monthlyMap.get(year)![monthIndex] ?? 0) + totalPlays; 
+  if (monthlyMap.get(year)) {
+    monthlyMap.get(year)![monthIndex] = (monthlyMap.get(year)![monthIndex] ?? 0) + totalPlays;
   }
 });
 ```
@@ -2035,11 +2035,11 @@ const heatmapResponsiveStyle = `
 const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => {
   // State for switching between time resolutions
   const [resolution, setResolution] = useState<'Hourly' | 'Daily' | 'Monthly'>('Hourly');
-  
+
   // Pagination state for daily view (showing 10 weeks at a time)
   const [pageIndex, setPageIndex] = useState(0);
   const pageSize = 10;
-  
+
   // Generate unique ID for radio button groups to avoid conflicts
   const uniqueId = useId();
 
@@ -2047,8 +2047,8 @@ const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => 
   // Adjusts the grid size on smaller screens
   const [scale, setScale] = useState(1);
   React.useEffect(() => {
-    const handleResize = () => { 
-      setScale(window.innerWidth < 690 ? 0.7 : 1); 
+    const handleResize = () => {
+      setScale(window.innerWidth < 690 ? 0.7 : 1);
     };
     window.addEventListener('resize', handleResize);
     handleResize(); // Call once on mount to set initial scale
@@ -2059,19 +2059,19 @@ const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => 
   // Used to normalize the color intensity across cells
   const maxHourlyCount = Math.max(
     ...Array.from(hourlyMap.entries())
-      .flatMap(([_, weekMap]) => 
+      .flatMap(([_, weekMap]) =>
         Array.from(weekMap.entries())
           .flatMap(([_, hourArray]) => hourArray)
       )
   );
-  
+
   const maxDailyCount = Math.max(
     ...Array.from(weekdayMap.values())
-      .flatMap(({ counts }) => 
+      .flatMap(({ counts }) =>
         counts.filter((count): count is number => count !== null)
       )
   );
-  
+
   const maxMonthlyCount = Math.max(
     ...Array.from(monthlyMap.values())
       .flat()
@@ -2082,7 +2082,7 @@ const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => 
    * Determines the background color class based on listening intensity
    * @param count - Number of plays in the time period
    * @returns Tailwind CSS class for the appropriate color intensity
-   * 
+   *
    * Color scale (from least to most intense):
    * - neutral-700: No data available
    * - neutral-300: Zero plays
@@ -2090,22 +2090,22 @@ const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => 
    */
   const getIntensityClass = (count: (number | null)) => {
     if (count === null || count === undefined) return 'bg-neutral-700';
-    
+
     let ratio = 1;
     switch (resolution) {
-      case 'Hourly': 
+      case 'Hourly':
         ratio = count / maxHourlyCount;
         break;
-      case 'Daily': 
+      case 'Daily':
         ratio = count / maxDailyCount;
         break;
-      case 'Monthly': 
+      case 'Monthly':
         ratio = count / maxMonthlyCount;
         break;
-      default: 
+      default:
         'bg-neutral-200';
     }
-    
+
     // Map ratio to color intensity
     if (ratio === 0) return 'bg-neutral-300';
     if (ratio < 0.2) return 'bg-rose-400';
@@ -2122,10 +2122,10 @@ const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => 
   // Calculate pagination for daily view
   const totalPages = Math.ceil(sortedWeeks.length / pageSize);
   const paginatedWeeks = sortedWeeks.slice(
-    pageIndex * pageSize, 
+    pageIndex * pageSize,
     (pageIndex + 1) * pageSize
   );
-  
+
   // Week navigation for hourly view
   const weekKeys = Array.from(hourlyMap.keys()).sort();
   const [weekIndex, setWeekIndex] = useState(0);
@@ -2153,15 +2153,15 @@ const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => 
   return (
     <>
       <style>{heatmapResponsiveStyle}</style>
-      <motion.div 
-        layout 
-        initial={{ opacity: 0.8, scale: 0.98 }} 
-        animate={{ opacity: 1, scale: 1 }} 
-        transition={{ type: 'tween', ease: 'easeOut', duration: 0.4 }} 
+      <motion.div
+        layout
+        initial={{ opacity: 0.8, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: 'tween', ease: 'easeOut', duration: 0.4 }}
         className='col-span-6 h-full'
       >
         <Card className='heatmap-responsive col-span-6 h-full rounded-xl border border-neutral-400 bg-neutral-100 p-3 pb-2 dark:border-neutral-900 mb-4'>
-          
+
           {/* Header with title and resolution selector */}
           <div className='flex items-center justify-between mb-1'>
             <div className='text-sm dark:text-neutral-400'>
@@ -2170,39 +2170,39 @@ const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => 
             <div className='flex gap-3 items-center'>
               {['Hourly', 'Daily', 'Monthly'].map(option => (
                 <label key={option} className='text-sm text-neutral-600 dark:text-neutral-400 flex items-center'>
-                  <input 
-                    type='radio' 
-                    name={`resolution-${uniqueId}`} 
-                    value={option} 
-                    checked={resolution === option} 
-                    onChange={() => setResolution(option as any)} 
-                    className='mr-1 accent-rose-600' 
+                  <input
+                    type='radio'
+                    name={`resolution-${uniqueId}`}
+                    value={option}
+                    checked={resolution === option}
+                    onChange={() => setResolution(option as any)}
+                    className='mr-1 accent-rose-600'
                   />
                   {option}
                 </label>
               ))}
             </div>
           </div>
-          
+
           <div className='flex justify-center'>
-            
+
             {/* HOURLY VIEW: 7x24 grid showing hour-by-hour listening for a week */}
             {resolution === 'Hourly' && (
               <div className='space-y-2'>
                 {/* Hourly Grid */}
-                <div 
-                  className='grid' 
-                  style={{ 
-                    gridTemplateColumns: `${29 * scale}px repeat(24, ${20 * scale}px)`, 
-                    gap: `${2 * scale}px`, 
-                    width: '100%', 
-                    maxWidth: '100vw' 
+                <div
+                  className='grid'
+                  style={{
+                    gridTemplateColumns: `${29 * scale}px repeat(24, ${20 * scale}px)`,
+                    gap: `${2 * scale}px`,
+                    width: '100%',
+                    maxWidth: '100vw'
                   }}
                 >
-                  
+
                   {/* Empty cell for grid alignment */}
                   <div></div>
-                  
+
                   {/* Hour labels (12a, 1a, ... 11p) */}
                   {[...Array(24)].map((_, hour) => (
                     <div key={`hour-${hour}`} style={{ fontSize: `${12 * scale}px` }} className='text-neutral-500 text-center'>
@@ -2214,21 +2214,21 @@ const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => 
                   {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(weekday => {
                     // Get hourly play counts for this weekday, default to empty array
                     const hourly_plays = hourlyMap.get(weekKeys[weekIndex])?.get(weekday) ?? Array(24).fill(0);
-                    
+
                     return (
                       <React.Fragment key={weekday}>
                         {/* Weekday label (abbreviated) */}
-                        <div style={{ fontSize: `${12 * scale}px` }} className='text-neutral-500 text-right pr-1'> 
+                        <div style={{ fontSize: `${12 * scale}px` }} className='text-neutral-500 text-right pr-1'>
                           {weekday.substring(0, 3)}
                         </div>
-                        
+
                         {/* Hour cells for this weekday */}
                         {hourly_plays.map((count, hour) => (
-                          <div 
-                            key={`${weekday}-${hour}`} 
-                            style={{ height: `${20 * scale}px`, width: `${20 * scale}px` }} 
-                            className={clsx('rounded-sm cursor-default', getIntensityClass(count))} 
-                            title={`${weekday} ${hour}:00 : ${count} plays`} 
+                          <div
+                            key={`${weekday}-${hour}`}
+                            style={{ height: `${20 * scale}px`, width: `${20 * scale}px` }}
+                            className={clsx('rounded-sm cursor-default', getIntensityClass(count))}
+                            title={`${weekday} ${hour}:00 : ${count} plays`}
                           />
                         ))}
                       </React.Fragment>
@@ -2238,12 +2238,12 @@ const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => 
 
                 {/* Week navigation controls */}
                 <div className='flex items-center justify-center gap-4 mt-4 pt-3'>
-                  <button 
-                    disabled={weekIndex === 0} 
-                    onClick={() => setWeekIndex(i => Math.max(i - 1, 0))} 
+                  <button
+                    disabled={weekIndex === 0}
+                    onClick={() => setWeekIndex(i => Math.max(i - 1, 0))}
                     className='flex px-4 py-2 w-24 h-10 items-center justify-center rounded-lg text-3xl
-                      bg-gradient-to-tr from-purple-400 to-purple-700 text-neutral-300 shadow-md 
-                      hover:opacity-85 hover:scale-105 active:scale-95 transition-colors 
+                      bg-gradient-to-tr from-purple-400 to-purple-700 text-neutral-300 shadow-md
+                      hover:opacity-85 hover:scale-105 active:scale-95 transition-colors
                       disabled:opacity-50'
                   >
                     ←
@@ -2253,12 +2253,12 @@ const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => 
                     {formattedWeekRange}
                   </div>
 
-                  <button 
-                    disabled={weekIndex === weekKeys.length - 1} 
-                    onClick={() => setWeekIndex(i => Math.min(i + 1, weekKeys.length - 1))} 
+                  <button
+                    disabled={weekIndex === weekKeys.length - 1}
+                    onClick={() => setWeekIndex(i => Math.min(i + 1, weekKeys.length - 1))}
                     className='flex px-4 py-2 w-24 h-10 items-center justify-center rounded-lg text-3xl
-                      bg-gradient-to-tr from-purple-400 to-purple-700 text-neutral-300 shadow-md 
-                      hover:opacity-85 hover:scale-105 active:scale-95 transition-colors 
+                      bg-gradient-to-tr from-purple-400 to-purple-700 text-neutral-300 shadow-md
+                      hover:opacity-85 hover:scale-105 active:scale-95 transition-colors
                       disabled:opacity-50'
                   >
                     →
@@ -2269,25 +2269,25 @@ const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => 
 
             {/* DAILY VIEW: Shows multiple weeks with daily totals */}
             {resolution === 'Daily' && (
-              <div 
-                className='grid' 
-                style={{ 
-                  gridTemplateColumns: `${120 * scale}px repeat(7, ${20 * scale}px)`, 
-                  gap: `${2 * scale}px`, 
-                  width: '100%', 
-                  maxWidth: '100vw' 
+              <div
+                className='grid'
+                style={{
+                  gridTemplateColumns: `${120 * scale}px repeat(7, ${20 * scale}px)`,
+                  gap: `${2 * scale}px`,
+                  width: '100%',
+                  maxWidth: '100vw'
                 }}
               >
                 {/* Empty cell for grid alignment */}
                 <div></div>
-                
+
                 {/* Day of week labels */}
-                {['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'].map(day => ( 
+                {['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'].map(day => (
                   <div key={day} style={{ fontSize: `${12 * scale}px` }} className='text-neutral-500 text-center'>
                     {day}
-                  </div> 
+                  </div>
                 ))}
-                
+
                 {/* Render each week (paginated) */}
                 {paginatedWeeks.map(([label, { start, counts }]) => (
                   <React.Fragment key={label}>
@@ -2295,22 +2295,22 @@ const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => 
                     <div style={{ fontSize: `${12 * scale}px` }} className='text-neutral-500 text-right pr-1'>
                       {format(start, "MMM d ''yy")}
                     </div>
-                    
+
                     {/* Daily cells for this week */}
-                    {counts.map((count, i) => { 
+                    {counts.map((count, i) => {
                       const cellDate = addDays(start, i);
                       const dateLabel = format(cellDate, 'EEE, MMM d', { weekStartsOn: 0 });
-                      const title = count === null || count === undefined 
-                        ? `${dateLabel}: No data` 
+                      const title = count === null || count === undefined
+                        ? `${dateLabel}: No data`
                         : `${dateLabel}: ${count} plays`;
-                      
-                      return ( 
-                        <div 
-                          key={`${label}-${i}`} 
-                          style={{ height: `${20 * scale}px`, width: `${20 * scale}px` }} 
-                          className={clsx('rounded-sm cursor-default', getIntensityClass(count))} 
-                          title={title} 
-                        /> 
+
+                      return (
+                        <div
+                          key={`${label}-${i}`}
+                          style={{ height: `${20 * scale}px`, width: `${20 * scale}px` }}
+                          className={clsx('rounded-sm cursor-default', getIntensityClass(count))}
+                          title={title}
+                        />
                       );
                     })}
                   </React.Fragment>
@@ -2319,23 +2319,23 @@ const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => 
                 {/* Pagination controls for daily view */}
                 {totalPages > 1 && (
                   <div className='col-span-8 flex justify-end gap-2 mt-2'>
-                    <button 
+                    <button
                       className='flex px-4 py-2 w-24 h-10 items-center justify-center rounded-lg text-3xl
-                        bg-gradient-to-tr from-purple-400 to-purple-700 text-neutral-300 shadow-md 
-                        hover:opacity-85 hover:scale-105 active:scale-95 transition-colors 
+                        bg-gradient-to-tr from-purple-400 to-purple-700 text-neutral-300 shadow-md
+                        hover:opacity-85 hover:scale-105 active:scale-95 transition-colors
                         disabled:opacity-50'
-                      onClick={() => setPageIndex(i => Math.max(i - 1, 0))} 
+                      onClick={() => setPageIndex(i => Math.max(i - 1, 0))}
                       disabled={pageIndex === 0}
                     >
                       ←
                     </button>
-                    
-                    <button 
+
+                    <button
                       className='flex px-4 py-2 w-24 h-10 items-center justify-center rounded-lg text-3xl
-                        bg-gradient-to-tr from-purple-400 to-purple-700 text-neutral-300 shadow-md 
-                        hover:opacity-85 hover:scale-105 active:scale-95 transition-colors 
-                        disabled:opacity-50' 
-                      onClick={() => setPageIndex(i => Math.min(i + 1, totalPages - 1))} 
+                        bg-gradient-to-tr from-purple-400 to-purple-700 text-neutral-300 shadow-md
+                        hover:opacity-85 hover:scale-105 active:scale-95 transition-colors
+                        disabled:opacity-50'
+                      onClick={() => setPageIndex(i => Math.min(i + 1, totalPages - 1))}
                       disabled={pageIndex >= totalPages - 1}
                     >
                       →
@@ -2347,34 +2347,34 @@ const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => 
 
             {/* MONTHLY VIEW: Shows years with monthly totals */}
             {resolution === 'Monthly' && (
-              <div 
-                className='grid' 
-                style={{ 
-                  gridTemplateColumns: `${40 * scale}px repeat(12, ${20 * scale}px)`, 
-                  gap: `${2 * scale}px`, 
-                  width: '100%', 
-                  maxWidth: '100vw' 
+              <div
+                className='grid'
+                style={{
+                  gridTemplateColumns: `${40 * scale}px repeat(12, ${20 * scale}px)`,
+                  gap: `${2 * scale}px`,
+                  width: '100%',
+                  maxWidth: '100vw'
                 }}
               >
                 {/* Empty cell for grid alignment */}
                 <div></div>
-                
+
                 {/* Month number labels (1-12) */}
-                {['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'].map(month => ( 
+                {['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'].map(month => (
                   <div key={month} style={{ fontSize: `${12 * scale}px` }} className='text-neutral-500 text-center' >
                     {month}
-                  </div> 
+                  </div>
                 ))}
 
                 {/* Render each year's monthly data */}
                 {[...monthlyMap.entries()]
                   .sort(([a], [b]) => parseInt(a) - parseInt(b)) // Sort years chronologically
                   .map(([yearLabel, monthlyCounts]) => (
-                    
+
                     <React.Fragment key={yearLabel}>
                       {/* Year label */}
-                      <div 
-                        style={{ fontSize: `${12 * scale}px` }} 
+                      <div
+                        style={{ fontSize: `${12 * scale}px` }}
                         className='text-neutral-500 text-right pr-1'
                       >
                         {yearLabel}
@@ -2385,13 +2385,13 @@ const Heatmap = ({ hourlyMap, weekdayMap, monthlyMap }: HeatmapDisplayProps) => 
                         const monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i];
                         const title = count === null ? `${monthName}: No data` : `${monthName}: ${count} plays`;
 
-                        return ( 
-                          <div 
-                            key={`${yearLabel}-${i}`} 
-                            style={{ height: `${20 * scale}px`, width: `${20 * scale}px` }} 
-                            className={clsx( 'rounded-sm cursor-default', getIntensityClass(count) )} 
-                            title={title} 
-                          /> 
+                        return (
+                          <div
+                            key={`${yearLabel}-${i}`}
+                            style={{ height: `${20 * scale}px`, width: `${20 * scale}px` }}
+                            className={clsx( 'rounded-sm cursor-default', getIntensityClass(count) )}
+                            title={title}
+                          />
                         );
                       })}
                     </React.Fragment>
@@ -2475,10 +2475,10 @@ My `src/pages/api` routes return data wrapped in a standard response object like
 ```
 
 Well from a backend service I accidentally returned data as if it was an API route:
-  
+
 ```
 res.status(200).json({ status: 200, data: { ... } });
-``` 
+```
 
 which resulted in a double wrapped return like this:
 
@@ -2490,7 +2490,7 @@ which resulted in a double wrapped return like this:
     data: { ...actual data... }
   }
 }
-``` 
+```
 
 That little nugget cost me some serious debugging time.
 
@@ -2684,6 +2684,6 @@ In the mean time, here is what the data looks like for a random track in Spotify
 
 This project was a lot of fun and I learned a lot along the way.
 
-Data and the story it can tell is so incredible to me. I am constantly amazed at the insights that can be gleaned from data, especially when it is visualized in a way that is easy to understand yet tells a story from a different and unique perspective. I hope to continue to explore the world of data and visualization in future projects.  
+Data and the story it can tell is so incredible to me. I am constantly amazed at the insights that can be gleaned from data, especially when it is visualized in a way that is easy to understand yet tells a story from a different and unique perspective. I hope to continue to explore the world of data and visualization in future projects.
 
 I hope you found the post interesting and maybe even useful. If you have any questions or comments, please feel free to reach out to me [HERE](https://lucas.untethered4life.com/contact).

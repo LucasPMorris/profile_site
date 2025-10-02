@@ -94,20 +94,20 @@ const CodeBlock = ({ className = '', children, inline, header, canCollapse, ...p
             {!header && (
               <button type='button' aria-label='Copy to Clipboard' onClick={() => handleCopy(rawCode)} className='absolute top-2 right-2 p-2 rounded border border-neutral-700 hover:bg-neutral-800 z-10' >
                 {!isCopied ? ( <CopyIcon size={18} className='text-neutral-400' /> ) : ( <CheckIcon size={18} className='text-green-500' /> )}
-              </button>                  
+              </button>
             )}
             { match && className === 'language-json'
               ? ( <ReactJson src={JSON.parse(String(children).replace(/\n$/, ''))} collapsed={1} name={false} enableClipboard={false} displayDataTypes={false} displayObjectSize={false} theme='monokai' style={{ backgroundColor: 'transparent', fontSize: '14px', padding: '20px', borderRadius: '8px', overflow: 'auto' }} /> )
-              : ( 
+              : (
                 <SyntaxHighlighter
-                  {...props} style={themeColor} showLineNumbers={true} customStyle={{ padding: '15px', fontSize: '14px', borderRadius: '8px', paddingRight: '50px' }} PreTag='div' language={match ? match[1] : 'javascript'} wrapLongLines>              
+                  {...props} style={themeColor} showLineNumbers={true} customStyle={{ padding: '15px', fontSize: '14px', borderRadius: '8px', paddingRight: '50px' }} PreTag='div' language={match ? match[1] : 'javascript'} wrapLongLines>
                 {String(children).replace(/\n$/, '')}
               </SyntaxHighlighter> )
             }
           </div>
         </div>
       ) : (
-        <code className='rounded-md bg-neutral-200 px-2 py-1 text-[14px] font-light text-sky-600 dark:bg-neutral-700 dark:text-sky-300'>
+        <code className='rounded-md bg-neutral-200 px-1 py-1 text-[14px] font-light text-sky-600 dark:bg-neutral-700 dark:text-sky-300 break-all'>
           {children}
         </code>
       )}

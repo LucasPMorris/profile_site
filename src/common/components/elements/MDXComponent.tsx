@@ -25,7 +25,7 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
   if (frontmatterRegex.test(children)) {
     processedContent = children.replace(frontmatterRegex, '').trim();
   }
-  
+
   // Normalize line endings and ensure proper code block separation
   processedContent = processedContent
     .replace(/\r\n/g, '\n') // Convert Windows line endings
@@ -51,7 +51,7 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
 
     if (mode === 'javascript') {
       decodedCode = decodedCode
-        .replace(/; /g, ";\n")        
+        .replace(/; /g, ";\n")
         .replace(/\/\/ /g, "\n// ");
     } else if (mode === 'css') {
       decodedCode = decodedCode
@@ -99,36 +99,36 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
           var header;
           var canCollapse = false;
           var codeContent = String(children);
-          
+
           // Process special directives in order: header, canCollapse, language
           const lines = codeContent.split('\n');
           let lineIndex = 0;
-          
+
           // Check for header (##Header)
           if (lines[lineIndex]?.startsWith('##')) {
             header = lines[lineIndex].replace(/^#+\s*/, '');
             lineIndex++;
           }
-          
+
           // Check for canCollapse (#canCollapse)
           if (lines[lineIndex]?.startsWith('#canCollapse')) {
             canCollapse = true;
             lineIndex++;
           }
-          
+
           // Check for language (#language-xxx)
           if (lines[lineIndex]?.startsWith('#language-')) {
             const lang = lines[lineIndex].replace('#language-', 'language-').trim();
             if (lang && !className) { className = `${lang}`; }
             lineIndex++;
           }
-          
+
           // Remove processed lines from content
           codeContent = lines.slice(lineIndex).join('\n');
-          
+
           return isBlock
             ? (<CodeBlock className={className} header={header || undefined} canCollapse={canCollapse}>{codeContent}</CodeBlock>)
-            : (<code className='rounded bg-neutral-400/70 px-1 py-0.5 font-mono text-sm dark:bg-slate-700'>{children}</code>); },
+            : (<code className='rounded bg-neutral-400/70 px-1 py-0.5 font-mono text-sm dark:bg-slate-700 break-all'>{children}</code>); },
         hr: () => ( <hr className='my-6 border-t-1 border-neutral-700' /> ),
         blockquote: (props: React.HTMLProps<HTMLQuoteElement>) => ( <blockquote className='rounded-br-2xl rounded-tr-2xl items-center border-l-[5px] border-neutral-700 border-l-cyan-500 bg-neutral-200 py-2 pl-6 text-lg font-medium text-cyan-800 dark:bg-neutral-800 dark:text-cyan-200' {...props} /> ),
         table: (props: React.HTMLProps<HTMLTableElement>) => <Table {...props} />,
@@ -175,8 +175,8 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
             const description = props['data-description'];
             const snippetId = props['data-snippet-id'];
             const code = props['data-code'];
-            const html = props['data-html']; 
-            const mode = props['data-mode'] || 'javascript'; 
+            const html = props['data-html'];
+            const mode = props['data-mode'] || 'javascript';
 
             const decodedCode = decodeCode(code, mode);
             const decodedHtml = html ? decodeCode(html, 'html') : undefined;
@@ -193,7 +193,7 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
                 </div>
               );
             }
-            
+
             return <CallOut header={props['data-header']} children={props.children}/>;
           }
 
@@ -210,7 +210,7 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
             const width = props['data-width'] ? parseInt(props['data-width']) : undefined;
             const height = props['data-height'] ? parseInt(props['data-height']) : undefined;
             const initialScale = props['data-initial-scale'] ? parseFloat(props['data-initial-scale']) : undefined;
-            return <SvgScroll src={src} width={width} height={height} initialScale={initialScale} />;            
+            return <SvgScroll src={src} width={width} height={height} initialScale={initialScale} />;
           }
 
           return <div {...props} />;
