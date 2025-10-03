@@ -14,7 +14,7 @@ export const CAREERS: CareerProps[] = [
     industry: 'ota',
     link: 'https://fusionauth.io',
     responsibilities: [
-      'Lead and manage developer support engineers and ensure timely and effective resolution of customer issues related to identity and access management solutions.',
+      'Lead and managed developer support engineers to ensure timely and effective resolution of customer issues related to identity and access management solutions.',
       'Develop and implement support processes, best practices, and tools to enhance the customer support experience and improve team efficiency.',
       'Involved in onboarding of key customers and providing technical expertise during integration of FusionAuth software systems.',
       'Collaborate with cross-functional teams including engineering, product management, and sales to address customer needs and drive product improvements based on feedback.',
@@ -30,7 +30,7 @@ export const CAREERS: CareerProps[] = [
     location_type: 'On Site',
     type: 'Full-time',
     start_date: '2023-09',
-    end_date: '2022-09',
+    end_date: '2025-09',
     industry: 'Media',
     link: 'https://youtube.com/@untethered4life',
     responsibilities: [
@@ -47,7 +47,7 @@ export const CAREERS: CareerProps[] = [
     location: 'Boulder, Colorado',
     location_type: 'Hybrid',
     type: 'Full-time',
-    start_date: '2015-08',
+    start_date: '2020-01',
     end_date: '2022-12',
     industry: 'Aviation',
     link: 'https://shotover.com/',
@@ -66,8 +66,8 @@ export const CAREERS: CareerProps[] = [
     location: 'Boulder, Colorado',
     location_type: 'Hybrid',
     type: 'Full-time',
-    start_date: '2021-01',
-    end_date: '2015-08',
+    start_date: '2015-08', 
+    end_date: '2019-12',  
     industry: 'Aviation',
     link: 'https://shotover.com/',
     responsibilities: [
