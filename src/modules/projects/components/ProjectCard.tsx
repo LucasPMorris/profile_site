@@ -5,6 +5,7 @@ import { HiOutlineArrowSmRight as ViewIcon } from 'react-icons/hi';
 import Card from '@/common/components/elements/Card';
 import Image from '@/common/components/elements/Image';
 import Tooltip from '@/common/components/elements/Tooltip';
+import { formatExcerpt } from '@/common/helpers';
 import { STACKS } from '@/common/constant/stacks';
 import { ProjectItemProps } from '@/common/types/projects';
 
@@ -34,8 +35,8 @@ const ProjectCard = ({ title, slug, description, image, stacks, is_featured }: P
               {title}
             </div>
           </div>
-          <p className='text-[15px] leading-relaxed text-neutral-800 dark:text-neutral-400'>
-            {description}
+          <p className='text-sm leading-relaxed text-neutral-700 dark:text-neutral-400'>
+            {formatExcerpt(description)}
           </p>
           <div className='flex flex-wrap items-center gap-3 pt-2'>
             {stacksArray.map((stack: string, index: number) => (

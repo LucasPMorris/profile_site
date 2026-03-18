@@ -36,7 +36,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } else {
       // Create blog post (existing logic)
       const { title, slug, contentMarkdown, excerptHtml, featuredImageUrl, sticky, rawMD, tags, excerpt } = req.body;
-      const contentHtml = await marked(contentMarkdown || '');
+      
+      let contentHtml = '';
+      try {
+        contentHtml = await marked(contentMarkdown || '');
+      } catch (markdownError) {
+        console.error('Markdown parsing error:', markdownError);
+        return res.status(400).json({ 
+          error: 'Invalid markdown syntax. Please check your content for unclosed tags or invalid formatting.',
+          details: markdownError instanceof Error ? markdownError.message : 'Unknown markdown error'
+        });
+      }
 
       try {
         const newPost = await prisma.blogPost.create({

@@ -9,6 +9,7 @@ import {
 import prisma from '@/common/libs/prisma';
 import MDXComponent from '@/common/components/elements/MDXComponent';
 import RawMDComponent from '@/common/components/elements/RawMDComponent';
+import MarkdownErrorBoundary from '@/common/components/elements/MarkdownErrorBoundary';
 import { BlogDetailProps } from '@/common/types/blog';
 import { mapPrismaPostToBlogDetail } from '@/common/libs/blog';
 
@@ -82,9 +83,10 @@ export default function AdminEditor({ existingData, type, isEdit }: AdminEditorP
     excerpt: existingData?.excerpt?.rendered || ''
   });
 
+
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isVisualMode, setIsVisualMode] = useState(false);
-  const [publishStatus, setPublishStatus] = useState('');
+  const [publishStatus, setPublishStatus] = useState<{ state: 'idle' | 'loading' | 'success' | 'error'; message: string }>({ state: 'idle', message: '' });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-resize textarea
@@ -127,7 +129,7 @@ export default function AdminEditor({ existingData, type, isEdit }: AdminEditorP
 
   const handlePublish = async () => {
     try {
-      setPublishStatus('Publishing...');
+      setPublishStatus({ state: 'loading', message: 'Publishing...' });
       
       const url = isEdit 
         ? `/api/admin/${existingData.id}?type=${type}` 
@@ -170,19 +172,22 @@ export default function AdminEditor({ existingData, type, isEdit }: AdminEditorP
       });
 
       if (response.ok) {
-        setPublishStatus(isEdit ? 'Changes published!' : 'Published successfully!');
+        setPublishStatus({ state: 'success', message: isEdit ? 'Changes published!' : 'Published successfully!' });
         setTimeout(() => {
           router.push('/admin');
         }, 2000);
-      } else { 
-        setPublishStatus('Publish failed'); 
-        setTimeout(() => setPublishStatus(''), 3000);
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error occurred' }));
+        const errorMessage = errorData.error || 'Failed to publish';
+        setPublishStatus({ state: 'error', message: errorMessage });
+        setTimeout(() => setPublishStatus({ state: 'idle', message: '' }), 5000);
       }
     
     } catch (error) {
-      setPublishStatus('Publish failed');
+      const errorMessage = error instanceof Error ? error.message : 'Network error occurred';
+      setPublishStatus({ state: 'error', message: errorMessage });
       console.error('Publish error:', error);
-      setTimeout(() => setPublishStatus(''), 3000);
+      setTimeout(() => setPublishStatus({ state: 'idle', message: '' }), 5000);
     }
   };
 
@@ -312,21 +317,49 @@ export default function AdminEditor({ existingData, type, isEdit }: AdminEditorP
           )}
 
           {/* Action buttons */}
-          <div className="flex gap-2">
-            <button
-              onClick={handlePublish}
-              disabled={!!publishStatus}
-              className="bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded text-sm flex items-center gap-2"
-            >
-              <Publish className="w-4 h-4" />
-              {publishStatus || (isEdit ? 'Update' : 'Publish')}
-            </button>
-            <button
-              onClick={handleCancel}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm"
-            >
-              Cancel
-            </button>
+          <div className="flex gap-2 flex-col">
+            <div className="flex gap-2">
+              <button
+                onClick={handlePublish}
+                disabled={publishStatus.state === 'loading'}
+                className={`text-white px-4 py-2 rounded text-sm flex items-center gap-2 font-medium transition-all ${
+                  publishStatus.state === 'loading' 
+                    ? 'bg-gray-400 cursor-not-allowed' 
+                    : 'bg-green-600 hover:bg-green-700 active:bg-green-800'
+                }`}
+              >
+                <Publish className="w-4 h-4" />
+                {publishStatus.state === 'loading' ? publishStatus.message : (isEdit ? 'Update' : 'Publish')}
+              </button>
+              <button
+                onClick={handleCancel}
+                disabled={publishStatus.state === 'loading'}
+                className="bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white px-4 py-2 rounded text-sm disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+            </div>
+            {publishStatus.state === 'error' && (
+              <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-800 flex items-start gap-3">
+                <svg className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <div className="flex-1">
+                  <h3 className="font-medium text-red-900 dark:text-red-200">Publish Failed</h3>
+                  <p className="text-sm text-red-700 dark:text-red-300 mt-1">{publishStatus.message}</p>
+                </div>
+              </div>
+            )}
+            {publishStatus.state === 'success' && (
+              <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-300 dark:border-green-800 flex items-start gap-3">
+                <svg className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <div>
+                  <p className="text-sm text-green-700 dark:text-green-300 font-medium">{publishStatus.message}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -440,10 +473,12 @@ export default function AdminEditor({ existingData, type, isEdit }: AdminEditorP
             </div>
             <div className="flex-1 overflow-y-auto p-6 bg-white dark:bg-neutral-900">
               <div className="max-w-none">
-                {metadata.rawMD
-                  ? <RawMDComponent>{content}</RawMDComponent>
-                  : <div className="prose prose-neutral dark:prose-invert"><MDXComponent>{content}</MDXComponent></div>
-                }
+                <MarkdownErrorBoundary>
+                  {metadata.rawMD
+                    ? <RawMDComponent>{content}</RawMDComponent>
+                    : <div className="prose prose-neutral dark:prose-invert"><MDXComponent>{content}</MDXComponent></div>
+                  }
+                </MarkdownErrorBoundary>
               </div>
             </div>
           </div>
