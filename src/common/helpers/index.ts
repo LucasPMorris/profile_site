@@ -41,7 +41,10 @@ export const removeHtmlTags = (html: string) => {
   if (typeof DOMParser !== 'undefined') {
     const doc = new DOMParser().parseFromString(html, 'text/html');
     return doc.body.textContent || '';
-  } else { return html; }
+  }
+
+  // Server-side fallback for SSR environments where DOMParser is unavailable.
+  return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 };
 
 export const formatExcerpt = (content: string, maxLength = 100) => {
