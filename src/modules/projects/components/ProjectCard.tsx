@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { AiFillPushpin as PinIcon } from 'react-icons/ai';
 import { HiOutlineArrowSmRight as ViewIcon } from 'react-icons/hi';
 
+import Breakline from '@/common/components/elements/Breakline';
 import Card from '@/common/components/elements/Card';
 import Image from '@/common/components/elements/Image';
 import Tooltip from '@/common/components/elements/Tooltip';
@@ -30,7 +31,7 @@ const ProjectCard = ({ title, slug, description, image, stacks, is_featured }: P
         </div>
         <div className='space-y-2 p-5'>
           <div className='flex justify-between'>
-            <div className='cursor-pointer  text-lg text-neutral-800 transition-all duration-300 dark:text-neutral-300 dark:group-hover:text-teal-400 lg:group-hover:text-teal-600'>
+            <div className='cursor-pointer text-lg font-medium text-neutral-800 transition-all duration-300 dark:text-neutral-300 dark:group-hover:text-teal-400 lg:group-hover:text-teal-600'>
               {title}
             </div>
           </div>
@@ -45,6 +46,7 @@ const ProjectCard = ({ title, slug, description, image, stacks, is_featured }: P
           >
             {description}
           </p>
+          <Breakline className='!border-neutral-700' />
           <div className='flex flex-wrap items-center gap-3 pt-2'>
             {stacksArray.map((stack: string, index: number) => (
               <div key={index}>

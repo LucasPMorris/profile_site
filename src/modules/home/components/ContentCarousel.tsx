@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { useMemo, useRef } from 'react';
-import { useDraggable } from 'react-use-draggable-scroll';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { HiOutlineArrowSmLeft as ArrowLeft, HiOutlineArrowSmRight as ArrowRight } from 'react-icons/hi';
 import useSWR from 'swr';
 
 import BlogCardNewSkeleton from '@/common/components/skeleton/BlogCardNewSkeleton';
@@ -34,8 +34,58 @@ const ContentCarousel = () => {
     return merged;
   }, [blogResponse, projectResponse]);
 
-  const ref = useRef<HTMLDivElement>(undefined) as React.MutableRefObject<HTMLInputElement>;
-  const { events } = useDraggable(ref);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [visibilityMap, setVisibilityMap] = useState<Record<number, number>>({});
+
+  const updateVisibility = useCallback(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const newMap: Record<number, number> = {};
+
+    Array.from(container.children).forEach((child, index) => {
+      const childRect = child.getBoundingClientRect();
+      const visibleLeft = Math.max(containerRect.left, childRect.left);
+      const visibleRight = Math.min(containerRect.right, childRect.right);
+      const visibleWidth = Math.max(0, visibleRight - visibleLeft);
+      const ratio = childRect.width > 0 ? visibleWidth / childRect.width : 0;
+      newMap[index] = ratio;
+    });
+
+    setVisibilityMap(newMap);
+  }, []);
+
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    updateVisibility();
+    container.addEventListener('scroll', updateVisibility, { passive: true });
+    window.addEventListener('resize', updateVisibility);
+
+    return () => {
+      container.removeEventListener('scroll', updateVisibility);
+      window.removeEventListener('resize', updateVisibility);
+    };
+  }, [updateVisibility, items]);
+
+  const scrollTo = (direction: 'left' | 'right') => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const cardWidth = container.children[0]?.getBoundingClientRect().width ?? 303;
+    const scrollAmount = cardWidth + 16;
+    container.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+  };
+
+  const scrollToIndex = (index: number) => {
+    const container = scrollRef.current;
+    if (!container || !container.children[index]) return;
+
+    const child = container.children[index] as HTMLElement;
+    container.scrollTo({ left: child.offsetLeft - container.offsetLeft, behavior: 'smooth' });
+  };
 
   const renderCards = () => {
     if (isLoading) { return Array.from({ length: 3 }, (_, index) => (<BlogCardNewSkeleton key={index} />)); }
@@ -50,8 +100,36 @@ const ContentCarousel = () => {
     ));
   };
 
+  const getDotColor = (index: number) => {
+    const ratio = visibilityMap[index] ?? 0;
+    if (ratio > 0.95) return 'bg-purple-500';
+    if (ratio > 0.3) return 'bg-purple-500/40';
+    return 'bg-neutral-500/40';
+  };
+
   return (
-    <div className='flex items-stretch gap-4 overflow-x-scroll p-1 scrollbar-hide' {...events} ref={ref}>{renderCards()}</div>
+    <div className='flex flex-col gap-4'>
+      <div className='flex items-stretch gap-4 overflow-x-scroll p-1 scrollbar-hide' ref={scrollRef}>
+        {renderCards()}
+      </div>
+
+      {!isLoading && items.length > 0 && (
+        <div className='flex items-center justify-center gap-3'>
+          <button onClick={() => scrollTo('left')} className='text-neutral-500 transition-colors hover:text-purple-500' aria-label='Scroll left'>
+            <ArrowLeft size={22} />
+          </button>
+          <div className='flex items-center gap-2'>
+            {items.map((_, index) => (
+              <button key={index} onClick={() => scrollToIndex(index)} aria-label={`Go to card ${index + 1}`}
+                className={`h-2.5 w-2.5 rounded-full transition-colors duration-300 ${getDotColor(index)}`} />
+            ))}
+          </div>
+          <button onClick={() => scrollTo('right')} className='text-neutral-500 transition-colors hover:text-purple-500' aria-label='Scroll right'>
+            <ArrowRight size={22} />
+          </button>
+        </div>
+      )}
+    </div>
   );
 };
 

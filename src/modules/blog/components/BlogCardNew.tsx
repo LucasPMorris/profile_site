@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useState } from 'react';
 import { BsArrowRight as MoreIcon } from 'react-icons/bs';
+import { HiOutlineArrowSmRight as ArrowIcon } from 'react-icons/hi';
 import { FaRegEye as ViewIcon } from 'react-icons/fa';
 import { HiOutlineClock as ClockIcon } from 'react-icons/hi';
 import { TbCalendarBolt as DateIcon } from 'react-icons/tb';
@@ -26,10 +27,14 @@ const BlogCardNew = ({ id, title, featured_image_url, date, slug, content, excer
 
   return (
     <Link href={`/blog/${slug}?id=${id}`}>
-      <Card className='group relative flex w-full flex-col rounded-lg border border-neutral-400 shadow-sm dark:border-neutral-800 overflow-hidden'>
+      <Card className='group relative flex w-full flex-col rounded-lg border border-neutral-400 shadow-sm dark:border-neutral-800 overflow-hidden lg:hover:scale-[102%] transition-transform duration-300'>
         {/* Image Section */}
         <div className='relative w-full h-[200px]'>
-          <Image src={featured_image_url || defaultImage} alt={title?.rendered} fill sizes='100vw' className='object-cover object-center transition-transform duration-300 group-hover:scale-105' />
+          <Image src={featured_image_url || defaultImage} alt={title?.rendered} fill sizes='100vw' className='object-cover object-center' />
+          <div className='absolute left-0 top-0 flex h-full w-full items-center justify-center gap-1 bg-black text-sm font-medium text-white opacity-0 transition-opacity duration-300 group-hover:opacity-80 z-[1]'>
+            <span>View Post</span>
+            <ArrowIcon size={20} />
+          </div>
           {/* Tags */}
           <div className='absolute top-2 left-2 flex flex-wrap gap-2 p-2 z-4'>
             {tagList?.map((tag) => (
@@ -49,7 +54,7 @@ const BlogCardNew = ({ id, title, featured_image_url, date, slug, content, excer
         <div className='flex flex-col justify-between p-5 space-y-4'>
           {/* Title + Meta */}
           <div className='flex flex-col space-y-3'>
-            <h3 className='text-lg font-medium dark:text-neutral-100 group-hover:underline group-hover:underline-offset-4'>{title?.rendered}</h3>
+            <h3 className='text-lg font-medium text-neutral-800 transition-all duration-300 dark:text-neutral-300 dark:group-hover:text-teal-400 lg:group-hover:text-teal-600'>{title?.rendered}</h3>
             {isExcerpt && (
               <p className='text-sm leading-relaxed text-neutral-700 dark:text-neutral-400'>
                 {formatExcerpt(excerpt?.rendered)}
