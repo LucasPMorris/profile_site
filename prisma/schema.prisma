@@ -22,6 +22,7 @@ model projects {
   updated_at  DateTime @default(now())
   content     String?
   is_featured Boolean  @default(false)
+  rawMD       Boolean  @default(false)
 }
 
 model contentmeta {
@@ -53,6 +54,7 @@ model blogPost {
   footnotes        String
   featuredImageUrl String?
   totalViewsCount  Int          @default(0)
+  rawMD            Boolean      @default(false)
   author           user         @relation(fields: [authorId], references: [user_id])
   featuredMedia    media?       @relation("FeaturedMedia", fields: [featuredMediaId], references: [id])
   categories       category[]   @relation("PostCategories")

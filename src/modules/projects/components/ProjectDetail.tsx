@@ -1,5 +1,6 @@
 import Image from '@/common/components/elements/Image';
 import MDXComponent from '@/common/components/elements/MDXComponent';
+import RawMDComponent from '@/common/components/elements/RawMDComponent';
 import Tooltip from '@/common/components/elements/Tooltip';
 import { STACKS } from '@/common/constant/stacks';
 import { ProjectItemProps } from '@/common/types/projects';
@@ -12,7 +13,7 @@ import useIsMobile from '@/common/hooks/useIsMobile'; // Use your existing hook
 import { MobileTOC } from '@/common/components/elements/MobileTOC';
 import { useRef } from 'react';
 
-const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, slug }: ProjectItemProps) => {
+const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, slug, rawMD }: ProjectItemProps) => {
   const { data: viewsData } = useSWR(`/api/views?slug=${slug}&type=project`, fetcher);
   const stacksArray = stacks ? stacks.split(',').map(s => s.trim()) : [];
   const hasMounted = useHasMounted();
@@ -37,7 +38,7 @@ const ProjectDetail = ({ title, image, stacks, link_demo, link_github, content, 
             </div>
 
             <div className="w-full"><Image src={image || '/placeholder.jpg'} width={800} height={400} sizes="(max-width: 640px) 100vw, (max-width: 1200px) 80vw, 1200px" alt={title} className='w-full h-auto hover:scale-105' /></div>
-            {content && (<div className='mt-5 space-y-5 leading-[1.8] dark:text-neutral-300'><MDXComponent>{content}</MDXComponent></div>)}
+            {content && (<div className='mt-5 space-y-5 leading-[1.8] dark:text-neutral-300'>{rawMD ? <RawMDComponent>{content}</RawMDComponent> : <MDXComponent>{content}</MDXComponent>}</div>)}
           </div>
         </main>
       </div>

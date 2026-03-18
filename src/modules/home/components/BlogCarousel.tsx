@@ -22,12 +22,8 @@ const BlogCarousel = () => {
     if (isLoading) { return Array.from({ length: 3 }, (_, index) => ( <BlogCardNewSkeleton key={index} /> )); }
 
     return blogData.map((item, index) => (
-      <motion.div key={index}
-        initial={{ opacity: 0, x: 100 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -100 }}
-        transition={{ duration: 0.5 }}
-        className='min-w-[326px] gap-x-5'>
+      <motion.div key={index} initial={{ opacity: 0, x: 100 }} animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }} transition={{ duration: 0.5 }} className='min-w-[326px] gap-x-5'>
         <BlogCardNew {...item} />
       </motion.div>
     ));

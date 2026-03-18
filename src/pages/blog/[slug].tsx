@@ -38,9 +38,10 @@ const BlogDetailPage: NextPage<BlogDetailPageProps> = ({ post }) => {
           type: 'article',
           article: { publishedTime: post?.date, modifiedTime: post?.date, authors: ['Lucas Morris', 'LucasPMorris'] },
           url: canonicalUrl,
-          images: [ { url: `https://lucas.untethered4life.com${post?.featured_image_url}`} ],
+          images: [ { url: post?.featured_image_url?.startsWith('http') ? post.featured_image_url : `https://lucas.untethered4life.com${post?.featured_image_url}`, width: 1200, height: 630, alt: post?.title?.rendered } ],
           siteName: 'Blog by Lucas Morris',
         }}
+        twitter={{ cardType: 'summary_large_image' }}
       />
       <Container data-aos='fade-up'>
         <BackButton url='/blog' />

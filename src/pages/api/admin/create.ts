@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'POST') {
     if (type === 'project') {
       // Create project
-      const { title, slug, description, image, stacks, link_demo, link_github, content, is_featured } = req.body;
+      const { title, slug, description, image, stacks, link_demo, link_github, content, is_featured, rawMD } = req.body;
 
       try {
         const newProject = await prisma.projects.create({
@@ -22,6 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             link_github: link_github || null,
             content: content || null,
             is_featured: is_featured || false,
+            rawMD: rawMD || false,
             is_show: true,
             updated_at: new Date()
           }
@@ -34,7 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     } else {
       // Create blog post (existing logic)
-      const { title, slug, contentMarkdown, excerptHtml, featuredImageUrl, sticky, tags, excerpt } = req.body;
+      const { title, slug, contentMarkdown, excerptHtml, featuredImageUrl, sticky, rawMD, tags, excerpt } = req.body;
       const contentHtml = await marked(contentMarkdown || '');
 
       try {
@@ -57,6 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             contentProtected: false,
             excerptProtected: false,
             sticky: sticky || false,
+            rawMD: rawMD || false,
             featuredMediaId: 0,
             totalViewsCount: 0,
           }

@@ -2,14 +2,14 @@ import express from 'express';
 import next from 'next';
 import { schedule } from 'node-cron'; 
 
-const port = parseInt(process.env.PORT, 10) || 3000;
+const port = parseInt(process.env.PORT, 10) || 3001;
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
   const server = express();
-  const domain = dev ? 'http://localhost:3000' : 'https://lucas.untethered4life.com';
+  const domain = dev ? 'http://localhost:3001' : 'https://lucas.untethered4life.com';
   const historyurl = `${domain}/api/getspotifyhistory`;
   const dailyurl = `${domain}/api/aggregatedailystats`;
 
@@ -56,7 +56,7 @@ app.prepare().then(() => {
   } 
 
   server.all('*', (req, res) => { return handle(req, res); });
-  server.listen(port, (err) => {
+  server.listen(port, '0.0.0.0', (err) => {
     if (err) throw err;
     console.log(`> Ready on ${domain}`);
   });

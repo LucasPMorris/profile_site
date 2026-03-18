@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'PUT') {
     if (type === 'project') {
       // Update project
-      const { title, slug, description, image, stacks, link_demo, link_github, content, is_featured } = req.body;
+      const { title, slug, description, image, stacks, link_demo, link_github, content, is_featured, rawMD } = req.body;
 
       try {
         const updatedProject = await prisma.projects.update({
@@ -33,6 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             link_github: link_github || null,
             content: content || null,
             is_featured: is_featured || false,
+            rawMD: rawMD || false,
             updated_at: new Date()
           }
         });
@@ -44,7 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     } else {
       // Update blog post
-      const { title, slug, contentMarkdown, featuredImageUrl, sticky, tags, excerpt } = req.body;
+      const { title, slug, contentMarkdown, featuredImageUrl, sticky, rawMD, tags, excerpt } = req.body;
       const contentHtml = await marked(contentMarkdown || '');
 
       try {
@@ -58,6 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             modified: new Date(),
             featuredImageUrl: featuredImageUrl || '',
             sticky: sticky || false,
+            rawMD: rawMD || false,
             excerptHtml: excerpt || ''
           },
         });

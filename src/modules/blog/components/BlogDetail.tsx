@@ -2,13 +2,14 @@ import useSWR from 'swr';
 
 import Breakline from '@/common/components/elements/Breakline';
 import MDXComponent from '@/common/components/elements/MDXComponent';
+import RawMDComponent from '@/common/components/elements/RawMDComponent';
 import { calculateReadingTime, formatDate } from '@/common/helpers';
 import { BlogDetailProps } from '@/common/types/blog';
 import { fetcher } from '@/services/fetcher';
 
 import BlogHeader from './BlogHeader';
 
-const BlogDetail = ({ id, title, date, slug, content, tags_list, featured_image_url, date_gmt }: BlogDetailProps) => {
+const BlogDetail = ({ id, title, date, slug, content, tags_list, featured_image_url, date_gmt, rawMD }: BlogDetailProps) => {
   const { data: viewsData } = useSWR( `/api/views?slug=${slug}&type=blog`, fetcher );
 
   const viewsCount = viewsData?.views || 0;
@@ -19,7 +20,13 @@ const BlogDetail = ({ id, title, date, slug, content, tags_list, featured_image_
   return (
     <>
       <BlogHeader title={title?.rendered} comments_count={0} reading_time_minutes={readingTimeMinutes} published_at={date} page_views_count={viewsCount} featuredImageUrl={featured_image_url} tags_list={tags_list} />
-      <div className='space-y-6 leading-[1.8] dark:text-neutral-300 '>{content?.rendered && <MDXComponent>{content?.markdown}</MDXComponent>}</div>
+      <div className='space-y-6 leading-[1.8] dark:text-neutral-300'>
+        {content?.rendered && (
+          rawMD
+            ? <RawMDComponent>{content.markdown}</RawMDComponent>
+            : <MDXComponent>{content.markdown}</MDXComponent>
+        )}
+      </div>
       <Breakline className='!my-6' />
     </>
   );

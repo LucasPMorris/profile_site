@@ -26,7 +26,7 @@ const BlogCardNew = ({ id, title, featured_image_url, date, slug, content, excer
 
   return (
     <Link href={`/blog/${slug}?id=${id}`}>
-      <Card className='group relative flex w-full flex-col rounded-lg border shadow-sm dark:border-neutral-800 overflow-hidden'>
+      <Card className='group relative flex w-full flex-col rounded-lg border border-neutral-400 shadow-sm dark:border-neutral-800 overflow-hidden'>
         {/* Image Section */}
         <div className='relative w-full h-[200px]'>
           <Image src={featured_image_url || defaultImage} alt={title?.rendered} fill sizes='100vw' className='object-cover object-center transition-transform duration-300 group-hover:scale-105' />

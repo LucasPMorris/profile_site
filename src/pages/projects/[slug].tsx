@@ -33,8 +33,11 @@ const ProjectsDetailPage: NextPage<ProjectsDetailPageProps> = ({ project }) => {
         openGraph={{
           type: 'article',
           article: { publishedTime: project?.updated_at.toString(), modifiedTime: project?.updated_at.toString(), authors: ['Lucas Morris'] },
-          url: canonicalUrl, images: [ { url: `https://lucas.untethered4life.com${project?.image}`} ], siteName: 'Projects by Lucas Morris'
+          url: canonicalUrl,
+          images: [ { url: project?.image?.startsWith('http') ? project.image : `https://lucas.untethered4life.com${project?.image}`, width: 1200, height: 630, alt: project?.title } ],
+          siteName: 'Projects by Lucas Morris',
         }}
+        twitter={{ cardType: 'summary_large_image' }}
       />
       <Container data-aos='fade-up'>
         <BackButton url='/projects' />

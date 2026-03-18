@@ -33,6 +33,7 @@ export type BlogItemProps = {
   amp_enabled: boolean;
   featured_image_url: string;
   total_views_count: number;
+  rawMD?: boolean;
 };
 
 export type BlogDetailProps = {
@@ -70,6 +71,7 @@ export type BlogDetailProps = {
   wp_term: { taxonomy: string; embeddable: true; href: string; }[];
   curies: { name: string; href: string; templated: true; }[];
   total_views_count: number;
+  rawMD?: boolean;
 };
 
 export type BlogProps = { blogs: BlogItemProps[]; };

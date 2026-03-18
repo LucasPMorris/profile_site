@@ -8,6 +8,7 @@ import {
 } from 'react-icons/bs';
 import prisma from '@/common/libs/prisma';
 import MDXComponent from '@/common/components/elements/MDXComponent';
+import RawMDComponent from '@/common/components/elements/RawMDComponent';
 import { BlogDetailProps } from '@/common/types/blog';
 import { mapPrismaPostToBlogDetail } from '@/common/libs/blog';
 
@@ -76,6 +77,7 @@ export default function AdminEditor({ existingData, type, isEdit }: AdminEditorP
     link_github: existingData?.link_github || '',
     sticky: existingData?.sticky || false,
     is_featured: existingData?.is_featured || false,
+    rawMD: existingData?.rawMD || false,
     tags: existingData?.tags?.map((t: any) => t.name).join(', ') || '',
     excerpt: existingData?.excerpt?.rendered || ''
   });
@@ -142,6 +144,7 @@ export default function AdminEditor({ existingData, type, isEdit }: AdminEditorP
           contentMarkdown: content,
           featuredImageUrl: metadata.image,
           sticky: metadata.sticky,
+          rawMD: metadata.rawMD,
           tags: metadata.tags,
           excerpt: metadata.excerpt
         };
@@ -155,7 +158,8 @@ export default function AdminEditor({ existingData, type, isEdit }: AdminEditorP
           link_demo: metadata.link_demo,
           link_github: metadata.link_github,
           content: content,
-          is_featured: metadata.is_featured
+          is_featured: metadata.is_featured,
+          rawMD: metadata.rawMD
         };
       }
 
@@ -261,6 +265,15 @@ export default function AdminEditor({ existingData, type, isEdit }: AdminEditorP
                   />
                   Featured
                 </label>
+                <label className="flex items-center text-sm dark:text-neutral-300">
+                  <input
+                    type="checkbox"
+                    checked={metadata.rawMD}
+                    onChange={(e) => setMetadata({...metadata, rawMD: e.target.checked})}
+                    className="mr-2"
+                  />
+                  Raw MD
+                </label>
               </div>
             </>
           ) : (
@@ -284,6 +297,15 @@ export default function AdminEditor({ existingData, type, isEdit }: AdminEditorP
                     className="mr-2"
                   />
                   Sticky
+                </label>
+                <label className="flex items-center text-sm dark:text-neutral-300">
+                  <input
+                    type="checkbox"
+                    checked={metadata.rawMD}
+                    onChange={(e) => setMetadata({...metadata, rawMD: e.target.checked})}
+                    className="mr-2"
+                  />
+                  Raw MD
                 </label>
               </div>
             </>
@@ -417,8 +439,11 @@ export default function AdminEditor({ existingData, type, isEdit }: AdminEditorP
               <span className="text-sm font-medium dark:text-neutral-300">Preview</span>
             </div>
             <div className="flex-1 overflow-y-auto p-6 bg-white dark:bg-neutral-900">
-              <div className="max-w-none prose prose-neutral dark:prose-invert">
-                <MDXComponent>{content}</MDXComponent>
+              <div className="max-w-none">
+                {metadata.rawMD
+                  ? <RawMDComponent>{content}</RawMDComponent>
+                  : <div className="prose prose-neutral dark:prose-invert"><MDXComponent>{content}</MDXComponent></div>
+                }
               </div>
             </div>
           </div>
