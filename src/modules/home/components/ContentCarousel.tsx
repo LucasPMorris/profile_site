@@ -24,14 +24,12 @@ const ContentCarousel = () => {
     const blogs: CarouselItem[] = (blogResponse?.posts || []).map((post: BlogItemProps) => ({ type: 'blog' as const, data: post }));
     const projects: CarouselItem[] = (projectResponse?.data || []).filter((p: ProjectItemProps) => p.is_show).slice(0, 4).map((project: ProjectItemProps) => ({ type: 'project' as const, data: project }));
 
-    // Interleave: blog, project, blog, project, ...
-    const merged: CarouselItem[] = [];
-    const maxLen = Math.max(blogs.length, projects.length);
-    for (let i = 0; i < maxLen; i++) {
-      if (i < blogs.length) merged.push(blogs[i]);
-      if (i < projects.length) merged.push(projects[i]);
-    }
-    return merged;
+    // Sort all items newest to oldest
+    return [...blogs, ...projects].sort((a, b) => {
+      const dateA = a.type === 'blog' ? new Date(a.data.date) : new Date(a.data.updated_at);
+      const dateB = b.type === 'blog' ? new Date(b.data.date) : new Date(b.data.updated_at);
+      return dateB.getTime() - dateA.getTime();
+    });
   }, [blogResponse, projectResponse]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
