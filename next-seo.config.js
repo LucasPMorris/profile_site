@@ -13,9 +13,7 @@ const defaultSEOConfig = {
     description: metaDescription,
     type: 'website',
     images: [
-      { url: metaImage, alt: 'lucas.untethered4life.com og-image', width: 800, height: 600 },
       { url: metaImage, alt: 'lucas.untethered4life.com og-image', width: 1200, height: 630 },
-      { url: metaImage, alt: 'lucas.untethered4life.com og-image', width: 1600, height: 900, } 
     ],
   site_name: 'lucas.untethered4life.com',
   },

@@ -20,6 +20,8 @@ const BlogDetailPage: NextPage<BlogDetailPageProps> = ({ post }) => {
   const slug = `${post?.slug}`;
   const canonicalUrl = `https://lucas.untethered4life.com/blog/${slug}`;
   const description = formatExcerpt(post?.excerpt?.rendered);
+  const featuredImage = post?.featured_image_url?.startsWith('http') ? post.featured_image_url : `https://lucas.untethered4life.com${post?.featured_image_url}`;
+  const ogImage = `https://lucas.untethered4life.com/api/og?title=${encodeURIComponent(post?.title?.rendered ?? '')}&image=${encodeURIComponent(featuredImage)}`;
 
   const incrementViews = async () => { await axios.post(`/api/views?&slug=${slug}&type=blog`); };
 
@@ -38,7 +40,7 @@ const BlogDetailPage: NextPage<BlogDetailPageProps> = ({ post }) => {
           type: 'article',
           article: { publishedTime: post?.date, modifiedTime: post?.date, authors: ['Lucas Morris', 'LucasPMorris'] },
           url: canonicalUrl,
-          images: [ { url: post?.featured_image_url?.startsWith('http') ? post.featured_image_url : `https://lucas.untethered4life.com${post?.featured_image_url}`, width: 1200, height: 630, alt: post?.title?.rendered } ],
+          images: [ { url: ogImage, width: 1200, height: 630, alt: post?.title?.rendered } ],
           siteName: 'Blog by Lucas Morris',
         }}
         twitter={{ cardType: 'summary_large_image' }}
