@@ -134,9 +134,14 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
         table: (props: React.HTMLProps<HTMLTableElement>) => <Table {...props} />,
         th: (props: React.HTMLProps<HTMLTableCellElement>) => ( <th className='border px-3 py-1 text-left dark:border-neutral-600'>{props.children}</th> ),
         td: (props: React.HTMLProps<HTMLTableCellElement>) => ( <td className='border px-3 py-1 dark:border-neutral-600'>{props.children}</td> ),
-        img: ({ src = '', alt = '', width, height, className, style }: React.ImgHTMLAttributes<HTMLImageElement>) => {
+        img: ({ src = '', alt = '', width, height, className, style, ...rest }: React.ImgHTMLAttributes<HTMLImageElement>) => {
           // Don't render if src is empty
           if (!src || (typeof src === 'string' && src.trim() === '')) { return null; }
+
+          // data-raw bypasses all adjustments and renders a plain <img>
+          if ((rest as any)['data-raw'] !== undefined) {
+            return ( <img src={typeof src === 'string' ? src : ''} alt={alt} width={width} height={height} className={className} style={style} /> );
+          }
 
           var fallbackHeight = 1080;
           // If width and height are provided, use them directly
