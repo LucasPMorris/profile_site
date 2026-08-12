@@ -234,10 +234,26 @@ install_deps() {
   fi
 
   log "Installing dependencies | reason=package-lock changed or first release"
+  # --legacy-peer-deps is required, not optional. @headlessui/react@1.7.19
+  # declares peerDependencies react "^16 || ^17 || ^18" and this project runs
+  # react 19, so npm's resolver fails with ERESOLVE on any clean machine. The
+  # dev box never hits it: its node_modules predates the lockfile and `npm ci`
+  # has not been re-run there. Headless UI 1.x works on 19 in practice, the peer
+  # range is just stale. Drop this once that dependency moves to 2.x, which
+  # declares react ^18 || ^19.
+  #
+  # NOT --force. That flag also clears the ERESOLVE, but it works by telling npm
+  # to re-resolve the graph instead of trusting the lockfile, and re-resolution
+  # pulls transitive versions the lockfile never recorded (monaco-editor,
+  # dompurify, marked, jquery), which `npm ci` then rejects with EUSAGE
+  # "package.json and package-lock.json are not in sync". --legacy-peer-deps
+  # skips peer resolution and installs the locked tree verbatim, which is the
+  # whole point of a ci install.
+  #
   # package.json postinstall runs `prisma generate`, so a real install already
   # produces a matching client.
-  ( cd "$release" && npm ci --include=dev )
-  log "Installed dependencies"
+  ( cd "$release" && npm ci --include=dev --legacy-peer-deps )
+  log "Installed dependencies | note=--legacy-peer-deps, see the headlessui peer range"
 }
 
 prune_releases() {
