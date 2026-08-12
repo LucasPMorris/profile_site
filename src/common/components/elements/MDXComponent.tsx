@@ -1,5 +1,6 @@
 import { ReactNode, createElement } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import ReactMarkdown, { Components } from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import CodeBlock from './CodeBlock';
@@ -76,7 +77,14 @@ const MDXComponent = ({ children }: MarkdownRendererProps) => {
     <ReactMarkdown
       rehypePlugins={[rehypeRaw]}
       components={{
-        a: (props: React.HTMLProps<HTMLAnchorElement>) => ( <a className='cursor-pointer text-teal-500 hover:text-teal-400 hover:underline' {...props} /> ),
+        a: ({ href = '', children, ...props }: React.HTMLProps<HTMLAnchorElement>) => {
+          const isInternal = href.startsWith('/') || href.startsWith('#');
+          const className = 'cursor-pointer text-teal-500 hover:text-teal-400 hover:underline';
+          if (isInternal) {
+            return <Link href={href} className={className}>{children}</Link>;
+          }
+          return <a href={href} className={className} target="_blank" rel="noopener noreferrer" {...props}>{children}</a>;
+        },
         p: (props: React.HTMLProps<HTMLParagraphElement>) => <p className="mb-4" {...props} />,
         h1: (props: React.HTMLProps<HTMLHeadingElement>) => {
           const text = typeof props.children === 'string' ? props.children : '';

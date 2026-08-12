@@ -1,0 +1,85 @@
+# cloudflared ingress for lucas.untethered4life.com.
+#
+# ─── READ THIS FIRST: this YAML is reference only ─────────────────────────
+# The geekom runs a tunnel named TMServer, and it is CLOUDFLARE MANAGED:
+#
+#   ExecStart=/usr/bin/cloudflared --no-autoupdate tunnel run --token <token>
+#
+# A --token run pulls its ingress from Cloudflare and ignores any local file,
+# so writing /etc/cloudflared/config.yml changes nothing. Routes are added at
+# Zero Trust -> Networks -> Tunnels -> TMServer -> Configure/Edit -> Published
+# application routes (the tab formerly called Public Hostname). The tunnel
+# overview page has no such control; it is behind the edit action.
+#
+# The same tunnel already serves letitresolve.com, www, auth, and tm. This
+# hostname is one more row in that list, not a new tunnel.
+#
+# ─── Prerequisite: the zone has to be on Cloudflare ───────────────────────
+# letitresolve.com was already on Cloudflare nameservers when its cutover
+# happened. untethered4life.com is the one to check first:
+#
+#   dig +short NS untethered4life.com
+#
+# If that does not return *.ns.cloudflare.com, the zone is still elsewhere and
+# no tunnel route can be published for it until the nameservers move. Moving
+# them relocates MX and DKIM as well, so the Google Workspace mail records must
+# be recreated in the Cloudflare zone BEFORE the nameserver switch, not after.
+# Mail for this domain is live and unforgiving; the site is not.
+#
+# ─── Existing records to clear ────────────────────────────────────────────
+# `lucas.untethered4life.com` currently resolves to the Render profile-site
+# service. That record has to be deleted before the tunnel route can claim the
+# hostname, exactly as the letitresolve.com apex did.
+#
+#   DNS -> Records -> delete the `lucas` A/CNAME record
+#   then add the published application route below
+#
+# ─── The route ────────────────────────────────────────────────────────────
+# Subdomain  : lucas
+# Domain     : untethered4life.com
+# Type       : HTTP
+# URL        : localhost:4060
+#
+# No cloudflared restart is needed; remote config is picked up within seconds.
+#
+# ─── After traffic is flowing ─────────────────────────────────────────────
+#   SSL/TLS mode: Full. Flexible causes redirect loops and is never correct
+#   with a tunnel, where the Cloudflare-to-origin hop is already encrypted.
+#
+#   server.js builds its cron URLs from the production domain, so the Spotify
+#   ingestion POSTs to https://lucas.untethered4life.com/api/getspotifyhistory
+#   every 30 minutes. Until DNS points here those calls fail harmlessly against
+#   Render or NXDOMAIN; after cutover they start landing. Check the journal
+#   after the first half hour:
+#
+#     ./scripts/deploy/deploy.sh logs 200 | grep -i spotify
+#
+# ─── Rolling back to Render ───────────────────────────────────────────────
+# Delete the published application route and re-add the Render CNAME. TTL is
+# short, so it is a minutes-scale reversal.
+
+# ══════════════════════════════════════════════════════════════════════════
+#  MERGE FROM HERE DOWN
+#
+#  Only the `- hostname:` block goes into an existing tunnel's ingress list,
+#  above whatever catch-all it already ends with. The `tunnel:` and
+#  `credentials-file:` keys below belong to a standalone tunnel and must NOT
+#  be pasted into a config that already has them.
+# ══════════════════════════════════════════════════════════════════════════
+
+tunnel: <UUID>
+credentials-file: /etc/cloudflared/<UUID>.json
+
+metrics: 127.0.0.1:2000
+no-autoupdate: true
+
+ingress:
+  # letitresolve.com, www, auth, and tm rules stay where they are.
+  - hostname: lucas.untethered4life.com
+    service: http://localhost:4060
+    originRequest:
+      # next build output is served by the Express wrapper in server.js.
+      connectTimeout: 30s
+      httpHostHeader: lucas.untethered4life.com
+
+  - service: http_status:404

@@ -1,0 +1,39 @@
+# systemd unit template for the profile_site production process.
+# Placeholders are substituted by scripts/deploy/setup/bootstrap.sh:
+#   __USER__       deploy user that owns __ROOT__
+#   __ROOT__       DEPLOY_ROOT (e.g. /home/geekom/node/profile_site)
+#   __NPM__        absolute path to npm (systemd gets no nvm shell)
+#   __NODEBIN__    directory holding node/npm, prepended to PATH for the same reason
+#
+# WorkingDirectory points at the `current` symlink and systemd resolves it at
+# each exec, so `systemctl restart` is what promotes a newly switched release.
+
+[Unit]
+Description=lucas.untethered4life.com (profile_site) - Next.js + Express
+Documentation=https://lucas.untethered4life.com
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__USER__
+WorkingDirectory=__ROOT__/current
+EnvironmentFile=__ROOT__/shared/app.env
+Environment=PATH=__NODEBIN__:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=__NPM__ start
+
+# Next needs a beat to flush; SIGINT is the signal it handles cleanly.
+KillSignal=SIGINT
+TimeoutStopSec=30
+Restart=always
+RestartSec=5
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=profile-site
+
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
