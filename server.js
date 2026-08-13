@@ -3,6 +3,8 @@ import next from 'next';
 import { schedule } from 'node-cron'; 
 
 const port = parseInt(process.env.PORT, 10) || 4060;
+// Loopback only: cloudflared runs on the same box, so nothing needs the LAN interface.
+const host = process.env.HOST ?? '127.0.0.1';
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
@@ -56,8 +58,8 @@ app.prepare().then(() => {
   } 
 
   server.all('*', (req, res) => { return handle(req, res); });
-  server.listen(port, '0.0.0.0', (err) => {
+  server.listen(port, host, (err) => {
     if (err) throw err;
-    console.log(`> Ready on ${domain}`);
+    console.log(`> Ready on ${domain} | listen=${host}:${port}`);
   });
 }); 
